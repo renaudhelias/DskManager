@@ -1,9 +1,14 @@
 package dskmanager;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.RandomAccessFile;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 
 public class DskManager {
 	
@@ -83,8 +88,72 @@ public class DskManager {
 		return 0;
 	}
 
-	public void addFile(File file, boolean generateAMSDOSHeader) {
+	public void addFile(File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
+		File dskFileEntry=new File(currentDir, fileName);
+		long size=dskFileEntry.length();
+		int nbEntry = (int)(size/(16*1024))+1; // each 16KB
+		int nbEntryLast = (int)(size%(16*1024)); // each 16KB
 		
+		// search entry free space
+		FileInputStream fis = new FileInputStream(dskFile);
+		fis.skip(0x100); //header
+		fis.skip(0x100); // first Track-info
+		byte [] entryFileName=new byte [8+3];
+		int jocker=fis.read(); // jocker equals 0
+		fis.read(entryFileName);
+		fis.read();// nbEntry
+		fis.read();fis.read();
+		byte entryFileSize;
+		entryFileSize=(byte) fis.read();
+		byte [] entrySectors = new byte[0x10];
+		fis.read(entrySectors);
+		fis.close();
+				
+		if (jocker == fillerByte) {
+			RandomAccessFile fos = new RandomAccessFile(dskFile, "rw");
+			FileChannel channel = fos.getChannel();
+			channel.position(0x200);
+			for (int i=0;i<nbEntry;i++) {
+				channel.write(ByteBuffer.wrap(new byte[]{0x00}));//jocker
+				entryFileName=realname2cpcname(fileName).getBytes();
+				channel.write(ByteBuffer.wrap(entryFileName));
+				channel.write(ByteBuffer.wrap(new byte[]{(byte)i}));
+				channel.write(ByteBuffer.wrap(new byte[]{0,0}));
+				if (i==nbEntry-1) {
+					channel.write(ByteBuffer.wrap(new byte[]{(byte) nbEntryLast})); // entrySize
+				} else {
+					channel.write(ByteBuffer.wrap(new byte[]{(byte) nbEntryLast})); // entrySize
+				}
+				channel.write(ByteBuffer.wrap(entrySectors));
+			}
+			fos.close();
+		}
+		
+		
+		
+	
+	
 	}
+	
+	
+	public static String realname2cpcname(String realname) {
+    	String cpcname = realname.toUpperCase();
+    	if (cpcname.contains(".")) {
+            int point = cpcname.indexOf(".");
+            String filename = cpcname.substring(0, point);
+            filename = filename + "        ";
+            filename = filename.substring(0, 8);
+            String extension = cpcname.substring(point + 1,
+                    cpcname.length());
+            extension = extension + "   ";
+            extension = extension.substring(0, 3);
+
+            cpcname = filename + extension;
+        } else {
+            cpcname = cpcname + "        " + "   ";
+            cpcname = cpcname.substring(0, 8 + 3);
+        }
+    	return cpcname;
+    }
 	
 }
