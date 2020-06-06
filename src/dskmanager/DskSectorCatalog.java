@@ -11,6 +11,11 @@ import java.util.List;
 
 public class DskSectorCatalog extends DskSector {
 	List<String> catalog = new ArrayList<String>();
+	private DskFile dskFile;
+	
+	public DskSectorCatalog(DskFile dskFile) {
+		this.dskFile = dskFile;
+	}
 	public int addFilename(String filename) {
 		this.catalog.add(filename);
 		return catalog.size()-1;
@@ -28,24 +33,26 @@ public class DskSectorCatalog extends DskSector {
 		fis.close();
 	}
 	
-	public void scan(FileOutputStream fos,int noFileEntry) {
-		
+	public void scan(RandomAccessFile fos,String fileName) throws IOException {
+		int nbEntry = (int)(dskFile.file.length()/(16*1024))+1; // each 16KB
+		int nbEntryLast = (int)(dskFile.file.length()%(16*1024)); // each 16KB
+
 		FileChannel channel = fos.getChannel();
-//		channel.position(0x200);
-//		for (int i=0;i<nbEntry;i++) {
-//			channel.write(ByteBuffer.wrap(new byte[]{0x00}));//jocker
-//			entryFileName=realname2cpcname(fileName).getBytes();
-//			channel.write(ByteBuffer.wrap(entryFileName));
-//			channel.write(ByteBuffer.wrap(new byte[]{(byte)i}));
-//			channel.write(ByteBuffer.wrap(new byte[]{0,0}));
-//			if (i==nbEntry-1) {
-//				channel.write(ByteBuffer.wrap(new byte[]{(byte) (nbEntryLast/2)})); // entrySize
-//			} else {
-//				channel.write(ByteBuffer.wrap(new byte[]{(byte) (16*1024/2)})); // entrySize
-//			}
+		channel.position(0x200);
+		for (int i=0;i<nbEntry;i++) {
+			channel.write(ByteBuffer.wrap(new byte[]{0x00}));//jocker
+			byte [] entryFileName = realname2cpcname(fileName).getBytes();
+			channel.write(ByteBuffer.wrap(entryFileName));
+			channel.write(ByteBuffer.wrap(new byte[]{(byte)i}));
+			channel.write(ByteBuffer.wrap(new byte[]{0,0}));
+			if (i==nbEntry-1) {
+				channel.write(ByteBuffer.wrap(new byte[]{(byte) (nbEntryLast/2)})); // entrySize
+			} else {
+				channel.write(ByteBuffer.wrap(new byte[]{(byte) (16*1024/2)})); // entrySize
+			}
 //			entrySectors = newEntrySectors();
 //			channel.write(ByteBuffer.wrap(entrySectors));
-//		}
+		}
 	}
 
 	public static String realname2cpcname(String realname) {

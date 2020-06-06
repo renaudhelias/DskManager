@@ -44,19 +44,21 @@ public class DskManager {
 		//FileEntry
 		File dskFileEntry=new File(currentDir, fileName);
 		long size=dskFileEntry.length();
-		int nbEntry = (int)(size/(16*1024))+1; // each 16KB
-		int nbEntryLast = (int)(size%(16*1024)); // each 16KB
 		
 		// search entry free space
-		FileInputStream fis = new FileInputStream(dskFile.file);
-		fis.skip(0x100); //header
+		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
+		fos.getChannel().position(0x100); //header
 		//Track-info
-		fis.skip(0x100); // first Track-info
+		fos.getChannel().position(0x200); // first Track-info
 		
 		DskFile dskFile=new DskFile(currentDir, fileName);
 		List<DskTrack> tracks=dskFile.tracks;
 		// pour les 4 premiers secteur du premier track
-		
+		for (int i =0;i<4;i++) {
+			DskSectorCatalog sectorCatalog = new DskSectorCatalog(dskFile);
+			sectorCatalog.scan(fos,fileName);
+		}
+		fos.close();
 				
 		
 		
