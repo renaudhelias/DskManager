@@ -11,10 +11,9 @@ import java.util.List;
 
 public class DskSectorCatalog extends DskSector {
 	List<String> catalog = new ArrayList<String>();
-	private DskFile dskFile;
 	
-	public DskSectorCatalog(DskFile dskFile) {
-		this.dskFile = dskFile;
+	public DskSectorCatalog(int sectorId, DskFile dskFile) {
+		super(sectorId, dskFile);
 	}
 	public int addFilename(String filename) {
 		this.catalog.add(filename);

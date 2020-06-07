@@ -9,10 +9,10 @@ import java.util.List;
 
 public class DskFile {
 	
-	private static final String HEADER_DISK="EXTENDED CPC DSK File\r\nDisk-Info\r\n";
+	String header="EXTENDED CPC DSK File\r\nDisk-Info\r\n";
 	String creator="CPCDiskXP v2.5";
-	byte nbTracks=40;
-	byte nbSides=1;
+	int nbTracks=40;
+	int nbSides=1;
 	int sizeOfTrack=19;
 	
 	
@@ -24,10 +24,19 @@ public class DskFile {
 	/**
 	 * Scan from 0 to 0x0FF
 	 * @param fis
+	 * @throws IOException 
 	 */
-	public void scan(FileInputStream fis) {
-		
-		
+	public void scan(FileInputStream fis) throws IOException {
+		byte[] bufferHeader = new byte[34];
+		fis.read(bufferHeader);
+		header=bufferHeader.toString();
+		byte[] bufferCreator = new byte[14];
+		fis.read(bufferCreator);
+		creator=bufferCreator.toString();
+		nbTracks=fis.read();
+		nbSides=fis.read();
+		sizeOfTrack=fis.read();
+		sizeOfTrack+=fis.read()*0x10;
 	}
 	
 	/**
@@ -36,7 +45,7 @@ public class DskFile {
 	 * @throws IOException 
 	 */
 	public void scan(FileOutputStream fos) throws IOException {
-		fos.write(HEADER_DISK.getBytes());
+		fos.write(header.getBytes());
 		fos.write(creator.getBytes());
 		fos.write(nbTracks);
 		fos.write(nbSides);

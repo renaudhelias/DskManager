@@ -3,28 +3,40 @@ package dskmanager;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class DskTrack {
 	
 	
-	public static final String HEADER_TRACK="Track-Info\r\n";
+	String header="Track-Info\r\n";
 	
-	List<DskSector> sectors;
+	public List<DskSector> sectors=new ArrayList<DskSector>();
 
-	private int noTrack;
-	byte sectorSize=2;
-	byte nbSectors=9;
-	byte gap=0x2A;
+	int noTrack;
+	int side=0;
+	int sectorSize=2;
+	int nbSectors=9;
+	int gap=0x2A;
 	int fillerByte=0xE5;
-	private int side=0;
+	
 	
 	public DskTrack(int noTrack) {
 		this.noTrack = noTrack;
 	}
 	
-	public void scan(FileInputStream fis) {
-		
+	public void scan(FileInputStream fis) throws IOException {
+		byte[] bufferHeader = new byte[12];
+		fis.read(bufferHeader);
+		header=bufferHeader.toString();
+		fis.read();fis.read();fis.read();fis.read();
+		noTrack=fis.read();
+		side=fis.read();
+		fis.read();fis.read();
+		sectorSize=fis.read();
+		nbSectors=fis.read();
+		gap=fis.read();
+		fillerByte=fis.read();
 	}
 	/**
 	 * Au début d'un Track-header
@@ -32,7 +44,7 @@ public class DskTrack {
 	 * @throws IOException 
 	 */
 	public void scan(FileOutputStream fos) throws IOException {
-		fos.write(HEADER_TRACK.getBytes());
+		fos.write(header.getBytes());
 		fos.write(0);fos.write(0);fos.write(0);fos.write(0);
 		fos.write(noTrack);
 		fos.write(side);// side
@@ -42,32 +54,16 @@ public class DskTrack {
 		fos.write(gap);
 		fos.write(fillerByte);
 		
-		// SECTOR INFfos
-		int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
-		for (int j=0;j<nbSectors;j++) {
-			fos.write(noTrack);//track
-			fos.write(0);//side
-			fos.write(sectorId[j]);
-			fos.write(sectorSize);
-			fos.write(0);//FDC 1
-			fos.write(0);//FDC 2
-			fos.write(0);fos.write(2);
-		}
-		// garbage
-		for (int k=0;k<0x200-0x160;k++) {
-			fos.write(0);					
-		}
-		for (int j=0;j<nbSectors;j++) {
-			for (int k=0;k<computeSectorSize(sectorSize);k++) {
-				fos.write(fillerByte);
-			}
-		}
 	}
 	
-	private int computeSectorSize(byte sectorSize) {
-		//(x"80",x"100",x"200",x"400",x"800",x"1000",x"1800");
-		if (sectorSize==2) return 0x200;  
-		return 0;
-	}
+	
 
+	DskSector find(int sectorId) {
+		for (DskSector sector:sectors) {
+			if (sector.sectorIdR==sectorId) {
+				return sector;
+			}
+		}
+		return null;
+	}
 }
