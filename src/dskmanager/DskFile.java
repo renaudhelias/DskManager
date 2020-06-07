@@ -60,5 +60,8 @@ public class DskFile {
 		}
 		
 	}
+	public DskSector nextFreeSector() {
+		return new DskSector(0,0xC5,this);
+	}
 	
 }

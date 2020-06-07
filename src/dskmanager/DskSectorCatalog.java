@@ -10,50 +10,58 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DskSectorCatalog extends DskSector {
-	List<String> catalog = new ArrayList<String>();
+	// FIXME : plus tard ça.
+	//	List<String> catalog = new ArrayList<String>();
 	
-	public DskSectorCatalog(int sectorId, DskFile dskFile) {
-		super(sectorId, dskFile);
+	public DskSectorCatalog(int sectorTrack, int sectorId, DskFile dskFile) {
+		super(sectorTrack,sectorId, dskFile);
 	}
-	public int addFilename(String filename) {
-		this.catalog.add(filename);
-		return catalog.size()-1;
-	}
-	public void scan(FileInputStream fis, int noFileEntry) throws IOException {
-		fis.read(catalog.get(noFileEntry).getBytes());
-		fis.read();// nbEntry
-		fis.read();fis.read();
-		byte entryFileSize;
-		entryFileSize=(byte) fis.read();
-		byte [] entrySectors = new byte[0x10];
-		fis.read(entrySectors);
-		byte [] usedSectorEntry=new byte[]{};
-		usedSectorEntry=computeUsedSector(usedSectorEntry,entrySectors);
-		fis.close();
-	}
+//	public int addFilename(String filename) {
+//		this.catalog.add(filename);
+//		return catalog.size()-1;
+//	}
 	
-	public void scan(RandomAccessFile fos,String fileName) throws IOException {
-		int nbEntry = (int)(dskFile.file.length()/(16*1024))+1; // each 16KB
-		int nbEntryLast = (int)(dskFile.file.length()%(16*1024)); // each 16KB
+	//**
+	
+	
+	/**
+	 * 
+	 * @param fos
+	 * @param fileName
+	 * @return > zero si pas assez de jocker FIXME
+	 * @throws IOException
+	 */
+	public void scan(FileChannel channel, String fileName, List<DskSector> listSector) throws IOException {
 
-		FileChannel channel = fos.getChannel();
-		channel.position(0x200);
-		for (int i=0;i<nbEntry;i++) {
-			channel.write(ByteBuffer.wrap(new byte[]{0x00}));//jocker
-			byte [] entryFileName = realname2cpcname(fileName).getBytes();
-			channel.write(ByteBuffer.wrap(entryFileName));
-			channel.write(ByteBuffer.wrap(new byte[]{(byte)i}));
-			channel.write(ByteBuffer.wrap(new byte[]{0,0}));
-			if (i==nbEntry-1) {
-				channel.write(ByteBuffer.wrap(new byte[]{(byte) (nbEntryLast/2)})); // entrySize
-			} else {
-				channel.write(ByteBuffer.wrap(new byte[]{(byte) (16*1024/2)})); // entrySize
+		// à simplifier
+		
+		
+		channel.position(0x200); // here C1 of track 1
+		ByteBuffer jocker=ByteBuffer.allocate(1);
+		for (int i =0;i<0x10;i++) {
+			channel.position(0x200+i*0x20);
+			channel.read(jocker);
+			if (jocker.get()!=0x00) {
+				channel.write(ByteBuffer.wrap(new byte[]{0x00}));//jocker
+				byte [] entryFileName = realname2cpcname(fileName).getBytes();
+				channel.write(ByteBuffer.wrap(entryFileName));
+				channel.write(ByteBuffer.wrap(new byte[]{(byte)i}));
+				channel.write(ByteBuffer.wrap(new byte[]{0,0}));
+				for (DskSector sector:listSector) {
+					channel.write(ByteBuffer.wrap(new byte[]{(byte)sector.cat}));
+				}
+				for (int j=0;j<0x10-listSector.size();j++) {
+					channel.write(ByteBuffer.wrap(new byte[]{0}));					
+				}
+				
 			}
-//			entrySectors = newEntrySectors();
-//			channel.write(ByteBuffer.wrap(entrySectors));
 		}
+		
 	}
 
+	private byte[] newEntrySectors() {
+		return new byte[]{0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+	}
 	public static String realname2cpcname(String realname) {
     	String cpcname = realname.toUpperCase();
     	if (cpcname.contains(".")) {

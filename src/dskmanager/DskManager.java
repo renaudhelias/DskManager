@@ -41,11 +41,11 @@ public class DskManager {
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (sectorId[j] <= 0xC4) {
-					DskSectorCatalog sector = new DskSectorCatalog(sectorId[j],dskFile);
+					DskSectorCatalog sector = new DskSectorCatalog(i, sectorId[j],dskFile);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
 				} else {
-					DskSector sector = new DskSector(sectorId[j],dskFile);
+					DskSector sector = new DskSector(i, sectorId[j],dskFile);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
 				}
@@ -84,10 +84,25 @@ public class DskManager {
 		DskSectorCatalog sectorCatalogC4 = (DskSectorCatalog) track0.find(0xC4);
 		// search entry free space
 		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
-		fos.getChannel().position(0x100); //header
+//		fos.getChannel().position(0x100); //header
 		//Track-info
-		fos.getChannel().position(0x200); // first Track-info
-		sectorCatalogC1.scan(fos,fileName);
+//		; // first Track-info
+
+		int nbEntry = (int)(dskFile.file.length()/(16*1024))+1; // each 16KB
+//		
+
+		FileInputStream fis=new FileInputStream(dskFile.file);
+		List<DskSector> listSector=new ArrayList<DskSector>();
+		for (int i=0;i<nbEntry;i++) {
+			byte [] data=new byte[Math.min(512,fis.available())]; 
+			fis.read(data);
+			DskSector d=dskFile.nextFreeSector();
+			d.data=data;
+			listSector.add(d);
+		}
+		
+		sectorCatalogC1.scan(fos.getChannel().position(0x200),fileName,listSector);
+		fis.close();
 		
 		
 		DskFile dskFile=new DskFile(currentDir, fileName);
@@ -98,7 +113,6 @@ public class DskManager {
 		}
 		
 		for (int j=0;j<track0.nbSectors;j++) {
-			int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 			for (int k=0;k<sectorSizes[0x02];k++) {
 				fos.write(track0.fillerByte);
 			}

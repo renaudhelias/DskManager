@@ -16,11 +16,29 @@ public class DskSector {
 	int fdc2;
 
 	public byte[] data;
+
+	public byte cat;
 	
-	public DskSector(int sectorId, DskFile dskFile) {
+	public DskSector(int sectorTrack,int sectorId, DskFile dskFile) {
+		this.trackC = sectorTrack;
 		this.sectorIdR=sectorId;
 		this.dskFile=dskFile;
 	}
+	
+
+	public void scan(FileInputStream fis) throws IOException {
+		trackC=fis.read();
+		sideH=fis.read();
+		sectorIdR=fis.read();
+		sectorSizeN=fis.read();
+		fdc1=fis.read();
+		fdc2=fis.read();
+		fis.read();fis.read();
+		//FIXME cat
+		byte [] entrySectors = new byte[0x10];
+		fis.read(entrySectors);
+	}
+	
 	public void scan(FileOutputStream fos) throws IOException {
 		fos.write(trackC);//track
 		fos.write(sideH);//side
