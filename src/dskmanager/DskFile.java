@@ -50,7 +50,7 @@ public class DskFile {
 		fos.write(nbTracks);
 		fos.write(nbSides);
 		fos.write(0);
-		fos.write(sizeOfTrack);
+		fos.write(0);//sizeOfTrack);
 		int i=0;
 		for (i=0;i<nbTracks;i++) {
 			fos.write(sizeOfTrack);

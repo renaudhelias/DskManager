@@ -19,6 +19,9 @@ public class DskManager {
 
 	DskFile dskFile;
 	
+	int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
+	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
+	// dictionary
 	byte[]usedSectorEntry={};
 	
 	private static DskManager instance=null;
@@ -35,7 +38,7 @@ public class DskManager {
 			DskTrack dskTrack = new DskTrack(i);
 			dskFile.tracks.add(dskTrack);
 			dskTrack.scan(fos);
-			int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
+			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (sectorId[j] <= 0xC4) {
 					DskSectorCatalog sector = new DskSectorCatalog(sectorId[j],dskFile);
@@ -48,7 +51,22 @@ public class DskManager {
 				}
 					
 			}
+			//garbage "0" at end of Track-Info
+			int garbage=0x1D-dskTrack.nbSectors;
+			for (int j=0;j<garbage;j++) {
+				for (int k=0;k<8;k++) {
+					fos.write(0);
+				}
+			}
 			
+			// garbage "E5" as data of each sector
+			for (int j=0;j<dskTrack.nbSectors;j++) {
+				dskTrack.sectors.get(j).data=new byte[sectorSizes[dskTrack.sectorSize]];
+				for (int k=0;k<sectorSizes[dskTrack.sectorSize];k++) {
+					dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
+				}
+				dskTrack.sectors.get(j).scanData(fos);
+			}
 		}
 		fos.close();
 	}
