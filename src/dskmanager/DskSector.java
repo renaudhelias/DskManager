@@ -17,7 +17,9 @@ public class DskSector {
 
 	public byte[] data;
 
-	public byte cat;
+	public int cat;
+
+	private byte[] entrySectors;
 	
 	public DskSector(int sectorTrack,int sectorId, DskFile dskFile) {
 		this.trackC = sectorTrack;
@@ -34,9 +36,6 @@ public class DskSector {
 		fdc1=fis.read();
 		fdc2=fis.read();
 		fis.read();fis.read();
-		//FIXME cat
-		byte [] entrySectors = new byte[0x10];
-		fis.read(entrySectors);
 	}
 	
 	public void scan(FileOutputStream fos) throws IOException {

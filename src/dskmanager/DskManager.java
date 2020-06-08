@@ -41,7 +41,7 @@ public class DskManager {
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (sectorId[j] <= 0xC4) {
-					DskSectorCatalog sector = new DskSectorCatalog(i, sectorId[j],dskFile);
+					DskSectorCatalogs sector = new DskSectorCatalogs(i, sectorId[j],dskFile);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
 				} else {
@@ -68,6 +68,7 @@ public class DskManager {
 				dskTrack.sectors.get(j).scanData(fos);
 			}
 		}
+		dskFile.generateCatSectors();
 		fos.close();
 	}
 
@@ -78,10 +79,10 @@ public class DskManager {
 		long size=dskFileEntry.length();
 		
 		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalog sectorCatalogC1 = (DskSectorCatalog) track0.find(0xC1);
-		DskSectorCatalog sectorCatalogC2 = (DskSectorCatalog) track0.find(0xC2);
-		DskSectorCatalog sectorCatalogC3 = (DskSectorCatalog) track0.find(0xC3);
-		DskSectorCatalog sectorCatalogC4 = (DskSectorCatalog) track0.find(0xC4);
+		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) track0.find(0xC1);
+		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) track0.find(0xC2);
+		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) track0.find(0xC3);
+		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) track0.find(0xC4);
 		// search entry free space
 		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
 //		fos.getChannel().position(0x100); //header
@@ -101,7 +102,7 @@ public class DskManager {
 			listSector.add(d);
 		}
 		
-		sectorCatalogC1.scan(fos.getChannel().position(0x200),fileName,listSector);
+		sectorCatalogC1.scanCatalog(fos.getChannel().position(0x200),fileName,listSector);
 		fis.close();
 		
 		
