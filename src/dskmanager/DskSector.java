@@ -55,5 +55,9 @@ public class DskSector {
 	public void scanData(FileInputStream fis) throws IOException {
 		fis.read(data);
 	}
+	
+	public String toString() {
+		return "track "+trackC+ " head " + sideH +" id:"+String.format("#%02X", sectorIdR)+"\n"+data.length+"\n";
+	}
 
 }

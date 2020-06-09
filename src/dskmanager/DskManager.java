@@ -75,11 +75,13 @@ public class DskManager {
 	public void addFile(File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
 		
 		//FileEntry
-		File dskFileEntry=new File(currentDir, fileName);
-		long size=dskFileEntry.length();
+//		File dskFileEntry=new File(currentDir, fileName);
+//		long size=dskFileEntry.length();
 		
 		DskTrack track0 = dskFile.tracks.get(0);
+		System.out.println("Récupération de C1-C4");
 		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) track0.find(0xC1);
+		System.out.println(sectorCatalogC1);
 		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) track0.find(0xC2);
 		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) track0.find(0xC3);
 		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) track0.find(0xC4);
@@ -89,20 +91,24 @@ public class DskManager {
 		//Track-info
 //		; // first Track-info
 
-		int nbEntry = (int)(dskFile.file.length()/(16*1024))+1; // each 16KB
+		int nbEntry = (int)(dskFile.file.length()/(16*1024)); // each 16KB
+		int lastEntry = (int)(dskFile.file.length()%(16*1024));
 //		
 
 		FileInputStream fis=new FileInputStream(dskFile.file);
 		List<DskSector> listSector=new ArrayList<DskSector>();
-		for (int i=0;i<nbEntry;i++) {
-			byte [] data=new byte[Math.min(512,fis.available())]; 
-			fis.read(data);
-			DskSector d=dskFile.nextFreeSector();
-			d.data=data;
-			listSector.add(d);
+		for (int i=0;i<=nbEntry;i++) {
+			if (i<nbEntry || (i==nbEntry && lastEntry <i)) {
+				byte [] data=new byte[Math.min(512,fis.available())];
+				fis.read(data);
+				DskSector d=dskFile.nextFreeSector();
+				d.data=data;
+				listSector.add(d);
+			}
 		}
 		
 		sectorCatalogC1.scanCatalog(fos.getChannel().position(0x200),fileName,listSector);
+		System.out.println("Après : "+sectorCatalogC1);
 		fis.close();
 		
 		

@@ -66,4 +66,8 @@ public class DskTrack {
 		}
 		return null;
 	}
+	
+	public String toString() {
+		return "Track-Info "+noTrack+"\n";
+	}
 }

@@ -35,7 +35,7 @@ public class DskManagerTest {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
 		DskManager dm = DskManager.getInstance();
 		dm.newDsk(currentDir, "jdvpa10_test2.dsk");
-//		dm.addFile(currentDir,"main.bin",false);
+		dm.addFile(currentDir,"main.bin",false);
 		
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test0.dsk");
 	}

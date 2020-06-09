@@ -51,5 +51,11 @@ public class DskSectorCatalog {
     	return cpcname;
     }
 
-
+	public String toString() {
+		String s="DskSectorCatalog\n"+sectors.size()+" sectors\n";
+		for (DskSector sector:sectors) {
+			s+="track "+sector.trackC+" head "+sector.sideH+" cat:"+String.format("#%02X", sector.cat)+" id:"+String.format("#%02X", sector.sectorIdR)+" DATA size "+sector.data.length+"\n";
+		}
+		return s;
+	}
 }
