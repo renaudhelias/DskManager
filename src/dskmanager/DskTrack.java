@@ -53,15 +53,6 @@ public class DskTrack {
 		fos.write(fillerByte);
 	}
 
-	DskSector find(int sectorId) {
-		for (DskSector sector:sectors) {
-			if (sector.sectorIdR==sectorId) {
-				return sector;
-			}
-		}
-		return null;
-	}
-	
 	public String toString() {
 		return "Track-Info "+noTrack+"\n";
 	}

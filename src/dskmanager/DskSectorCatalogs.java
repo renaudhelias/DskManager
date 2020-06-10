@@ -8,8 +8,8 @@ import java.util.List;
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
-	public DskSectorCatalogs(int sectorTrack, int sectorId, DskFile dskFile) {
-		super(sectorTrack,sectorId, dskFile);
+	public DskSectorCatalogs(int sectorTrack, int sectorId) {
+		super(sectorTrack,sectorId);
 	}
 
 	/**

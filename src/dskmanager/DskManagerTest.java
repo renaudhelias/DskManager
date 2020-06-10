@@ -43,7 +43,7 @@ public class DskManagerTest {
 	}
 
 	private void compare(DskFile toto, DskFile tutu) {
-		assertEquals(toto.catSectors.size(),tutu.catSectors.size());
+		assertEquals(toto.master.catSectors.size(),tutu.master.catSectors.size());
 		
 		assertEquals(toto.tracks.size(),tutu.tracks.size());
 		assertEquals(toto.tracks.get(0).sectors.size(),tutu.tracks.get(0).sectors.size());

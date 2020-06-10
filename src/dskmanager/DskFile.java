@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 public class DskFile {
@@ -16,10 +15,11 @@ public class DskFile {
 	int nbSides=1;
 	int sizeOfTrack=19;
 	
-	
+	DskMaster master;
 	File file;
 	List<DskTrack> tracks=new ArrayList<DskTrack>();
 	public DskFile(File currentDir, String fileName) {
+		master=new DskMaster(this);
 		file=new File(currentDir, fileName);
 	}
 	/**
@@ -62,32 +62,5 @@ public class DskFile {
 		
 	}
 	
-	HashMap<Integer, DskSector> catSectors = new HashMap<Integer, DskSector>();
-	List<DskSector> catSectorsReferenced = new ArrayList<DskSector>();
-	public void generateCatSectors() {
-		int catRef=0x02;
-		for (DskTrack track:tracks) {
-			for (DskSector sector : track.sectors) {
-				if (sector instanceof DskSectorCatalogs) {
-					for (DskSectorCatalog cat:((DskSectorCatalogs)sector).cats) {
-						catSectorsReferenced.addAll(cat.sectors);
-					}
-				} else {
-					sector.cat=catRef;
-					catSectors.put(catRef, sector);
-					catRef++;
-				}
-			}
-		}
-	}
-	public DskSector nextFreeSector() {
-		for (DskSector cat : catSectors.values()) {
-			if (!catSectorsReferenced.contains(cat)) {
-				catSectorsReferenced.add(cat);
-				return cat; 
-			}
-		}
-		return null;
-	}
 	
 }
