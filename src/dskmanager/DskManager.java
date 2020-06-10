@@ -2,23 +2,13 @@ package dskmanager;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.nio.ByteBuffer;
-import java.nio.channels.FileChannel;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 
 public class DskManager {
-	
-
-	 
-	
 	int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 	// dictionary
@@ -79,10 +69,6 @@ public class DskManager {
 	}
 
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
-		//FileEntry
-//		File dskFileEntry=new File(currentDir, fileName);
-//		long size=dskFileEntry.length();
-		
 		DskTrack track0 = dskFile.tracks.get(0);
 		System.out.println("Récupération de C1-C4");
 		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) track0.find(0xC1);
@@ -95,10 +81,8 @@ public class DskManager {
 //		fos.getChannel().position(0x100); //header
 		//Track-info
 //		; // first Track-info
-
 		int nbEntry = (int)(dskFile.file.length()/(16*1024)); // each 16KB
 		int lastEntry = (int)(dskFile.file.length()%(16*1024));
-//		
 
 		FileInputStream fis=new FileInputStream(dskFile.file);
 		List<DskSector> listSector=new ArrayList<DskSector>();
@@ -131,25 +115,7 @@ public class DskManager {
 		}
 		
 		fos.close();
-				
-		
-		
 		
 	}
-//	
-//	
-//	
-//	private int computeSectorSize(byte sectorSize) {
-//		//();
-//		if (sectorSize==2) return 0x200;  
-//		return 0;
-//	}
-//
-//	private byte[] newEntrySectors() {
-//		
-//		return new byte [] {0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-//	}
-
-	
 	
 }

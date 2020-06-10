@@ -7,8 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DskTrack {
-	
-	
 	String header="Track-Info\r\n";
 	
 	public List<DskSector> sectors=new ArrayList<DskSector>();
@@ -53,10 +51,7 @@ public class DskTrack {
 		fos.write(nbSectors);
 		fos.write(gap);
 		fos.write(fillerByte);
-		
 	}
-	
-	
 
 	DskSector find(int sectorId) {
 		for (DskSector sector:sectors) {
