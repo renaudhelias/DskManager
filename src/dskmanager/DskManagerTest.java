@@ -34,10 +34,19 @@ public class DskManagerTest {
 	public void testDM() throws IOException {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
 		DskManager dm = DskManager.getInstance();
-		dm.newDsk(currentDir, "jdvpa10_test2.dsk");
-		dm.addFile(currentDir,"main.bin",false);
-		
+		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk");
+		dm.addFile(toto,currentDir,"main.bin",false);
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test0.dsk");
+		
+		DskFile tutu=dm.loadDsk(currentDir, "jdvpa10_test2.dsk");
+		compare(toto,tutu);
+	}
+
+	private void compare(DskFile toto, DskFile tutu) {
+		assertEquals(toto.catSectors.size(),tutu.catSectors.size());
+		
+		assertEquals(toto.tracks.size(),tutu.tracks.size());
+		assertEquals(toto.tracks.get(0).sectors.size(),tutu.tracks.get(0).sectors.size());
 	}
 
 	private void compare(File currentDir, String file1, String file2) throws IOException {

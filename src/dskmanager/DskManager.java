@@ -17,7 +17,7 @@ import java.util.List;
 public class DskManager {
 	
 
-	DskFile dskFile;
+	 
 	
 	int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
@@ -30,8 +30,8 @@ public class DskManager {
 		return instance;
 	}
 	
-	public void newDsk(File currentDir, String dskName) throws IOException{
-		dskFile=new DskFile(currentDir, dskName);
+	public DskFile newDsk(File currentDir, String dskName) throws IOException{
+		DskFile dskFile=new DskFile(currentDir, dskName);
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		for (int i=0; i<dskFile.nbTracks; i++) {
@@ -70,10 +70,15 @@ public class DskManager {
 		}
 		dskFile.generateCatSectors();
 		fos.close();
+		return dskFile;
+	}
+	
+	public DskFile loadDsk(File currentDir, String dskName) {
+		DskFile dskFile=new DskFile(currentDir, dskName);
+		return dskFile;
 	}
 
-	public void addFile(File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
-		
+	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
 		//FileEntry
 //		File dskFileEntry=new File(currentDir, fileName);
 //		long size=dskFileEntry.length();
@@ -112,7 +117,7 @@ public class DskManager {
 		fis.close();
 		
 		
-		DskFile dskFile=new DskFile(currentDir, fileName);
+		dskFile=new DskFile(currentDir, fileName);
 
 		// garbage
 		for (int k=0;k<0x200-0x160;k++) {
@@ -131,19 +136,19 @@ public class DskManager {
 		
 		
 	}
-	
-	
-	
-	private int computeSectorSize(byte sectorSize) {
-		//();
-		if (sectorSize==2) return 0x200;  
-		return 0;
-	}
-
-	private byte[] newEntrySectors() {
-		
-		return new byte [] {0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
-	}
+//	
+//	
+//	
+//	private int computeSectorSize(byte sectorSize) {
+//		//();
+//		if (sectorSize==2) return 0x200;  
+//		return 0;
+//	}
+//
+//	private byte[] newEntrySectors() {
+//		
+//		return new byte [] {0x02,0x03,0x04,0x05,0x06,0x07,0x08,0x09,0x0A,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+//	}
 
 	
 	
