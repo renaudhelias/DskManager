@@ -37,6 +37,7 @@ public class DskSectorCatalog {
 		channel.write(ByteBuffer.wrap(entryFileName));
 		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
 		channel.write(ByteBuffer.wrap(new byte[]{0,0}));
+		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
 		for (DskSector sector:sectors) {
 			channel.write(ByteBuffer.wrap(new byte[]{(byte)sector.cat}));
 		}

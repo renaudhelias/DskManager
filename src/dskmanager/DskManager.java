@@ -71,7 +71,7 @@ public class DskManager {
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (dskFile.master.sectorId[j] <= 0xC4) {
-					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile,i, dskFile.master.sectorId[j]);
+					DskSector sector = new DskSectorCatalogs(dskFile,i, dskFile.master.sectorId[j]);
 					sector.scan(fis);
 					dskTrack.sectors.add(sector);
 				} else {
@@ -118,12 +118,12 @@ public class DskManager {
 		fis.close();
 		
 		
-		dskFile=new DskFile(currentDir, fileName);
+//		dskFile=new DskFile(currentDir, fileName);
 
 		// garbage
-		for (int k=0;k<0x200-0x160;k++) {
-			fos.write(0);					
-		}
+//		for (int k=0;k<0x200-0x160;k++) {
+//			fos.write(0);					
+//		}
 		
 		for (int j=0;j<track0.nbSectors;j++) {
 			for (int k=0;k<dskFile.master.sectorSizes[0x02];k++) {
