@@ -61,4 +61,22 @@ public class DskMaster {
 		return null;
 	}
 	
+	DskSector find(int cat) {
+		for (DskTrack track:dskFile.tracks) {
+			for (DskSector sector:track.sectors) {
+				if (sector.cat==cat) {
+					return sector;
+				}
+			}
+		}
+		return null;
+	}
+	public List<DskSector> explose(byte[] entriesSector, List<DskSector> sectors) {
+		List<DskSector> sectorsData =new ArrayList<DskSector>();
+		for (int cat:entriesSector) {
+			sectorsData.add(find(cat));
+		}
+		return sectorsData;
+	}
+	
 }

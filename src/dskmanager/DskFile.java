@@ -7,6 +7,11 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Donne accès au Master qui s'occupe de morceau algorithme poussé
+ * @author Joe
+ *
+ */
 public class DskFile {
 	
 	String header="EXTENDED CPC DSK File\r\nDisk-Info\r\n";

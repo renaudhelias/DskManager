@@ -1,5 +1,6 @@
 package dskmanager;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.channels.FileChannel;
 import java.util.ArrayList;
@@ -8,8 +9,8 @@ import java.util.List;
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
-	public DskSectorCatalogs(int sectorTrack, int sectorId) {
-		super(sectorTrack,sectorId);
+	public DskSectorCatalogs(DskFile dskFile,int sectorTrack, int sectorId) {
+		super(dskFile,sectorTrack,sectorId);
 	}
 
 	/**
@@ -21,7 +22,7 @@ public class DskSectorCatalogs extends DskSector {
 	 */
 	public void scanCatalog(FileChannel channel, String fileName, List<DskSector> listSector) throws IOException {
 		// catEntry is not data's target of entry.
-		DskSectorCatalog cat = new DskSectorCatalog();
+		DskSectorCatalog cat = new DskSectorCatalog(dskFile);
 		cat.sectors=listSector;
 		cat.filename=fileName;
 		if (cat.sectors.size()>0x10) {
@@ -38,5 +39,16 @@ public class DskSectorCatalogs extends DskSector {
 			s+="cat "+cat.toString();
 		}
 		return s+super.toString();
+	}
+
+	public void scanCatalog() throws IOException {
+		// fill cats from data
+		ByteArrayInputStream bis=new ByteArrayInputStream(data);
+		DskSectorCatalog cat = new DskSectorCatalog(dskFile);
+		for (int c=0;c<data.length/8;c++) {
+			cat.scan(bis);
+			cats.add(cat);
+		}
+		
 	}
 }

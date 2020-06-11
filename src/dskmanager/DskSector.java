@@ -6,6 +6,8 @@ import java.io.IOException;
 
 public class DskSector {
 
+	DskFile dskFile;
+
 	int trackC;
 	int sideH=0;
 	int sectorIdR;
@@ -17,7 +19,8 @@ public class DskSector {
 
 	public int cat;
 	
-	public DskSector(int sectorTrack,int sectorId) {
+	public DskSector(DskFile dskFile, int sectorTrack,int sectorId) {
+		this.dskFile=dskFile;
 		this.trackC = sectorTrack;
 		this.sectorIdR=sectorId;
 	}

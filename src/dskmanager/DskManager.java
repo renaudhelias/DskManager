@@ -30,11 +30,11 @@ public class DskManager {
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (dskFile.master.sectorId[j] <= 0xC4) {
-					DskSectorCatalogs sector = new DskSectorCatalogs(i, dskFile.master.sectorId[j]);
+					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
 				} else {
-					DskSector sector = new DskSector(i, dskFile.master.sectorId[j]);
+					DskSector sector = new DskSector(dskFile, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
 				}
@@ -62,8 +62,26 @@ public class DskManager {
 		return dskFile;
 	}
 	
-	public DskFile loadDsk(File currentDir, String dskName) {
+	public DskFile loadDsk(File currentDir, String dskName) throws IOException {
 		DskFile dskFile=new DskFile(currentDir, dskName);
+		FileInputStream fis = new FileInputStream(dskFile.file);
+		for (int i=0; i<dskFile.nbTracks; i++) {
+			DskTrack dskTrack= new DskTrack(i);
+			dskFile.tracks.add(dskTrack);
+			dskTrack.scan(fis);
+			for (int j=0;j<dskTrack.nbSectors;j++) {
+				if (dskFile.master.sectorId[j] <= 0xC4) {
+					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile,i, dskFile.master.sectorId[j]);
+					sector.scan(fis);
+					dskTrack.sectors.add(sector);
+				} else {
+					DskSector sector = new DskSector(dskFile,i, dskFile.master.sectorId[j]);
+					sector.scan(fis);
+					dskTrack.sectors.add(sector);
+				}
+					
+			}
+		}
 		return dskFile;
 	}
 
