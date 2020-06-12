@@ -9,8 +9,8 @@ import java.util.List;
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
-	public DskSectorCatalogs(DskFile dskFile,int sectorTrack, int sectorId) {
-		super(dskFile,sectorTrack,sectorId);
+	public DskSectorCatalogs(DskMaster master,int track, int sectorId) {
+		super(master,track,sectorId);
 	}
 
 	/**
@@ -22,7 +22,7 @@ public class DskSectorCatalogs extends DskSector {
 	 */
 	public void scanCatalog(FileChannel channel, String fileName, List<DskSector> listSector) throws IOException {
 		// catEntry is not data's target of entry.
-		DskSectorCatalog cat = new DskSectorCatalog(dskFile);
+		DskSectorCatalog cat = new DskSectorCatalog(master);
 		cat.sectors=listSector;
 		cat.filename=fileName;
 		if (cat.sectors.size()>0x10) {
@@ -44,7 +44,7 @@ public class DskSectorCatalogs extends DskSector {
 	public void scanCatalog() throws IOException {
 		// fill cats from data
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
-		DskSectorCatalog cat = new DskSectorCatalog(dskFile);
+		DskSectorCatalog cat = new DskSectorCatalog(master);
 		for (int c=0;c<data.length/8;c++) {
 			cat.scan(bis);
 			cats.add(cat);

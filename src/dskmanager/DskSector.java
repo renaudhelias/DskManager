@@ -6,7 +6,7 @@ import java.io.IOException;
 
 public class DskSector {
 
-	DskFile dskFile;
+	DskMaster master;
 
 	int trackC;
 	int sideH=0;
@@ -15,14 +15,25 @@ public class DskSector {
 	int fdc1;
 	int fdc2;
 
-	public byte[] data;
+	public byte[] data=null;
 
 	public int cat;
 	
-	public DskSector(DskFile dskFile, int sectorTrack,int sectorId) {
-		this.dskFile=dskFile;
-		this.trackC = sectorTrack;
-		this.sectorIdR=sectorId;
+	/**
+	 * Le secteur contient juste data
+	 * @param master
+	 * @param sectorTrack C
+	 * @param sectorSide  H
+	 * @param sectorId    R
+	 * @param sectorSize  N
+	 * @param fdc1
+	 * @param fdc2
+	 */
+	public DskSector(DskMaster master, int track, int sectorId) {
+		this.master=master;
+		this.trackC = track; // aide au debug
+		this.sectorIdR = sectorId; // aide au debug
+		
 	}
 	
 
@@ -47,10 +58,16 @@ public class DskSector {
 	}
 	
 	public void scanData(FileOutputStream fos) throws IOException {
+		if (data==null) {
+			data = new byte[master.sectorSizes[sectorSizeN]];
+		}
 		fos.write(data);
 	}
 
 	public void scanData(FileInputStream fis) throws IOException {
+		if (data==null) {
+			data = new byte[master.sectorSizes[sectorSizeN]];
+		}
 		fis.read(data);
 	}
 	

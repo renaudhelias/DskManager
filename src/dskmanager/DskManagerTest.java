@@ -10,6 +10,8 @@ import org.junit.Test;
 
 public class DskManagerTest {
 
+	DskManager dm = DskManager.getInstance();
+	
 	File currentDir = new File(new File("src/"+DskManagerTest.class.getName().replace('.', '/')+".class").getAbsolutePath()).getParentFile();
 	
 	@Test
@@ -31,15 +33,37 @@ public class DskManagerTest {
 	}
 	
 	@Test
-	public void testDM() throws IOException {
+	public void testDMCreateAddDsk() throws IOException {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
-		DskManager dm = DskManager.getInstance();
+		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk");
 		dm.addFile(toto,currentDir,"main.bin",false);
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test0.dsk");
+	}
+	
+	@Test
+	public void testDMLoadDsk() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		assertEquals(dskFile.tracks.size(),40);
+		DskTrack track0=dskFile.tracks.get(0);
+		assertEquals(track0.sectors.size() ,9);
+		assertEquals(track0.nbSectors,9);
+		assertEquals(track0.sectors.size(),9);
+	}
+	@Test
+	public void testDMLoadDskCatalog() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		assertEquals(dskFile.tracks.size(),40);
+		DskTrack track0=dskFile.tracks.get(0);
+		assertEquals(track0.sectors.size() ,9);
+		assertEquals(track0.nbSectors,9);
+		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find(track0,0xC1);
+		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
+		assertEquals(track0.sectors.size(),9);
+		DskSector sector0 = cat0.sectors.get(0);
+		assertEquals(cat0.sectors.size(),9);
+		assertEquals(sector0.cat,0x02);
 		
-		DskFile tutu=dm.loadDsk(currentDir, "jdvpa10_test2.dsk");
-		compare(toto,tutu);
 	}
 
 	private void compare(DskFile toto, DskFile tutu) {

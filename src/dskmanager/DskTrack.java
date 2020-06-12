@@ -9,6 +9,8 @@ import java.util.List;
 public class DskTrack {
 	String header="Track-Info\r\n";
 	
+	private DskMaster master;
+
 	public List<DskSector> sectors=new ArrayList<DskSector>();
 
 	int noTrack;
@@ -17,16 +19,18 @@ public class DskTrack {
 	int nbSectors=9;
 	int gap=0x2A;
 	int fillerByte=0xE5;
+
 	
 	
-	public DskTrack(int noTrack) {
+	public DskTrack(DskMaster master,int noTrack) {
+		this.master = master;
 		this.noTrack = noTrack;
 	}
 	
 	public void scan(FileInputStream fis) throws IOException {
 		byte[] bufferHeader = new byte[12];
 		fis.read(bufferHeader);
-		header=bufferHeader.toString();
+		header=master.arrayToString(bufferHeader);
 		fis.read();fis.read();fis.read();fis.read();
 		noTrack=fis.read();
 		side=fis.read();

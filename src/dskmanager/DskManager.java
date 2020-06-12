@@ -24,18 +24,20 @@ public class DskManager {
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		for (int i=0; i<dskFile.nbTracks; i++) {
-			DskTrack dskTrack = new DskTrack(i);
+			DskTrack dskTrack = new DskTrack(dskFile.master, i);
 			dskFile.tracks.add(dskTrack);
 			dskTrack.scan(fos);
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (dskFile.master.sectorId[j] <= 0xC4) {
-					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile, i, dskFile.master.sectorId[j]);
+					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
+					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
 				} else {
-					DskSector sector = new DskSector(dskFile, i, dskFile.master.sectorId[j]);
+					DskSector sector = new DskSector(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
+					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
 				}
 					
@@ -65,22 +67,35 @@ public class DskManager {
 	public DskFile loadDsk(File currentDir, String dskName) throws IOException {
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		FileInputStream fis = new FileInputStream(dskFile.file);
+		dskFile.scan(fis);
 		for (int i=0; i<dskFile.nbTracks; i++) {
-			DskTrack dskTrack= new DskTrack(i);
+			DskTrack dskTrack= new DskTrack(dskFile.master,i);
 			dskFile.tracks.add(dskTrack);
+			System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				if (dskFile.master.sectorId[j] <= 0xC4) {
-					DskSector sector = new DskSectorCatalogs(dskFile,i, dskFile.master.sectorId[j]);
+					DskSector sector = new DskSectorCatalogs(dskFile.master,i, dskFile.master.sectorId[j]);
+					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					dskTrack.sectors.add(sector);
 				} else {
-					DskSector sector = new DskSector(dskFile,i, dskFile.master.sectorId[j]);
+					DskSector sector = new DskSector(dskFile.master,i, dskFile.master.sectorId[j]);
+					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					dskTrack.sectors.add(sector);
 				}
 					
 			}
+			System.out.println("garbage 0 debut : "+fis.getChannel().position());
+			fis.skip(160);//0x100-0x60-dskTrack.nbSectors*8); // skip 0x00
+			
+			System.out.println("garbage 0 fin : "+fis.getChannel().position());
+			for (DskSector sector : dskTrack.sectors) {
+				System.out.println("avant scanData sector : "+fis.getChannel().position());
+				sector.scanData(fis);
+			}
+			System.out.print("haouh");
 		}
 		return dskFile;
 	}

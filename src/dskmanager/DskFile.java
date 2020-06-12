@@ -35,14 +35,17 @@ public class DskFile {
 	public void scan(FileInputStream fis) throws IOException {
 		byte[] bufferHeader = new byte[34];
 		fis.read(bufferHeader);
-		header=bufferHeader.toString();
+		header=master.arrayToString(bufferHeader);
 		byte[] bufferCreator = new byte[14];
 		fis.read(bufferCreator);
-		creator=bufferCreator.toString();
+		creator=master.arrayToString(bufferCreator);
 		nbTracks=fis.read();
 		nbSides=fis.read();
 		sizeOfTrack=fis.read();
 		sizeOfTrack+=fis.read()*0x10;
+		sizeOfTrack=fis.read(); // les 0x13 mais faux, il y a un additif je pense
+		fis.skip(nbTracks-1); // les 0x13
+		fis.skip(0x100-nbTracks-0x34); // les 0x00
 	}
 	
 	/**

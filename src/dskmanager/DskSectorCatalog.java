@@ -8,15 +8,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DskSectorCatalog {
-	private DskFile dskFile;
+	private DskMaster master;
 
 	int jocker;
 	String filename;
 	List<DskSector> sectors = new ArrayList<DskSector>();
 	int sectorOffset;
 	
-	public DskSectorCatalog(DskFile dskFile) {
-		this.dskFile = dskFile;
+	public DskSectorCatalog(DskMaster master) {
+		this.master = master;
 	}
 	public void scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
@@ -29,7 +29,7 @@ public class DskSectorCatalog {
 		byte[] entriesSector = new byte[0x10];
 		bis.read(entriesSector);
 		
-		sectors.addAll(dskFile.master.explose(entriesSector,sectors));
+		sectors.addAll(master.explose(entriesSector,sectors));
 	}
 	public void scan(FileChannel channel, String filename) throws IOException {
 		channel.write(ByteBuffer.wrap(new byte[]{(byte)jocker}));

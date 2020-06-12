@@ -78,5 +78,15 @@ public class DskMaster {
 		}
 		return sectorsData;
 	}
+	public String arrayToString(byte[] bufferHeader) {
+		
+		StringBuilder sb = new StringBuilder();
+		for (byte b: bufferHeader) {
+			char ch = (char)b;
+			sb.append(ch);
+		}
+
+		return sb.toString();
+	}
 	
 }
