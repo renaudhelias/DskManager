@@ -20,9 +20,10 @@ public class DskManager {
 	
 	public DskFile newDsk(File currentDir, String dskName) throws IOException{
 		DskFile dskFile=new DskFile(currentDir, dskName);
-		dskFile.master=new DskMaster(dskFile);
+		dskFile.master=new DskMaster();
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
+		dskFile.master.allSectors.clear();
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			DskTrack dskTrack = new DskTrack(dskFile.master, i);
 			dskFile.tracks.add(dskTrack);
@@ -34,11 +35,13 @@ public class DskManager {
 					sector.scan(fos);
 					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				} else {
 					DskSector sector = new DskSector(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
 					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				}
 					
 			}
@@ -59,8 +62,17 @@ public class DskManager {
 				dskTrack.sectors.get(j).scanData(fos);
 			}
 		}
-		dskFile.master.generateCatSectors();
 		fos.close();
+		// cats : on attache les secteurs pointé par la liste de sector cat
+		DskTrack track0 = dskFile.tracks.get(0);
+		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
+		sectorCatalogC1.scanCatalog();
+		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
+		sectorCatalogC2.scanCatalog();
+		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
+		sectorCatalogC3.scanCatalog();
+		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
+		sectorCatalogC4.scanCatalog();
 		return dskFile;
 	}
 	
@@ -68,6 +80,7 @@ public class DskManager {
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		FileInputStream fis = new FileInputStream(dskFile.file);
 		dskFile.scan(fis);
+		dskFile.master.allSectors.clear();
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			DskTrack dskTrack= new DskTrack(dskFile.master,i);
 			dskFile.tracks.add(dskTrack);
@@ -79,11 +92,13 @@ public class DskManager {
 					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				} else {
 					DskSector sector = new DskSector(dskFile.master,i, dskFile.master.sectorId[j]);
 					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				}
 					
 			}
@@ -97,6 +112,18 @@ public class DskManager {
 			}
 			System.out.print("haouh");
 		}
+		fis.close();
+		// cats : on attache les secteurs pointé par la liste de sector cat
+		DskTrack track0 = dskFile.tracks.get(0);
+		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
+		sectorCatalogC1.scanCatalog();
+		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
+		sectorCatalogC2.scanCatalog();
+		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
+		sectorCatalogC3.scanCatalog();
+		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
+		sectorCatalogC4.scanCatalog();
+		
 		return dskFile;
 	}
 
@@ -118,6 +145,8 @@ public class DskManager {
 
 		FileInputStream fis=new FileInputStream(dskFile.file);
 		List<DskSector> listSector=new ArrayList<DskSector>();
+		
+//		allCats=dskFile.master.searchAllCat(dskFile.master.allSectors);
 		for (int i=0;i<=nbEntry;i++) {
 			if (i<nbEntry || (i==nbEntry && lastEntry <i)) {
 				byte [] data=new byte[Math.min(512,fis.available())];
@@ -128,7 +157,7 @@ public class DskManager {
 			}
 		}
 		
-		sectorCatalogC1.scanCatalog(fos.getChannel().position(0x200),fileName,listSector);
+		sectorCatalogC1.scanCatalog(fos.getChannel().position(0x200),fileName);
 		System.out.println("Après : "+sectorCatalogC1);
 		fis.close();
 		

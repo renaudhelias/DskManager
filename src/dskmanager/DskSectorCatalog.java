@@ -4,21 +4,29 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
+/**
+ * One per filename
+ * + list of sector(track0 C6...) by entry (0x02 0x03...)
+ * @author Joe
+ *
+ */
 public class DskSectorCatalog {
 	private DskMaster master;
 
 	int jocker;
 	String filename;
-	List<DskSector> sectors = new ArrayList<DskSector>();
+	LinkedHashMap<Integer,DskSector> catSectors = new LinkedHashMap<Integer,DskSector>();
 	int sectorOffset;
 	
 	public DskSectorCatalog(DskMaster master) {
 		this.master = master;
 	}
 	public void scan(ByteArrayInputStream bis) throws IOException {
+		List<DskSector> sectors = master.allSectors;
 		jocker = bis.read();
 		byte[] filename = new byte[11];
 		bis.read(filename);
@@ -29,8 +37,10 @@ public class DskSectorCatalog {
 		byte[] entriesSector = new byte[0x10];
 		bis.read(entriesSector);
 		
-		sectors.addAll(master.explose(entriesSector,sectors));
+		this.catSectors=master.findCat(entriesSector,sectors);
 	}
+	
+	
 	public void scan(FileChannel channel, String filename) throws IOException {
 		channel.write(ByteBuffer.wrap(new byte[]{(byte)jocker}));
 		byte [] entryFileName = realname2cpcname(filename).getBytes();
@@ -38,10 +48,10 @@ public class DskSectorCatalog {
 		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
 		channel.write(ByteBuffer.wrap(new byte[]{0,0}));
 		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
-		for (DskSector sector:sectors) {
-			channel.write(ByteBuffer.wrap(new byte[]{(byte)sector.cat}));
+		for (Integer cat:catSectors.keySet()) {
+			channel.write(ByteBuffer.wrap(new byte[]{(byte)cat.intValue()}));
 		}
-		for (int j=0;j<0x10-sectors.size();j++) {
+		for (int j=0;j<0x10-catSectors.size();j++) {
 			channel.write(ByteBuffer.wrap(new byte[]{0}));					
 		}
 		
@@ -68,9 +78,10 @@ public class DskSectorCatalog {
     }
 
 	public String toString() {
-		String s="DskSectorCatalog\n"+sectors.size()+" sectors\n";
-		for (DskSector sector:sectors) {
-			s+="track "+sector.trackC+" head "+sector.sideH+" cat:"+String.format("#%02X", sector.cat)+" id:"+String.format("#%02X", sector.sectorIdR)+" DATA size "+sector.data.length+"\n";
+		String s="DskSectorCatalog\n"+catSectors.size()+" sectors references\n";
+		for (Integer cat:catSectors.keySet()) {
+			DskSector sector=catSectors.get(cat);
+			s+="track "+sector.trackC+" head "+sector.sideH+" cat:"+String.format("#%02X", cat)+" id:"+String.format("#%02X", sector.sectorIdR)+" DATA size "+sector.data.length+"\n";
 		}
 		return s;
 	}

@@ -1,7 +1,7 @@
 package dskmanager;
 
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -17,41 +17,12 @@ public class DskMaster {
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 	// dictionary
 	byte[]usedSectorEntry={};
-	private DskFile dskFile;
+	List<DskSector> allSectors = new ArrayList<DskSector>();
+	LinkedHashMap<Integer, DskSector> allCats= new LinkedHashMap<Integer, DskSector>();
 	
-	public DskMaster(DskFile dskFile) {
-		this.dskFile = dskFile;
+	public DskMaster() {
 	}
 	
-	HashMap<Integer, DskSector> catSectors = new HashMap<Integer, DskSector>();
-	List<DskSector> catSectorsReferenced = new ArrayList<DskSector>();
-	public void generateCatSectors() {
-		int catRef=0x02;
-		for (DskTrack track:dskFile.tracks) {
-			for (DskSector sector : track.sectors) {
-				if (sector instanceof DskSectorCatalogs) {
-					for (DskSectorCatalog cat:((DskSectorCatalogs)sector).cats) {
-						catSectorsReferenced.addAll(cat.sectors);
-					}
-				} else {
-					sector.cat=catRef;
-					catSectors.put(catRef, sector);
-					catRef++;
-				}
-			}
-		}
-	}
-	public DskSector nextFreeSector() {
-		for (DskSector cat : catSectors.values()) {
-			if (!catSectorsReferenced.contains(cat)) {
-				catSectorsReferenced.add(cat);
-				return cat; 
-			}
-		}
-		return null;
-	}
-	
-
 	DskSector find(DskTrack track, int sectorId) {
 		for (DskSector sector:track.sectors) {
 			if (sector.sectorIdR==sectorId) {
@@ -61,23 +32,35 @@ public class DskMaster {
 		return null;
 	}
 	
-	DskSector find(int cat) {
-		for (DskTrack track:dskFile.tracks) {
-			for (DskSector sector:track.sectors) {
-				if (sector.cat==cat) {
-					return sector;
+	/**
+	 * Repli allCats au passage
+	 * @param entriesSector
+	 * @param sectors
+	 * @return
+	 */
+	public LinkedHashMap<Integer, DskSector> findCat(byte[] entriesSector, List<DskSector> sectors) {
+		LinkedHashMap<Integer, DskSector> cats= new LinkedHashMap<Integer, DskSector>();
+		for (int i=0+2;i<sectors.size()+2;i++) {
+			for (byte b : entriesSector) {
+				if (b==i) {
+					cats.put((int)b, sectors.get(i-2));
+					allCats.put((int)b, sectors.get(i-2));
 				}
 			}
 		}
+		return cats;
+	}
+	
+	public DskSector nextFreeSector() {
+		for (DskSector sector : allSectors) {
+			if (allCats.values().contains(sector)) {
+				continue;
+			}
+			return sector;
+		}
 		return null;
 	}
-	public List<DskSector> explose(byte[] entriesSector, List<DskSector> sectors) {
-		List<DskSector> sectorsData =new ArrayList<DskSector>();
-		for (int cat:entriesSector) {
-			sectorsData.add(find(cat));
-		}
-		return sectorsData;
-	}
+	
 	public String arrayToString(byte[] bufferHeader) {
 		
 		StringBuilder sb = new StringBuilder();
@@ -88,5 +71,5 @@ public class DskMaster {
 
 		return sb.toString();
 	}
-	
+
 }

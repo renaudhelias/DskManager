@@ -17,7 +17,7 @@ public class DskSector {
 
 	public byte[] data=null;
 
-	public int cat;
+//	public int cat;
 	
 	/**
 	 * Le secteur contient juste data

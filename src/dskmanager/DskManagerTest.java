@@ -60,17 +60,8 @@ public class DskManagerTest {
 		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find(track0,0xC1);
 		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
 		assertEquals(track0.sectors.size(),9);
-		DskSector sector0 = cat0.sectors.get(0);
-		assertEquals(cat0.sectors.size(),9);
-		assertEquals(sector0.cat,0x02);
-		
-	}
-
-	private void compare(DskFile toto, DskFile tutu) {
-		assertEquals(toto.master.catSectors.size(),tutu.master.catSectors.size());
-		
-		assertEquals(toto.tracks.size(),tutu.tracks.size());
-		assertEquals(toto.tracks.get(0).sectors.size(),tutu.tracks.get(0).sectors.size());
+		DskSector sector0 = cat0.catSectors.get(0);
+		assertEquals(cat0.catSectors.size(),10);
 	}
 
 	private void compare(File currentDir, String file1, String file2) throws IOException {

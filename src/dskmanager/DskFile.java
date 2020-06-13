@@ -24,7 +24,7 @@ public class DskFile {
 	File file;
 	List<DskTrack> tracks=new ArrayList<DskTrack>();
 	public DskFile(File currentDir, String fileName) {
-		master=new DskMaster(this);
+		master=new DskMaster();
 		file=new File(currentDir, fileName);
 	}
 	/**

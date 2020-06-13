@@ -20,12 +20,11 @@ public class DskSectorCatalogs extends DskSector {
 	 * @return > zero si pas assez de jocker FIXME
 	 * @throws IOException
 	 */
-	public void scanCatalog(FileChannel channel, String fileName, List<DskSector> listSector) throws IOException {
+	public void scanCatalog(FileChannel channel, String fileName) throws IOException {
 		// catEntry is not data's target of entry.
 		DskSectorCatalog cat = new DskSectorCatalog(master);
-		cat.sectors=listSector;
 		cat.filename=fileName;
-		if (cat.sectors.size()>0x10) {
+		if (cat.catSectors.size()>0x10) {
 			System.out.println("ça ne tient pas dans C1, faudra utiliser C2-C4");
 		}
 		cat.scan(channel.position(0x200+cats.size()*0x20), fileName);
@@ -45,7 +44,8 @@ public class DskSectorCatalogs extends DskSector {
 		// fill cats from data
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
 		DskSectorCatalog cat = new DskSectorCatalog(master);
-		for (int c=0;c<data.length/8;c++) {
+		// for each Amstrad filename
+		for (int c=0;c<data.length/0x20;c++) {
 			cat.scan(bis);
 			cats.add(cat);
 		}
