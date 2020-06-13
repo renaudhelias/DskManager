@@ -33,13 +33,11 @@ public class DskManager {
 				if (dskFile.master.sectorId[j] <= 0xC4) {
 					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
-					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
 					dskFile.master.allSectors.add(sector);
 				} else {
 					DskSector sector = new DskSector(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
-					sector.scanData(fos);
 					dskTrack.sectors.add(sector);
 					dskFile.master.allSectors.add(sector);
 				}
@@ -61,6 +59,9 @@ public class DskManager {
 				}
 				dskTrack.sectors.get(j).scanData(fos);
 			}
+			
+			
+			
 		}
 		fos.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
