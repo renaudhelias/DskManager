@@ -1,6 +1,7 @@
 package dskmanager;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
@@ -26,12 +27,13 @@ public class DskSectorCatalog {
 	public DskSectorCatalog(DskMaster master) {
 		this.master = master;
 	}
-	public void scan(ByteArrayInputStream bis) throws IOException {
-		List<DskSector> sectors = master.allSectors;
+	public boolean scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
+		if (jocker !=0) return false;
+		List<DskSector> sectors = master.allSectors;
 		byte[] filename = new byte[11];
 		bis.read(filename);
-		this.filename = String.valueOf(filename);
+		this.filename = master.arrayToString(filename);
 		
 		bis.read();bis.read();bis.read();bis.read();
 		
@@ -39,22 +41,23 @@ public class DskSectorCatalog {
 		bis.read(entriesSector);
 		
 		this.catSectors=master.findCat(entriesSector,sectors);
+		return true;
 	}
 	
 	
-	public void scan(RandomAccessFile fos, String filename) throws IOException {
-		fos.write(new byte[]{(byte)jocker});
+	public void scan(ByteArrayOutputStream bos, String filename) throws IOException {
+		bos.write(new byte[]{(byte)jocker});
 		byte [] entryFileName = realname2cpcname(filename).getBytes();
-		fos.write(entryFileName);
-		fos.write(new byte[]{(byte)sectorOffset});
-		fos.write(new byte[]{0,0});
-		fos.write(new byte[]{(byte)sectorOffset});
+		bos.write(entryFileName);
+		bos.write(new byte[]{(byte)sectorOffset});
+		bos.write(new byte[]{0,0});
+		bos.write(new byte[]{(byte)sectorOffset});
 		
 		for (Integer cat:catSectors.keySet()) {
-			fos.write(new byte[]{(byte)cat.intValue()});
+			bos.write(new byte[]{(byte)cat.intValue()});
 		}
 		for (int j=0;j<0x10-catSectors.size();j++) {
-			fos.write(new byte[]{0});					
+			bos.write(new byte[]{0});					
 		}
 		
 	}

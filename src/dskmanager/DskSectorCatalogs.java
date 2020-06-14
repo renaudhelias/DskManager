@@ -1,6 +1,7 @@
 package dskmanager;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
@@ -16,10 +17,11 @@ public class DskSectorCatalogs extends DskSector {
 	}
 
 	public List<Integer> scanCatalog(RandomAccessFile fos, String fileName, List<Integer> catalog) throws IOException {
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		List<Integer>catalogDepil =new ArrayList<Integer>(catalog);
 		Iterator<Integer> it = catalogDepil.iterator();
-		while (cats.size()<=0x10 && it.hasNext()) {
-			// ajouter des entrée
+		while (cats.size() < 0x10 && it.hasNext()) {
+					// ajouter des entrée
 			DskSectorCatalog catEntry = new DskSectorCatalog(master);
 			catEntry.filename=fileName;
 			catEntry.catSectors.clear();
@@ -27,11 +29,20 @@ public class DskSectorCatalogs extends DskSector {
 				Integer catDepil = it.next();
 				catEntry.catSectors.put(catDepil, master.allCats.get(catDepil));
 			}
-			// on écrit dans DATA C1
-			catEntry.scan(fos, fileName);
-			cats.add(catEntry);
+			catEntry.scan(baos, fileName);
+			if (catEntry.jocker==0) {cats.add(catEntry);};
+		}
+
+		data = new byte[master.sectorSizes[sectorSizeN]];
+		int b;
+		for (b=0;b<baos.toByteArray().length;b++) {
+			data[b]=baos.toByteArray()[b];
+		};
+		for (b=baos.toByteArray().length;b<master.sectorSizes[sectorSizeN]; b++) {
+			data[b]=(byte)0xE5;
 		}
 		scanData(fos);
+		
 		if (cats.size()== 0x10 && it.hasNext()) {
 			//full, bye bye C1, goto C2.
 			return null;
@@ -66,11 +77,13 @@ public class DskSectorCatalogs extends DskSector {
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
 		DskSectorCatalog cat = new DskSectorCatalog(master);
 		// for each Amstrad filename
+		cats.clear();
 		for (int c=0;c<data.length/0x20;c++) {
-			cat.scan(bis);
-			cats.add(cat);
+			if (cat.scan(bis)) {
+				cats.add(cat);
+			}
 		}
-		
+		bis.close();
 	}
 
 }
