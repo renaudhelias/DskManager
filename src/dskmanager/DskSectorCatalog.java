@@ -2,6 +2,7 @@ package dskmanager;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.util.HashMap;
@@ -41,18 +42,19 @@ public class DskSectorCatalog {
 	}
 	
 	
-	public void scan(FileChannel channel, String filename) throws IOException {
-		channel.write(ByteBuffer.wrap(new byte[]{(byte)jocker}));
+	public void scan(RandomAccessFile fos, String filename) throws IOException {
+		fos.write(new byte[]{(byte)jocker});
 		byte [] entryFileName = realname2cpcname(filename).getBytes();
-		channel.write(ByteBuffer.wrap(entryFileName));
-		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
-		channel.write(ByteBuffer.wrap(new byte[]{0,0}));
-		channel.write(ByteBuffer.wrap(new byte[]{(byte)sectorOffset}));
+		fos.write(entryFileName);
+		fos.write(new byte[]{(byte)sectorOffset});
+		fos.write(new byte[]{0,0});
+		fos.write(new byte[]{(byte)sectorOffset});
+		
 		for (Integer cat:catSectors.keySet()) {
-			channel.write(ByteBuffer.wrap(new byte[]{(byte)cat.intValue()}));
+			fos.write(new byte[]{(byte)cat.intValue()});
 		}
 		for (int j=0;j<0x10-catSectors.size();j++) {
-			channel.write(ByteBuffer.wrap(new byte[]{0}));					
+			fos.write(new byte[]{0});					
 		}
 		
 	}

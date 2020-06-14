@@ -51,15 +51,16 @@ public class DskMaster {
 		return cats;
 	}
 	
-	public DskSector nextFreeSector() {
-		for (DskSector sector : allSectors) {
-			if (allCats.values().contains(sector)) {
-				continue;
+	public int nextFreeCat() {
+		for (int k=0x02;k<allSectors.size();k++) {
+			if (!allCats.containsKey(k)) {
+				allCats.put(k,allSectors.get(k-0x02));
+				return k;
 			}
-			return sector;
 		}
-		return null;
+		return 2;
 	}
+	
 	
 	public String arrayToString(byte[] bufferHeader) {
 		

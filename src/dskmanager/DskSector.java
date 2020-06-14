@@ -3,6 +3,7 @@ package dskmanager;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.RandomAccessFile;
 
 public class DskSector {
 
@@ -16,8 +17,7 @@ public class DskSector {
 	int fdc2;
 
 	public byte[] data=null;
-
-//	public int cat;
+	long dataPosition=0;
 	
 	/**
 	 * Le secteur contient juste data
@@ -57,7 +57,26 @@ public class DskSector {
 		fos.write(0);fos.write(2);
 	}
 	
+	/**
+	 * un fos barbare, pour par exemple si on écrit 20 fois des zone de fillEmpty
+	 * @param fos
+	 * @throws IOException
+	 */
 	public void scanData(FileOutputStream fos) throws IOException {
+		dataPosition=fos.getChannel().position();
+		if (data==null) {
+			data = new byte[master.sectorSizes[sectorSizeN]];
+		}
+		fos.write(data);
+	}
+
+	/**
+	 * un fos courageux, attaché sur un dskFile bien réglé.
+	 * @param fos
+	 * @throws IOException
+	 */
+	public void scanData(RandomAccessFile fos) throws IOException {
+		fos.getChannel().position(dataPosition);
 		if (data==null) {
 			data = new byte[master.sectorSizes[sectorSizeN]];
 		}
@@ -65,6 +84,7 @@ public class DskSector {
 	}
 
 	public void scanData(FileInputStream fis) throws IOException {
+		dataPosition=fis.getChannel().position();
 		if (data==null) {
 			data = new byte[master.sectorSizes[sectorSizeN]];
 		}
