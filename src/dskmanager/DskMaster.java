@@ -17,6 +17,7 @@ public class DskMaster {
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 	// dictionary
 	byte[]usedSectorEntry={};
+	// contient aussi C1 C2 C3 C4
 	List<DskSector> allSectors = new ArrayList<DskSector>();
 	LinkedHashMap<Integer, DskSector> allCats= new LinkedHashMap<Integer, DskSector>();
 	
@@ -51,10 +52,14 @@ public class DskMaster {
 		return cats;
 	}
 	
+	/**
+	 * recherche un cat libre et pas dans C1-C4
+	 * @return
+	 */
 	public int nextFreeCat() {
-		for (int k=0x02;k<allSectors.size();k++) {
+		for (int k=0x04;k<allSectors.size();k++) {
 			if (!allCats.containsKey(k)) {
-				allCats.put(k,allSectors.get(k-0x02));
+				allCats.put(k,allSectors.get(k));
 				return k;
 			}
 		}

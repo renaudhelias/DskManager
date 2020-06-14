@@ -173,13 +173,11 @@ public class DskManager {
 		List<Integer> catalog = new ArrayList<Integer>();
 		for (int i=0;i<=nbEntry;i++) {
 			if (i<nbEntry || (i==nbEntry && lastEntry <i)) {
-				byte [] data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
-				fis.read(data);
 				int cat = dskFile.master.nextFreeCat();
 				catalog.add(cat);
 				DskSector d=dskFile.master.allCats.get(cat);
-				d.data=data;
-				d.scanData(fis);
+				d.data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
+				fis.read(d.data);
 				d.scanData(fos);
 			}
 		}
