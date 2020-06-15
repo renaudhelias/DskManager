@@ -157,53 +157,51 @@ public class DskManager {
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)};
-		
-		
-//		fos.getChannel().position(0x100); //header
-		//Track-info
-//		; // first Track-info
-		// FIXME : file est faux, faut ouvrir le fichier lui même.
-		
 
+		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
+			catalogC1C4.scanCatalog();
+		}
+		
+		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		FileInputStream fis = new FileInputStream(file);
-		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
 		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]));
 		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]));
-		List<Integer> catalog = new ArrayList<Integer>();
+		// le transformer en cats
+		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
+		
 		for (int i=0;i<=nbEntry;i++) {
-			if (i<nbEntry || (i==nbEntry && lastEntry <i)) {
-				int cat = dskFile.master.nextFreeCat();
-				catalog.add(cat);
-				DskSector d=dskFile.master.allCats.get(cat);
+			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
+			for (int j=0;j<0x10;j++) {
+				int catId = dskFile.master.nextFreeCat();
+				// petit malin
+				cat.catSectors.put(catId, dskFile.master.allCats.get(cat));
+				cat.filename=fileName;
+			}
+			catalogs.add(cat);
+		}
+		
+		// depile cat
+		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
+			while (catalogC1C4.cats.size()<0x10 && !catalogs.isEmpty()) {
+				catalogC1C4.cats.add(catalogs.get(0));
+				catalogs.remove(0);
+				// data from cats
+				catalogC1C4.scanCatalog();
+			}
+		}
+		
+		FileInputStream fis = new FileInputStream(file);
+		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
+		for (DskSectorCatalog e:catalogs) {
+			for (DskSector d:e.catSectors.values()) {
 				d.data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
 				fis.read(d.data);
 				d.scanData(fos);
 			}
 		}
 		fis.close();
-		
-		
-		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
-			catalogC1C4.scanCatalog();
-		}
-		
-		
-		
-//		dskFile=new DskFile(currentDir, fileName);
-
-		// garbage
-//		for (int k=0;k<0x200-0x160;k++) {
-//			fos.write(0);					
-//		}
-		
-//		for (int j=0;j<track0.nbSectors;j++) {
-//			for (int k=0;k<dskFile.master.sectorSizes[0x02];k++) {
-//				fos.write(track0.fillerByte);
-//			}
-//		}
-		
 		fos.close();
+		
 		
 	}
 	

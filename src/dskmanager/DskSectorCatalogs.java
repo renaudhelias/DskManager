@@ -17,13 +17,10 @@ public class DskSectorCatalogs extends DskSector {
 
 	public void scanCatalog() throws IOException {
 		// fill data from cats
-		
-		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (DskSectorCatalog cat:cats) {
 			cat.scan(baos);
 		}
-
 		data = baos.toByteArray();
 	}
 
@@ -43,10 +40,10 @@ public class DskSectorCatalogs extends DskSector {
 	public void scanCatalogFromData() throws IOException {
 		// fill cats from data
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
-		DskSectorCatalog cat = new DskSectorCatalog(master);
 		// for each Amstrad filename
 		cats.clear();
 		for (int c=0;c<data.length/0x20*2;c++) {
+			DskSectorCatalog cat = new DskSectorCatalog(master);
 			if (cat.scan(bis)) {
 				cats.add(cat);
 			}
