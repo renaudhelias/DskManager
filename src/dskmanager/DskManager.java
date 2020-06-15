@@ -158,6 +158,9 @@ public class DskManager {
 		File file = new File(currentDir,fileName);
 		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]*2));
 		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]*2));
+		if (lastEntry>0) {
+			nbEntry++;
+		}
 		// le transformer en cats
 		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
 		while (nbEntry>0) {
