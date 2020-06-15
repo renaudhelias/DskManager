@@ -22,7 +22,8 @@ public class DskSectorCatalog {
 	int jocker;
 	String filename;
 	LinkedHashMap<Integer,DskSector> catSectors = new LinkedHashMap<Integer,DskSector>();
-	int sectorOffset;
+	int sectorIncrement;
+	int sectorLength;
 	
 	public DskSectorCatalog(DskMaster master) {
 		this.master = master;
@@ -35,7 +36,9 @@ public class DskSectorCatalog {
 		bis.read(filename);
 		this.filename = master.arrayToString(filename);
 		
-		bis.read();bis.read();bis.read();bis.read();
+		sectorIncrement=bis.read();
+		bis.read();bis.read();
+		sectorLength=bis.read();
 		
 		byte[] entriesSector = new byte[0x10];
 		bis.read(entriesSector);
@@ -49,9 +52,9 @@ public class DskSectorCatalog {
 		bos.write(new byte[]{(byte)jocker});
 		byte [] entryFileName = realname2cpcname(filename).getBytes();
 		bos.write(entryFileName);
-		bos.write(new byte[]{(byte)sectorOffset});
+		bos.write(new byte[]{(byte)sectorIncrement});
 		bos.write(new byte[]{0,0});
-		bos.write(new byte[]{(byte)sectorOffset});
+		bos.write(new byte[]{(byte)sectorLength});
 		
 		for (Integer cat:catSectors.keySet()) {
 			bos.write(new byte[]{(byte)cat.intValue()});

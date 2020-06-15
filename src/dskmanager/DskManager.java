@@ -163,6 +163,7 @@ public class DskManager {
 		}
 		// le transformer en cats
 		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
+		int countSectorIncrement=0;
 		while (nbEntry>0) {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
 				// un cat a 10 entrées
@@ -171,9 +172,23 @@ public class DskManager {
 					// petit malin
 					cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
 				}
-				nbEntry=nbEntry-0x10;
-			cat.filename=fileName;
-			catalogs.add(cat);
+				cat.sectorIncrement=countSectorIncrement;
+				countSectorIncrement++;
+				cat.filename=fileName;
+				catalogs.add(cat);
+			
+			nbEntry=nbEntry-0x10;
+			if (nbEntry>0) {
+				// full cat
+				cat.sectorLength=0x80;
+			} else if (nbEntry%0x10==0) {
+				// last full cat
+				cat.sectorLength=0x80;
+			} else {
+				// 0x80=128
+				// 9106/128=71,140625 -71 *128 = 18
+				cat.sectorLength=Math.min(Math.abs(lastEntry-0x80), lastEntry);
+			}
 		}
 		
 		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
