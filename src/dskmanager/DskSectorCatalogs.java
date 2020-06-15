@@ -21,6 +21,9 @@ public class DskSectorCatalogs extends DskSector {
 		for (DskSectorCatalog cat:cats) {
 			cat.scan(baos);
 		}
+		for (int i=cats.size()*0x20;i<master.sectorSizes[sectorSizeN];i++) {
+			baos.write(0xE5);
+		}
 		data = baos.toByteArray();
 	}
 

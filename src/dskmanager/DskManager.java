@@ -169,18 +169,20 @@ public class DskManager {
 		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]));
 		// le transformer en cats
 		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
-		
 		for (int i=0;i<=nbEntry;i++) {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
-			for (int j=0;j<0x10;j++) {
-				int catId = dskFile.master.nextFreeCat();
-				// petit malin
-				cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
-				cat.filename=fileName;
-			}
+				// un cat a 10 entrées
+				for (int j=0;j<0x10;j++) {
+					int catId = dskFile.master.nextFreeCat();
+					// petit malin
+					cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
+				}
+			cat.filename=fileName;
 			catalogs.add(cat);
 		}
 		
+		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
+		List<DskSectorCatalog> catalogsData= new ArrayList<DskSectorCatalog>(catalogs);
 		// depile cat
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			while (catalogC1C4.cats.size()<0x10 && !catalogs.isEmpty()) {
@@ -188,12 +190,12 @@ public class DskManager {
 				catalogs.remove(0);
 				// data from cats
 				catalogC1C4.scanCatalog();
+				catalogC1C4.scanData(fos);
 			}
 		}
 		
 		FileInputStream fis = new FileInputStream(file);
-		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
-		for (DskSectorCatalog e:catalogs) {
+		for (DskSectorCatalog e:catalogsData) {
 			for (DskSector d:e.catSectors.values()) {
 				d.data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
 				fis.read(d.data);
