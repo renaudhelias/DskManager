@@ -73,13 +73,13 @@ public class DskManager {
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
-		sectorCatalogC1.scanCatalog();
+		sectorCatalogC1.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
-		sectorCatalogC2.scanCatalog();
+		sectorCatalogC2.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
-		sectorCatalogC3.scanCatalog();
+		sectorCatalogC3.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
-		sectorCatalogC4.scanCatalog();
+		sectorCatalogC4.scanCatalogFromData();
 		return dskFile;
 	}
 	
@@ -130,13 +130,13 @@ public class DskManager {
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
-		sectorCatalogC1.scanCatalog();
+		sectorCatalogC1.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
-		sectorCatalogC2.scanCatalog();
+		sectorCatalogC2.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
-		sectorCatalogC3.scanCatalog();
+		sectorCatalogC3.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
-		sectorCatalogC4.scanCatalog();
+		sectorCatalogC4.scanCatalogFromData();
 		
 		return dskFile;
 	}
@@ -185,15 +185,7 @@ public class DskManager {
 		
 		
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
-			// on se base sur le data ?
-			List<Integer> suite = catalogC1C4.scanCatalog(fos, fileName, catalog);
-			if (suite == null) {
-				continue;
-			} else if (suite.isEmpty()) {
-				break;
-			} else {
-				catalog=suite;
-			}
+			catalogC1C4.scanCatalog();
 		}
 		
 		

@@ -15,50 +15,16 @@ public class DskSectorCatalogs extends DskSector {
 		super(master,track,sectorId);
 	}
 
-	public List<Integer> scanCatalog(RandomAccessFile fos, String fileName, List<Integer> catalog) throws IOException {
-		// fill data cats from data
+	public void scanCatalog() throws IOException {
+		// fill data from cats
 		
 		
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
-		List<Integer>catalogDepil =new ArrayList<Integer>(catalog);
-		Iterator<Integer> it = catalogDepil.iterator();
-		while (cats.size() < 0x10 && it.hasNext()) {
-					// ajouter des entrée
-			DskSectorCatalog catEntry = new DskSectorCatalog(master);
-			catEntry.filename=fileName;
-//			catEntry.catSectors.clear();
-			while (it.hasNext()) {
-				Integer catDepil = it.next();
-				catEntry.catSectors.put(catDepil, master.allCats.get(catDepil));
-			}
-			catEntry.scan(baos, fileName);
-			if (catEntry.jocker==0) {cats.add(catEntry);};
+		for (DskSectorCatalog cat:cats) {
+			cat.scan(baos);
 		}
 
-		data = new byte[master.sectorSizes[sectorSizeN]];
-		int b;
-		for (b=0;b<baos.toByteArray().length;b++) {
-			data[b]=baos.toByteArray()[b];
-		};
-		for (b=baos.toByteArray().length;b<master.sectorSizes[sectorSizeN]; b++) {
-			data[b]=(byte)0xE5;
-		}
-//		scanData(fos);
-		
-		if (cats.size()== 0x10 && it.hasNext()) {
-			//full, bye bye C1, goto C2.
-			return null;
-		} else {
-			if (it.hasNext()) {
-				List<Integer> babies = new ArrayList<Integer>();
-				while (it.hasNext()) {
-					babies.add(it.next());
-				}
-				return babies;
-			} else {
-				return new ArrayList<Integer>();
-			}
-		}
+		data = baos.toByteArray();
 	}
 
 	
@@ -74,7 +40,7 @@ public class DskSectorCatalogs extends DskSector {
 	 * Un scan catalog courageux, lors d'un loadDsk ou newDsk
 	 * @throws IOException
 	 */
-	public void scanCatalog() throws IOException {
+	public void scanCatalogFromData() throws IOException {
 		// fill cats from data
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
 		DskSectorCatalog cat = new DskSectorCatalog(master);
