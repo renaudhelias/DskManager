@@ -36,7 +36,7 @@ public class DskManager {
 			dskTrack.scan(fos);
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
+				if (dskFile.master.sectorId[j] <= 0xC2 && i==0) {
 					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
@@ -76,10 +76,6 @@ public class DskManager {
 		sectorCatalogC1.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
 		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
-		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
-		sectorCatalogC4.scanCatalogFromData();
 		return dskFile;
 	}
 	
@@ -102,7 +98,7 @@ public class DskManager {
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				// avant 0xC4 et track0
-				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
+				if (dskFile.master.sectorId[j] <= 0xC2 && i==0) {
 					DskSector sector = new DskSectorCatalogs(dskFile.master,i, dskFile.master.sectorId[j]);
 					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
@@ -134,10 +130,6 @@ public class DskManager {
 		sectorCatalogC1.scanCatalogFromData();
 		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
 		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
-		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
-		sectorCatalogC4.scanCatalogFromData();
 		
 		return dskFile;
 	}
@@ -152,12 +144,11 @@ public class DskManager {
 	 */
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
 		DskTrack track0 = dskFile.tracks.get(0);
-		System.out.println("Récupération de C1-C4");
+		System.out.println("Récupération de C1-C2");
 		DskSectorCatalogs [] catalogsC1C4= {
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)};
+		};
 
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			catalogC1C4.scanCatalog();
@@ -165,18 +156,19 @@ public class DskManager {
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]));
-		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]));
+		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]*2));
+		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]*2));
 		// le transformer en cats
 		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
-		for (int i=0;i<=nbEntry;i++) {
+		while (nbEntry>0) {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
 				// un cat a 10 entrées
-				for (int j=0;j<0x10;j++) {
+				for (int j=0;j<Math.min(nbEntry,0x10);j++) {
 					int catId = dskFile.master.nextFreeCat();
 					// petit malin
 					cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
 				}
+				nbEntry=nbEntry-0x10;
 			cat.filename=fileName;
 			catalogs.add(cat);
 		}
