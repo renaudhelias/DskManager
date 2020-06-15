@@ -57,7 +57,8 @@ public class DskMaster {
 	 * @return
 	 */
 	public int nextFreeCat() {
-		for (int k=0x04;k<allSectors.size();k++) {
+		// k à 0x00 car le second track a 0x00
+		for (int k=0;k<allSectors.size();k++) {
 			if (!allCats.containsKey(k)) {
 				allCats.put(k,allSectors.get(k));
 				return k;

@@ -36,7 +36,7 @@ public class DskManager {
 			dskTrack.scan(fos);
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				if (dskFile.master.sectorId[j] <= 0xC4) {
+				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
 					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile.master, i, dskFile.master.sectorId[j]);
 					sector.scan(fos);
 					dskTrack.sectors.add(sector);
@@ -101,7 +101,8 @@ public class DskManager {
 			System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				if (dskFile.master.sectorId[j] <= 0xC4) {
+				// avant 0xC4 et track0
+				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
 					DskSector sector = new DskSectorCatalogs(dskFile.master,i, dskFile.master.sectorId[j]);
 					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
@@ -174,7 +175,7 @@ public class DskManager {
 			for (int j=0;j<0x10;j++) {
 				int catId = dskFile.master.nextFreeCat();
 				// petit malin
-				cat.catSectors.put(catId, dskFile.master.allCats.get(cat));
+				cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
 				cat.filename=fileName;
 			}
 			catalogs.add(cat);
@@ -198,6 +199,9 @@ public class DskManager {
 				fis.read(d.data);
 				d.scanData(fos);
 			}
+		}
+		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
+			catalogC1C4.scanCatalogFromData();
 		}
 		fis.close();
 		fos.close();
