@@ -31,7 +31,6 @@ public class DskSectorCatalog {
 	public boolean scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
 		if (jocker !=0) return false;
-		List<DskSector> sectors = master.allSectors;
 		byte[] filename = new byte[11];
 		bis.read(filename);
 		this.filename = master.arrayToString(filename);
@@ -43,7 +42,7 @@ public class DskSectorCatalog {
 		byte[] entriesSector = new byte[0x10];
 		bis.read(entriesSector);
 		
-		this.catSectors=master.findCat(entriesSector,sectors);
+		this.catSectors=master.findCat(entriesSector);
 		return true;
 	}
 	

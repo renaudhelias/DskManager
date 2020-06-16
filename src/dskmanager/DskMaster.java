@@ -1,6 +1,8 @@
 package dskmanager;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -39,14 +41,39 @@ public class DskMaster {
 	 * @param sectors
 	 * @return
 	 */
-	public LinkedHashMap<Integer, DskSector> findCat(byte[] entriesSector, List<DskSector> sectors) {
+	public LinkedHashMap<Integer, DskSector> findCat(byte[] entriesSector) {
 		LinkedHashMap<Integer, DskSector> cats= new LinkedHashMap<Integer, DskSector>();
-		for (int i=0+2;i<sectors.size()+2;i++) {
-			for (byte b : entriesSector) {
-				if (b==i) {
-					cats.put((int)b, sectors.get(i-2));
-					allCats.put((int)b, sectors.get(i-2));
+		int k=2;
+		
+		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
+		Collections.sort(allCSectors, new Comparator<DskSector>() {
+			@Override
+			public int compare(DskSector o1, DskSector o2) {
+				if (o1.trackC<o2.trackC) {
+					return -1;
 				}
+				if (o1.trackC>o2.trackC) {
+					return 1;
+				}
+				if (o1.sectorIdR<o2.sectorIdR) {
+					return -1;
+				}
+				if (o1.sectorIdR>o2.sectorIdR) {
+					return 1;
+				}
+				return 0;
+			}
+		});
+
+		for (DskSector sector : allCSectors) {
+			if (!(sector instanceof DskSectorCatalogs)) {
+				for (byte b : entriesSector) {
+					if (b==k) {
+						cats.put((int)b, sector);
+						allCats.put((int)b, sector);
+					}
+				}
+				k++;
 			}
 		}
 		return cats;
@@ -58,10 +85,35 @@ public class DskMaster {
 	 */
 	public int nextFreeCat() {
 		// k à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
-		for (int k=2;k<allSectors.size();k++) {
-			if (!allCats.containsKey(k)) {
-				allCats.put(k,allSectors.get(k));
-				return k;
+		int k=2;
+		
+		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
+		Collections.sort(allCSectors, new Comparator<DskSector>() {
+			@Override
+			public int compare(DskSector o1, DskSector o2) {
+				if (o1.trackC<o2.trackC) {
+					return -1;
+				}
+				if (o1.trackC>o2.trackC) {
+					return 1;
+				}
+				if (o1.sectorIdR<o2.sectorIdR) {
+					return -1;
+				}
+				if (o1.sectorIdR>o2.sectorIdR) {
+					return 1;
+				}
+				return 0;
+			}
+		});
+		
+		for (DskSector sector : allCSectors) {
+			if (!(sector instanceof DskSectorCatalogs)) {
+				if (!allCats.containsKey(k)) {
+					allCats.put(k,sector);
+					return k;
+				}
+				k++;
 			}
 		}
 		return 2;
