@@ -166,8 +166,8 @@ public class DskManager {
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]*2));
-		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]*2));
+		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]));
+		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]));
 		if (lastEntry>0) {
 			nbEntry++;
 		}
