@@ -6,6 +6,24 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * le cat vise des paquets de 1024
+ * le 02++ vise donc des paquets de 1024
+ * Mais les paquet de 512 sont répartie sur des secteur 512 C1 C2 etc.
+ * Problème de mapping sectorID vs catID
+ * 
+ * Il faut donc garder le granulé sectorID car il est plus précis (sans perte d'info)
+ * 
+ * J'ai fait l'inverse avec DoubleInteger-catID, ça a cassé aux tests direct.
+ * 
+ * Donc on a :
+ * 
+ * catID=>SectorID,SectorID
+ * 
+ * exact.
+ * @author Joe
+ *
+ */
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
