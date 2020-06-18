@@ -61,7 +61,7 @@ public class DskSectorCatalogs extends DskSector {
 		ByteArrayInputStream bis=new ByteArrayInputStream(data);
 		// for each Amstrad filename
 		cats.clear();
-		for (int c=0;c<data.length/0x20*2;c++) {
+		for (int c=0;c<data.length/0x20;c++) {
 			DskSectorCatalog cat = new DskSectorCatalog(master);
 			if (cat.scan(bis)) {
 				cats.add(cat);
