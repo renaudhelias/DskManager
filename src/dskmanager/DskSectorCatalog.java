@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -21,7 +22,9 @@ public class DskSectorCatalog {
 
 	int jocker;
 	String filename;
-	LinkedHashMap<Integer,DskSector> catSectors = new LinkedHashMap<Integer,DskSector>();
+//	LinkedHashMap<Integer,DskSector> catSectors = new LinkedHashMap<Integer,DskSector>();
+	List<Integer> catsId= new ArrayList<Integer>();
+	List<DskSector> catsSector= new ArrayList<DskSector>();
 	int sectorIncrement;
 	int sectorLength;
 	
@@ -42,7 +45,9 @@ public class DskSectorCatalog {
 		byte[] entriesSector = new byte[0x10];
 		bis.read(entriesSector);
 		
-		this.catSectors=master.findCat(entriesSector);
+//		this.catSectors=master.findCat(entriesSector);
+		this.catsId=master.findCatsId(entriesSector);
+		this.catsSector=master.findCatsSector(entriesSector);
 		return true;
 	}
 	
@@ -55,10 +60,10 @@ public class DskSectorCatalog {
 		bos.write(new byte[]{0,0});
 		bos.write(new byte[]{(byte)sectorLength});
 		
-		for (Integer cat:catSectors.keySet()) {
+		for (Integer cat:catsId) {
 			bos.write(new byte[]{(byte)cat.intValue()});
 		}
-		for (int j=0;j<0x10-catSectors.size();j++) {
+		for (int j=0;j<0x10-catsId.size();j++) {
 			bos.write(new byte[]{0});					
 		}
 		
@@ -85,10 +90,9 @@ public class DskSectorCatalog {
     }
 
 	public String toString() {
-		String s="DskSectorCatalog\n"+catSectors.size()+" sectors references\n";
-		for (Integer cat:catSectors.keySet()) {
-			DskSector sector=catSectors.get(cat);
-			s+="track "+sector.trackC+" head "+sector.sideH+" cat:"+String.format("#%02X", cat)+" id:"+String.format("#%02X", sector.sectorIdR)+" DATA size "+sector.data.length+"\n";
+		String s="DskSectorCatalog\n"+catsId.size()+" sectors references\n";
+		for (Integer cat:catsId) {
+			s+="cat:"+String.format("#%02X", cat)+"\n";
 		}
 		return s;
 	}

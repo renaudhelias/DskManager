@@ -60,9 +60,9 @@ public class DskManagerTest {
 		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find(track0,0xC1);
 		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
 		assertEquals(track0.sectors.size(),9);
-		DskSector sector0 = cat0.catSectors.get(0);
+//		DskSector sector0 = cat0.catsSector.get(0);
 //		assertNull(sector0);
-		assertEquals(cat0.catSectors.size(),9);
+		assertEquals(cat0.catsSector.size(),9*2);
 	}
 
 	private void compare(File currentDir, String file1, String file2) throws IOException {

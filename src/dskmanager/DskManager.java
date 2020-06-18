@@ -166,8 +166,8 @@ public class DskManager {
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]));
-		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]));
+		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]*2));
+		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]*2));
 		if (lastEntry>0) {
 			nbEntry++;
 		}
@@ -178,9 +178,10 @@ public class DskManager {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
 				// un cat a 10 entrées
 				for (int j=0;j<Math.min(nbEntry,0x10);j++) {
-					int catId = dskFile.master.nextFreeCat();
+					NewFreeCatResult cats = dskFile.master.nextFreeCat();
 					// petit malin
-					cat.catSectors.put(catId, dskFile.master.allCats.get(catId));
+					cat.catsId.add(cats.catId);
+					cat.catsSector.addAll(cats.catSectors);
 				}
 				cat.sectorIncrement=countSectorIncrement;
 				countSectorIncrement++;
@@ -216,7 +217,7 @@ public class DskManager {
 		
 		FileInputStream fis = new FileInputStream(file);
 		for (DskSectorCatalog e:catalogsData) {
-			for (DskSector d:e.catSectors.values()) {
+			for (DskSector d:e.catsSector) {
 				d.data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
 				fis.read(d.data);
 				d.scanData(fos);
