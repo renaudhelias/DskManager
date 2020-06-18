@@ -133,6 +133,7 @@ public class DskMaster {
 		NewFreeCatResult cats= new NewFreeCatResult();
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
 		cats.catId=2;
+		int catIdModulo2=2;
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
@@ -179,7 +180,11 @@ public class DskMaster {
 					cats.catSectors.add(nextSector);
 					return cats;
 				}
-				cats.catId++;
+				
+				catIdModulo2++;
+				if (catIdModulo2%2==0) {
+					cats.catId++;
+				}
 			}
 		}
 		return cats;
