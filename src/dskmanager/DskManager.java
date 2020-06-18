@@ -196,9 +196,10 @@ public class DskManager {
 				// last full cat
 				cat.sectorLength=0x80;
 			} else {
-				// 0x80=128
-				// 9106/128=71,140625 -71 *128 = 18
-				cat.sectorLength=Math.min(Math.abs(lastEntry-0x80), lastEntry);
+				//cat.catsId.size()=9
+				//9       =>0x48 72
+				//16 0x10 =>0x80 128
+				cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/0x10);
 			}
 		}
 		
