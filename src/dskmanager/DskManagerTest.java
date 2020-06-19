@@ -2,9 +2,14 @@ package dskmanager;
 
 import static org.junit.Assert.*;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.List;
 
 import org.junit.Test;
@@ -21,7 +26,7 @@ public class DskManagerTest {
 			
 			System.out.println(currentDir);
 			System.out.println(new File(currentDir,"jdvpa10_test1.dsk").delete());
-			Runtime.getRuntime().exec("CPCDiskXP -File main.bin -AddToNewDsk jdvpa10_test1.dsk",null,currentDir).waitFor();
+			Runtime.getRuntime().exec("CPCDiskXP -File main2.bin -AddToNewDsk jdvpa10_test1.dsk",null,currentDir).waitFor();
 
 			FileInputStream fis = new FileInputStream(new File(currentDir,"jdvpa10_test1.dsk"));
 			
@@ -38,7 +43,7 @@ public class DskManagerTest {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
 		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk");
-		dm.addFile(toto,currentDir,"main.bin",false);
+		dm.addFile(toto,currentDir,"main2.bin",false);
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test1.dsk");
 	}
 	
@@ -83,9 +88,13 @@ public class DskManagerTest {
 	@Test
 	public void testDMReadDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		new File(currentDir,"MATRIX8F.SKS").delete();
 		File r1=dm.readFile(dskFile,currentDir,"MATRIX8F.SKS");
+		new File(currentDir,"CHIEFTAI.SKS").delete();
 		File r2=dm.readFile(dskFile,currentDir,"CHIEFTAI.SKS");
+		new File(currentDir,"PAN.SKS").delete();
 		File r3=dm.readFile(dskFile,currentDir,"PAN.SKS");
+		new File(currentDir,"THRONES.SKS").delete();
 		File r4=dm.readFile(dskFile,currentDir,"THRONES.SKS");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
@@ -99,16 +108,31 @@ public class DskManagerTest {
 	
 	@Test
 	public void testDMEraseDsk() throws IOException {
-		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
-		dm.addFile(dskFile, currentDir, "main.bin", false);
-		File r1=dm.readFile(dskFile,currentDir,"main.bin");
+		DskFile dskFile=dm.newDsk(currentDir, "jdvpa10_test3.dsk");
+		File original=new File(currentDir,"main.bin");
+		File tmp=new File(currentDir,"main3.bin");
+		tmp.delete();
+		
+		InputStream in = new BufferedInputStream(new FileInputStream(original));
+        OutputStream out = new BufferedOutputStream(new FileOutputStream(tmp));
+		  
+        byte[] buffer = new byte[1024];
+        int lengthRead;
+        while ((lengthRead = in.read(buffer)) > 0) {
+            out.write(buffer, 0, lengthRead);
+            out.flush();
+        }
+		out.close();
+		in.close();
+		
+		dm.addFile(dskFile, currentDir, "main3.bin", false);
+		File r1=dm.readFile(dskFile,currentDir,"MAIN3.BIN");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
-		assertTrue(r1.length()==0);
-		dm.eraseFile(dskFile, currentDir, "main.bin");
-		r1=dm.readFile(dskFile,currentDir,"main.bin");
-		assertNotNull(r1);
-		assertFalse(r1.exists());
+		tmp.delete();
+		dm.eraseFile(dskFile, currentDir, "MAIN3.BIN");
+		r1=dm.readFile(dskFile,currentDir,"MAIN3.BIN");
+		assertNull(r1);
 	}
 
 	@Test
@@ -117,5 +141,6 @@ public class DskManagerTest {
 		List<String> list=dm.listFiles(dskFile);
 		assertNotNull(list);
 		assertTrue(list.contains("TRON.BAS"));
+		assertTrue(list.contains("MATRIX8F.SKS"));
 	}
 }

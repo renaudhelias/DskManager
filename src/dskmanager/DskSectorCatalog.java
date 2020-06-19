@@ -27,7 +27,10 @@ public class DskSectorCatalog {
 	}
 	public boolean scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
-		if (jocker !=0) return false;
+		if (jocker !=0) {
+			bis.skip(0x20-1);
+			return false;
+		}
 		byte[] filename = new byte[11];
 		bis.read(filename);
 		this.filename = master.arrayToString(filename);

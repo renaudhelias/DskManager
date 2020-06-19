@@ -238,8 +238,9 @@ public class DskManager {
 	}
 
 	public File readFile(DskFile dskFile, File currentDir, String fileName) throws IOException {
-		File output= new File(currentDir,fileName);
-		FileOutputStream fos=new FileOutputStream(output);
+		
+		List<DskSector> sectors= new ArrayList<DskSector>();
+		
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
@@ -251,12 +252,22 @@ public class DskManager {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
 					for (DskSector sector : entryFile.catsSector) {
-						fos.write(sector.data);
+						sectors.add(sector);
 					}
 				}
 			}
 		}
-		fos.close();
+		
+		File output=null;
+		if (sectors.size()>0) {
+			output= new File(currentDir,fileName);
+			// create file
+			FileOutputStream fos=new FileOutputStream(output);
+			for(DskSector sector:sectors) {
+				fos.write(sector.data);
+			}
+			fos.close();
+		}
 		return output;
 	}
 
@@ -275,6 +286,9 @@ public class DskManager {
 				}
 			}
 			cat.scanCatalog();
+		}
+		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
+			catalogC1C4.scanCatalogFromData();
 		}
 	}
 
