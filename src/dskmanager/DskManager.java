@@ -237,14 +237,45 @@ public class DskManager {
 		
 	}
 
-	public File readFile(DskFile dskFile, File currentDir, String string) {
-		// TODO Auto-generated method stub
-		return null;
+	public File readFile(DskFile dskFile, File currentDir, String fileName) throws IOException {
+		File output= new File(currentDir,fileName);
+		FileOutputStream fos=new FileOutputStream(output);
+		DskTrack track0 = dskFile.tracks.get(0);
+		DskSectorCatalogs [] catalogsC1C4= {
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+		};
+		for (DskSectorCatalogs cat : catalogsC1C4) {
+			for (DskSectorCatalog entryFile : cat.cats) {
+				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
+					for (DskSector sector : entryFile.catsSector) {
+						fos.write(sector.data);
+					}
+				}
+			}
+		}
+		fos.close();
+		return output;
 	}
 
-	public void eraseFile(DskFile dskFile, File currentDir, String string) {
-		// TODO Auto-generated method stub
-		
+	public void eraseFile(DskFile dskFile, File currentDir, String fileName) throws IOException {
+		DskTrack track0 = dskFile.tracks.get(0);
+		DskSectorCatalogs [] catalogsC1C4= {
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+		};
+		for (DskSectorCatalogs cat : catalogsC1C4) {
+			for (DskSectorCatalog entryFile : cat.cats) {
+				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
+					entryFile.jocker=0xE5;
+				}
+			}
+			cat.scanCatalog();
+		}
 	}
 
 	public List<String> listFiles(DskFile dskFile) {

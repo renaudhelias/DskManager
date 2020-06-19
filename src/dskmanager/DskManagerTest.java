@@ -83,22 +83,18 @@ public class DskManagerTest {
 	@Test
 	public void testDMReadDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
-		File r1=dm.readFile(dskFile,currentDir,"matrix8f.sks");
-		File r2=dm.readFile(dskFile,currentDir,"chieftai.sks");
-		File r3=dm.readFile(dskFile,currentDir,"pan.sks");
-		File r4=dm.readFile(dskFile,currentDir,"thrones.sks");
+		File r1=dm.readFile(dskFile,currentDir,"MATRIX8F.SKS");
+		File r2=dm.readFile(dskFile,currentDir,"CHIEFTAI.SKS");
+		File r3=dm.readFile(dskFile,currentDir,"PAN.SKS");
+		File r4=dm.readFile(dskFile,currentDir,"THRONES.SKS");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
-		assertTrue(r1.length()>0);
 		assertNotNull(r2);
 		assertTrue(r2.exists());
-		assertTrue(r2.length()>0);
 		assertNotNull(r3);
 		assertTrue(r3.exists());
-		assertTrue(r3.length()>0);
 		assertNotNull(r4);
 		assertTrue(r4.exists());
-		assertTrue(r4.length()>0);
 	}
 	
 	@Test
@@ -108,10 +104,10 @@ public class DskManagerTest {
 		File r1=dm.readFile(dskFile,currentDir,"main.bin");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
-		assertTrue(r1.length()>0);
+		assertTrue(r1.length()==0);
 		dm.eraseFile(dskFile, currentDir, "main.bin");
 		r1=dm.readFile(dskFile,currentDir,"main.bin");
-		assertNull(r1);
+		assertNotNull(r1);
 		assertFalse(r1.exists());
 	}
 

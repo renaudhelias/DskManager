@@ -45,6 +45,13 @@ public class DskSectorCatalog {
 	}
 	
 	public void scan(ByteArrayOutputStream bos) throws IOException {
+		if (jocker !=0) {
+			// fill 0xE5
+			for (int i = 0;i<0x20;i++) {
+				bos.write(0xE5);
+			}
+			return;
+		}
 		bos.write(new byte[]{(byte)jocker});
 		byte [] entryFileName = master.realname2cpcname(filename).getBytes();
 		bos.write(entryFileName);
