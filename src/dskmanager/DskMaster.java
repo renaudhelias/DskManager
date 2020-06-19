@@ -3,7 +3,6 @@ package dskmanager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 /**
@@ -21,7 +20,6 @@ public class DskMaster {
 	byte[]usedSectorEntry={};
 	// contient aussi C1 C2 C3 C4
 	List<DskSector> allSectors = new ArrayList<DskSector>();
-//	LinkedHashMap<Integer, DskSector> allCats= new LinkedHashMap<Integer, DskSector>();
 	List<Integer> allCatsId= new ArrayList<Integer>();
 	List<DskSector> allCatsSector= new ArrayList<DskSector>();
 	
@@ -201,5 +199,31 @@ public class DskMaster {
 
 		return sb.toString();
 	}
+	
+	public String cpcname2realname(String cpcname) {
+    	String realname=cpcname.substring(0,8)+"."+cpcname.substring(8,11);
+    	realname=realname.replaceAll(" ", "");
+    	return realname;
+    }
+
+	public String realname2cpcname(String realname) {
+    	String cpcname = realname.toUpperCase();
+    	if (cpcname.contains(".")) {
+            int point = cpcname.indexOf(".");
+            String filename = cpcname.substring(0, point);
+            filename = filename + "        ";
+            filename = filename.substring(0, 8);
+            String extension = cpcname.substring(point + 1,
+                    cpcname.length());
+            extension = extension + "   ";
+            extension = extension.substring(0, 3);
+
+            cpcname = filename + extension;
+        } else {
+            cpcname = cpcname + "        " + "   ";
+            cpcname = cpcname.substring(0, 8 + 3);
+        }
+    	return cpcname;
+    }
 
 }

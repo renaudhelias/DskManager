@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -60,8 +61,8 @@ public class DskManagerTest {
 		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find(track0,0xC1);
 		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
 		assertEquals(track0.sectors.size(),9);
-//		DskSector sector0 = cat0.catsSector.get(0);
-//		assertNull(sector0);
+		DskSector sector0 = cat0.catsSector.get(0);
+		assertNotNull(sector0);
 		assertEquals(cat0.catsSector.size(),9*2);
 	}
 
@@ -77,5 +78,48 @@ public class DskManagerTest {
 		fis1.close();
 		fis2.close();
 	}
+	
+	
+	@Test
+	public void testDMReadDsk() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		File r1=dm.readFile(dskFile,currentDir,"matrix8f.sks");
+		File r2=dm.readFile(dskFile,currentDir,"chieftai.sks");
+		File r3=dm.readFile(dskFile,currentDir,"pan.sks");
+		File r4=dm.readFile(dskFile,currentDir,"thrones.sks");
+		assertNotNull(r1);
+		assertTrue(r1.exists());
+		assertTrue(r1.length()>0);
+		assertNotNull(r2);
+		assertTrue(r2.exists());
+		assertTrue(r2.length()>0);
+		assertNotNull(r3);
+		assertTrue(r3.exists());
+		assertTrue(r3.length()>0);
+		assertNotNull(r4);
+		assertTrue(r4.exists());
+		assertTrue(r4.length()>0);
+	}
+	
+	@Test
+	public void testDMEraseDsk() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		dm.addFile(dskFile, currentDir, "main.bin", false);
+		File r1=dm.readFile(dskFile,currentDir,"main.bin");
+		assertNotNull(r1);
+		assertTrue(r1.exists());
+		assertTrue(r1.length()>0);
+		dm.eraseFile(dskFile, currentDir, "main.bin");
+		r1=dm.readFile(dskFile,currentDir,"main.bin");
+		assertNull(r1);
+		assertFalse(r1.exists());
+	}
 
+	@Test
+	public void testDMListDsk() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
+		List<String> list=dm.listFiles(dskFile);
+		assertNotNull(list);
+		assertTrue(list.contains("TRON.BAS"));
+	}
 }

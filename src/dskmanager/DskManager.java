@@ -6,7 +6,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DskManager {
 	
@@ -231,6 +235,44 @@ public class DskManager {
 		fos.close();
 		
 		
+	}
+
+	public File readFile(DskFile dskFile, File currentDir, String string) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void eraseFile(DskFile dskFile, File currentDir, String string) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public List<String> listFiles(DskFile dskFile) {
+		Set<String> listFiles = new HashSet<String>();
+		DskTrack track0 = dskFile.tracks.get(0);
+		DskSectorCatalogs [] catalogsC1C4= {
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+		};
+		for (DskSectorCatalogs cat : catalogsC1C4) {
+			for (DskSectorCatalog entryFile : cat.cats) {
+				listFiles.add(dskFile.master.cpcname2realname(entryFile.filename));
+			}
+		}
+		List<String> result=new ArrayList<String>();
+		for (String filename: listFiles) {
+			result.add(filename);
+		}
+		Collections.sort(result, new Comparator<String>() {
+			@Override
+			public int compare(String o1, String o2) {
+				return o1.compareTo(o2);
+			}
+		});
+		
+		return result;
 	}
 	
 }
