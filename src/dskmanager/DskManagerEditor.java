@@ -37,8 +37,8 @@ public class DskManagerEditor extends JFrame {
 		table=new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		table.setDragEnabled(true);
-        table.setDropMode(DropMode.USE_SELECTION);
-        table.setTransferHandler(new TransferHelper());
+        table.setDropMode(DropMode.ON_OR_INSERT);
+        table.setTransferHandler(new TransferHelper(model));
         table.setRowSelectionAllowed(true);
         table.setCellSelectionEnabled(false);
 		
