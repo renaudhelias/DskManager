@@ -1,20 +1,13 @@
 package dskmanager;
 
 import java.awt.BorderLayout;
-import java.awt.dnd.DropTarget;
-import java.awt.dnd.DropTargetDragEvent;
-import java.awt.dnd.DropTargetDropEvent;
-import java.awt.dnd.DropTargetEvent;
-import java.awt.dnd.DropTargetListener;
 
 import javax.swing.DropMode;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -36,7 +29,8 @@ public class DskManagerEditor extends JFrame {
 		table.setTransferHandler(new TransferHelper(table));
         table.setDragEnabled(true);
         table.setDropMode(DropMode.USE_SELECTION);
-		
+        table.setFillsViewportHeight(true);
+        
 		add(scrollPane,BorderLayout.CENTER);
 		add(table.getTableHeader(), BorderLayout.NORTH);
 		add(bottomMenu,BorderLayout.SOUTH);
