@@ -1,9 +1,18 @@
 package dskmanager;
 
+import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.awt.dnd.DragSource;
 import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JComponent;
@@ -15,20 +24,37 @@ import javax.swing.table.DefaultTableModel;
 public class TransferHelper extends TransferHandler {
 
 	private DefaultTableModel model;
+	private JTable table;
 
-	public TransferHelper(DefaultTableModel model) {
-		this.model = model;
+	public TransferHelper(JTable table) {
+		this.model = (DefaultTableModel) table.getModel();
+		this.table = table;
+		 table.addMouseMotionListener(new MouseMotionListener() {
+			    public void mouseDragged(MouseEvent e) {
+			        e.consume();
+			        JComponent c = (JComponent) e.getSource();
+			        exportAsDrag(c, e, TransferHandler.MOVE);
+			    }
+
+			    public void mouseMoved(MouseEvent e) {
+			    }
+			});
 	}
     public boolean canImport(TransferHandler.TransferSupport info) {
-        // we only import Strings
+        // Spammed
+//    	System.out.println("canImport?");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+        	table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
         }
 
         JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
         if (dl.getRow() == -1) {
+        	table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
         }
+        
+        table.setCursor(DragSource.DefaultMoveDrop);
         return true;
     }
 
@@ -38,10 +64,12 @@ public class TransferHelper extends TransferHandler {
         }
          
         // Check for String flavor
-        if (!info.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+        if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
             System.out.println("List doesn't accept a drop of this type.");
             return false;
         }
+        System.out.println("from Desktop");
+        table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         JList.DropLocation dl = (JList.DropLocation)info.getDropLocation();
         DefaultTableModel listModel = model;
@@ -93,20 +121,76 @@ return false;
         return COPY;
     }
      
+    @Override
     protected Transferable createTransferable(JComponent c) {
-    	JTable list = (JTable)c;
-        int[] values = list.getSelectedRows();
- 
-        StringBuffer buff = new StringBuffer();
+    	System.out.println("to Desktop");
+    	
+//    	JTable list = (JTable)c;
+//        int[] values = list.getSelectedRows();
+// 
+//        StringBuffer buff = new StringBuffer();
+//
+//        for (int i = 0; i < values.length; i++) {
+//            Object val = model.getValueAt(values[i],0);
+//            buff.append(val == null ? "" : val.toString());
+//            if (i != values.length - 1) {
+//                buff.append("\n");
+//            }
+//        }
+        
+        List<File> files= new ArrayList<File>();
+        files.add(new File("toto.txt"));
+		return new FileTransferable(files);
+//        return new StringSelection(buff.toString());
+    }
+	@Override
+	protected void exportDone(JComponent c, Transferable t, int act) {
+		// spammé bien pour le cursor
+//		
+//			try {
+//		
+//			
+//			File data2 = (File) t.getTransferData(DataFlavor.javaFileListFlavor);
+//		} catch (UnsupportedFlavorException | IOException e) {
+//			e.printStackTrace();
+//			try {
+//				String data = (String) t.getTransferData(DataFlavor.stringFlavor);
+//			} catch (UnsupportedFlavorException | IOException e1) {
+//				e1.printStackTrace();
+//			}
+//		}
+				
+		
+//		System.out.println("exportDone "+act+" "+c);
+		if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
+	       table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+	    }
+		super.exportDone(c, t, act);
+	}
+	
+	private class FileTransferable implements Transferable {
 
-        for (int i = 0; i < values.length; i++) {
-            Object val = model.getValueAt(values[i],0);
-            buff.append(val == null ? "" : val.toString());
-            if (i != values.length - 1) {
-                buff.append("\n");
-            }
+        private List<File> files;
+
+        public FileTransferable(List<File> files) {
+            this.files = files;
         }
-        return new StringSelection(buff.toString());
+
+        public DataFlavor[] getTransferDataFlavors() {
+            return new DataFlavor[]{DataFlavor.javaFileListFlavor};
+        }
+
+        public boolean isDataFlavorSupported(DataFlavor flavor) {
+            return flavor.equals(DataFlavor.javaFileListFlavor);
+        }
+
+        public Object getTransferData(DataFlavor flavor)
+                throws UnsupportedFlavorException, IOException {
+            if (!isDataFlavorSupported(flavor)) {
+                throw new UnsupportedFlavorException(flavor);
+            }
+            return files;
+        }
     }
 
 }

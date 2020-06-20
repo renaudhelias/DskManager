@@ -1,23 +1,13 @@
 package dskmanager;
 
 import java.awt.BorderLayout;
-import java.awt.datatransfer.Transferable;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.io.File;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.swing.DropMode;
 import javax.swing.JButton;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.TransferHandler;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableModel;
 
@@ -36,11 +26,11 @@ public class DskManagerEditor extends JFrame {
 		DefaultTableModel model = new DefaultTableModel();
 		table=new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		table.setDragEnabled(true);
-        table.setDropMode(DropMode.ON_OR_INSERT);
-        table.setTransferHandler(new TransferHelper(model));
-        table.setRowSelectionAllowed(true);
-        table.setCellSelectionEnabled(false);
+		table.setTransferHandler(new TransferHelper(table));
+        table.setDragEnabled(true);
+        table.setDropMode(DropMode.USE_SELECTION);
+//        table.setRowSelectionAllowed(true);
+//        table.setCellSelectionEnabled(true);
 		
 		add(scrollPane,BorderLayout.CENTER);
 		add(table.getTableHeader(), BorderLayout.NORTH);
