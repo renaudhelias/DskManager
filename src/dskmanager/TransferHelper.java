@@ -42,7 +42,7 @@ public class TransferHelper extends TransferHandler {
 	}
     public boolean canImport(TransferHandler.TransferSupport info) {
         // Spammed
-//    	System.out.println("canImport?");
+    	System.out.println("canImport?");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
         	table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
@@ -64,57 +64,51 @@ public class TransferHelper extends TransferHandler {
         }
          
         // Check for String flavor
-        if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+        if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
             System.out.println("List doesn't accept a drop of this type.");
             return false;
         }
         System.out.println("from Desktop");
         table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
-        JList.DropLocation dl = (JList.DropLocation)info.getDropLocation();
+        JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
         DefaultTableModel listModel = model;
-        int index = dl.getIndex();
-        boolean insert = dl.isInsert();
+        int index = dl.getRow();
+        boolean insert = dl.isInsertRow();
         // Get the current string under the drop.
         String value = (String)listModel.getValueAt(index,0);
 
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
-        String data;
+        List<File> data;
         try {
-            data = (String)t.getTransferData(DataFlavor.stringFlavor);
+            data = (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor);
         } 
-        catch (Exception e) { return false; }
+        catch (Exception e) {
+        	return false;
+        }
          
         // Display a dialog with the drop information.
-        String dropValue = "\"" + data + "\" dropped ";
-        if (dl.isInsert()) {
-            if (dl.getIndex() == 0) {
+        String dropValue = "\"" + data.size() + ""+ data.get(0).getName()+ "\" dropped ";
+        if (dl.isInsertRow()) {
+            if (dl.getRow() == 0) {
                 System.out.println(dropValue + "at beginning of list");
-            } else if (dl.getIndex() >= model.getRowCount()) {
+            } else if (dl.getRow() >= model.getRowCount()) {
             	System.out.println(dropValue + "at end of list");
             } else {
-                String value1 = (String)model.getValueAt(dl.getIndex() - 1,0);
-                String value2 = (String)model.getValueAt(dl.getIndex(),0);
+                String value1 = (String)model.getValueAt(dl.getRow() - 1,0);
+                String value2 = (String)model.getValueAt(dl.getRow(),0);
                 System.out.println(dropValue + "between \"" + value1 + "\" and \"" + value2 + "\"");
             }
         } else {
         	System.out.println(dropValue + "on top of " + "\"" + value + "\"");
         }
-         
-/**  This is commented out for the basicdemo.html tutorial page.
-         **  If you add this code snippet back and delete the
-         **  "return false;" line, the list will accept drops
-         **  of type string.
-        // Perform the actual import.  
-        if (insert) {
-            listModel.add(index, data);
-        } else {
-            listModel.set(index, data);
+        
+        for (File f:data) {
+        	model.addRow(new Object []{f.getName(),f.length()});
         }
+         
         return true;
-*/
-return false;
     }
      
     public int getSourceActions(JComponent c) {
@@ -160,8 +154,8 @@ return false;
 //			}
 //		}
 				
-		
-//		System.out.println("exportDone "+act+" "+c);
+		// Spammed
+		System.out.println("exportDone?");
 		if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
 	       table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	    }
