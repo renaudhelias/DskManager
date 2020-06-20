@@ -9,7 +9,10 @@ import java.awt.dnd.DragSource;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionListener;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -119,8 +122,32 @@ public class TransferHelper extends TransferHandler {
     protected Transferable createTransferable(JComponent c) {
     	System.out.println("to Desktop");
     	
-//    	JTable list = (JTable)c;
-//        int[] values = list.getSelectedRows();
+    	JTable list = (JTable)c;
+        int[] values = list.getSelectedRows();
+        
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        bos.write(10);
+        
+        List<File> files= new ArrayList<File>();
+        for (int v :values) {
+        	File dossierTmp = new File("tmp");
+        	dossierTmp.mkdirs();
+        	File tmpFile = new File(dossierTmp,(String)model.getValueAt(v, 0));
+        	
+        	System.out.println("Creating File to move : "+tmpFile.getAbsolutePath());
+        	try {
+				FileOutputStream fos = new FileOutputStream(tmpFile);
+				fos.write(bos.toByteArray());
+				fos.close();
+			} catch (FileNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
+        	files.add(tmpFile);
+        }
 // 
 //        StringBuffer buff = new StringBuffer();
 //
@@ -131,9 +158,6 @@ public class TransferHelper extends TransferHandler {
 //                buff.append("\n");
 //            }
 //        }
-        
-        List<File> files= new ArrayList<File>();
-        files.add(new File("toto.txt"));
 		return new FileTransferable(files);
 //        return new StringSelection(buff.toString());
     }
