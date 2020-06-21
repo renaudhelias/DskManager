@@ -131,9 +131,16 @@ public class DskManagerTest {
 		assertNotNull(r1);
 		assertTrue(r1.exists());
 		tmp.delete();
-		dm.eraseFile(dskFile, currentDir, "MAIN3.BIN");
+		dm.eraseFile(dskFile, "MAIN3.BIN");
 		r1=dm.readFile(dskFile,currentDir,"MAIN3.BIN");
 		assertNull(r1);
+		
+		Set<String> list=dm.listFiles(dskFile).keySet();
+		for(String notErased:list) {
+			if (notErased.equals("MAIN3.BIN")) {
+				fail("still here");
+			}
+		}
 	}
 
 	@Test

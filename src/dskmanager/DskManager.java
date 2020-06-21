@@ -268,7 +268,7 @@ public class DskManager {
 		return output;
 	}
 
-	public void eraseFile(DskFile dskFile, File currentDir, String fileName) throws IOException {
+	public void eraseFile(DskFile dskFile, String fileName) throws IOException {
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
@@ -282,7 +282,11 @@ public class DskManager {
 					entryFile.jocker=0xE5;
 				}
 			}
+			
+			RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
 			cat.scanCatalog();
+			cat.scanData(fos);
+			fos.close();
 		}
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			catalogC1C4.scanCatalogFromData();
