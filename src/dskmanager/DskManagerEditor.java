@@ -99,7 +99,7 @@ public class DskManagerEditor extends JFrame {
 		model.removeRow(0);
 	}
 	
-	private void updateTable() throws IOException {
+	public void updateTable() throws IOException {
 		model.setRowCount(0);
 		
 		list = dm.listFiles(dskFile);

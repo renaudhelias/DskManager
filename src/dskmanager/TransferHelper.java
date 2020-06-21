@@ -5,8 +5,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragSource;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -18,7 +16,6 @@ import java.util.List;
 import javax.swing.JComponent;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
-import javax.swing.table.DefaultTableModel;
 
 public class TransferHelper extends TransferHandler {
 
@@ -61,21 +58,15 @@ public class TransferHelper extends TransferHandler {
 
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
-        List<File> data;
         try {
-            data = (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor);
+        	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
+        		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
+            	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+        	}
+        	dskManagerEditor.updateTable();
         } 
         catch (Exception e) {
         	return false;
-        }
-         
-        for (File f:data) {
-        	try {
-				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile, f.getParentFile(), f.getName(), false);
-	        	dskManagerEditor.model.addRow(new Object []{f.getName(),f.length()});
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
         }
          
         return true;
