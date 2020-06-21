@@ -1,5 +1,6 @@
 package dskmanager;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -8,7 +9,9 @@ import java.io.RandomAccessFile;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -292,8 +295,8 @@ public class DskManager {
 		}
 	}
 
-	public List<String> listFiles(DskFile dskFile) {
-		Set<String> listFiles = new HashSet<String>();
+	public LinkedHashMap<String,ByteArrayOutputStream> listFiles(DskFile dskFile) throws IOException {
+		LinkedHashMap<String,ByteArrayOutputStream> listFiles = new LinkedHashMap<String,ByteArrayOutputStream>();
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
 			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
@@ -303,21 +306,21 @@ public class DskManager {
 		};
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
-				listFiles.add(dskFile.master.cpcname2realname(entryFile.filename));
+				
+				for (DskSector sector:entryFile.catsSector) {
+					String key = dskFile.master.cpcname2realname(entryFile.filename);
+					if (listFiles.containsKey(key)) {
+						listFiles.get(key).write(sector.data);
+					} else {
+						ByteArrayOutputStream baos = new ByteArrayOutputStream();
+						baos.write(sector.data);
+						listFiles.put(key,baos);
+					}
+					
+				}
 			}
 		}
-		List<String> result=new ArrayList<String>();
-		for (String filename: listFiles) {
-			result.add(filename);
-		}
-		Collections.sort(result, new Comparator<String>() {
-			@Override
-			public int compare(String o1, String o2) {
-				return o1.compareTo(o2);
-			}
-		});
-		
-		return result;
+		return listFiles;
 	}
 	
 }

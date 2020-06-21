@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
+import java.util.Set;
 
 import org.junit.Test;
 
@@ -138,7 +139,7 @@ public class DskManagerTest {
 	@Test
 	public void testDMListDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
-		List<String> list=dm.listFiles(dskFile);
+		Set<String> list=dm.listFiles(dskFile).keySet();
 		assertNotNull(list);
 		assertTrue(list.contains("TRON.BAS"));
 		assertTrue(list.contains("MATRIX8F.SKS"));
