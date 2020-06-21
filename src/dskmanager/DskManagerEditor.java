@@ -28,7 +28,7 @@ public class DskManagerEditor extends JFrame {
 	JPanel bottomMenu = new JPanel();
 	private JButton buttonNew = new JButton("New");
 	private JButton buttonLoad = new JButton("Load");
-	private JTable table;
+	public JTable table;
 	
 	DefaultTableModel model = new DefaultTableModel();
 
@@ -41,7 +41,7 @@ public class DskManagerEditor extends JFrame {
 		
 		table=new JTable(model);
 		JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-		table.setTransferHandler(new TransferHelper(table));
+		table.setTransferHandler(new TransferHelper(this));
         table.setDragEnabled(true);
         table.setDropMode(DropMode.USE_SELECTION);
         table.setFillsViewportHeight(true);

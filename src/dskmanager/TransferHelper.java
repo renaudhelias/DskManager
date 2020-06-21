@@ -22,38 +22,27 @@ import javax.swing.table.DefaultTableModel;
 
 public class TransferHelper extends TransferHandler {
 
-	private DefaultTableModel model;
-	private JTable table;
+	private DskManagerEditor dskManagerEditor;
 
-	public TransferHelper(JTable table) {
-		this.model = (DefaultTableModel) table.getModel();
-		this.table = table;
-		 table.addMouseMotionListener(new MouseMotionListener() {
-			    public void mouseDragged(MouseEvent e) {
-			        e.consume();
-			        JComponent c = (JComponent) e.getSource();
-			        exportAsDrag(c, e, TransferHandler.MOVE);
-			    }
-
-			    public void mouseMoved(MouseEvent e) {
-			    }
-			});
+    public TransferHelper(DskManagerEditor dskManagerEditor) {
+		this.dskManagerEditor = dskManagerEditor;
 	}
-    public boolean canImport(TransferHandler.TransferSupport info) {
+    
+	public boolean canImport(TransferHandler.TransferSupport info) {
         // Spammed => bien pour le curseur
 //    	System.out.println("canImport?");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-        	table.setCursor(DragSource.DefaultMoveNoDrop);
+        	dskManagerEditor.table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
         }
 
         JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
         if (dl.getRow() == -1) {
-        	table.setCursor(DragSource.DefaultMoveNoDrop);
+        	dskManagerEditor.table.setCursor(DragSource.DefaultMoveNoDrop);
             return true;
         }
         
-        table.setCursor(DragSource.DefaultMoveDrop);
+        dskManagerEditor.table.setCursor(DragSource.DefaultMoveDrop);
         return true;
     }
 
@@ -68,7 +57,7 @@ public class TransferHelper extends TransferHandler {
             return false;
         }
 //        System.out.println("from Desktop");
-        table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
@@ -81,7 +70,12 @@ public class TransferHelper extends TransferHandler {
         }
          
         for (File f:data) {
-        	model.addRow(new Object []{f.getName(),f.length()});
+        	try {
+				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile, f.getParentFile(), f.getName(), false);
+	        	dskManagerEditor.model.addRow(new Object []{f.getName(),f.length()});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
         }
          
         return true;
@@ -105,12 +99,13 @@ public class TransferHelper extends TransferHandler {
         for (int v :values) {
         	File dossierTmp = new File("tmp");
         	dossierTmp.mkdirs();
-        	File tmpFile = new File(dossierTmp,(String)model.getValueAt(v, 0));
+        	String filename = (String) dskManagerEditor.model.getValueAt(v, 0);
+        	File tmpFile = new File(dossierTmp,filename);
         	
         	System.out.println("Creating File to move : "+tmpFile.getAbsolutePath());
         	try {
 				FileOutputStream fos = new FileOutputStream(tmpFile);
-				fos.write(bos.toByteArray());
+				fos.write(dskManagerEditor.list.get(filename).toByteArray());
 				fos.close();
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
@@ -126,7 +121,7 @@ public class TransferHelper extends TransferHandler {
 		// Spammed => bien pour le curseur
 //		System.out.println("exportDone?");
 		if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
-	       table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+			dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	    }
 		super.exportDone(c, t, act);
 	}
