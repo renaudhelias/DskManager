@@ -45,16 +45,16 @@ public class DskMaster {
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
 			@Override
 			public int compare(DskSector o1, DskSector o2) {
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
 				if (o1.trackC<o2.trackC) {
 					return -1;
 				}
 				if (o1.trackC>o2.trackC) {
+					return 1;
+				}
+				if (o1.sideH<o2.sideH) {
+					return -1;
+				}
+				if (o1.sideH>o2.sideH) {
 					return 1;
 				}
 				if (o1.sectorIdR<o2.sectorIdR) {
@@ -95,16 +95,16 @@ public class DskMaster {
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
 			@Override
 			public int compare(DskSector o1, DskSector o2) {
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
 				if (o1.trackC<o2.trackC) {
 					return -1;
 				}
 				if (o1.trackC>o2.trackC) {
+					return 1;
+				}
+				if (o1.sideH<o2.sideH) {
+					return -1;
+				}
+				if (o1.sideH>o2.sideH) {
 					return 1;
 				}
 				if (o1.sectorIdR<o2.sectorIdR) {
@@ -145,16 +145,16 @@ public class DskMaster {
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
 			@Override
 			public int compare(DskSector o1, DskSector o2) {
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
 				if (o1.trackC<o2.trackC) {
 					return -1;
 				}
 				if (o1.trackC>o2.trackC) {
+					return 1;
+				}
+				if (o1.sideH<o2.sideH) {
+					return -1;
+				}
+				if (o1.sideH>o2.sideH) {
 					return 1;
 				}
 				if (o1.sectorIdR<o2.sectorIdR) {
