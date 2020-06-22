@@ -65,7 +65,7 @@ public class DskManagerTest {
 	@Test
 	public void testDMLoadDskDOSD2() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "dosd2.dsk");
-		assertEquals(dskFile.tracks.size(),80);
+		assertEquals(dskFile.tracks.size(),80); // so SIZE * 2
 		DskTrack track0=dskFile.tracks.get(0);
 		assertEquals(track0.sectors.size() ,9);
 		assertEquals(track0.nbSectors,9);
@@ -73,7 +73,7 @@ public class DskManagerTest {
 		assertEquals(track0.sectorSize,2);
 		assertEquals(track0.sectors.size(),9);
 		DskTrack track1=dskFile.tracks.get(1);
-		assertEquals(track1.side,1);
+		assertEquals(track1.side,1); // so SIZE * 2 * 2
 	}
 	
 	@Test
