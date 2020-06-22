@@ -167,8 +167,8 @@ public class DskManager {
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		int nbEntry = (int)(file.length()/(dskFile.master.sectorSizes[2]*2));
-		int lastEntry = (int)(file.length()%(dskFile.master.sectorSizes[2]*2));
+		int nbEntry = (int)(file.length()/(0x400));
+		int lastEntry = (int)(file.length()%(0x400));
 		if (lastEntry>0) {
 			nbEntry++;
 		}
@@ -220,7 +220,7 @@ public class DskManager {
 		FileInputStream fis = new FileInputStream(file);
 		for (DskSectorCatalog e:catalogsData) {
 			for (DskSector d:e.catsSector) {
-				d.data=new byte[Math.min(dskFile.master.sectorSizes[2],fis.available())];
+				d.data=new byte[Math.min(dskFile.master.sectorSizes[d.sectorSizeN],fis.available())];
 				fis.read(d.data);
 				d.scanData(fos);
 			}
