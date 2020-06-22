@@ -66,6 +66,7 @@ public class DskManagerEditor extends JFrame {
 				    try {
 				    	dskFile=dm.newDsk(fileToSave.getParentFile(), fileToSave.getName());
 				    	updateTable();
+				    	setTitle("CPC Dsk Manager - "+dskFile.file.getName());
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
@@ -84,6 +85,7 @@ public class DskManagerEditor extends JFrame {
 				    try {
 				    	dskFile=dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
 				    	updateTable();
+				    	setTitle("CPC Dsk Manager - "+dskFile.file.getName());
 					} catch (IOException e1) {
 						e1.printStackTrace();
 					}
