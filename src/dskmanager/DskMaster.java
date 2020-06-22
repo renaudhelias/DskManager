@@ -11,13 +11,9 @@ import java.util.List;
  *
  */
 public class DskMaster {
-
-	
-	
-	int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 	// dictionary
-	byte[]usedSectorEntry={};
+//	byte[]usedSectorEntry={};
 	// contient aussi C1 C2 C3 C4
 	List<DskSector> allSectors = new ArrayList<DskSector>();
 	List<Integer> allCatsId= new ArrayList<Integer>();
@@ -26,9 +22,9 @@ public class DskMaster {
 	public DskMaster() {
 	}
 	
-	DskSector find(DskTrack track, int sectorId) {
+	DskSector find0F(DskTrack track, int sectorId) {
 		for (DskSector sector:track.sectors) {
-			if (sector.sectorIdR==sectorId) {
+			if ((sector.sectorIdR & 0x0F)==(sectorId & 0x0F)) {
 				return sector;
 			}
 		}

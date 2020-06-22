@@ -26,6 +26,7 @@ public class DskManager {
 	 * @throws IOException
 	 */
 	public DskFile newDsk(File currentDir, String dskName) throws IOException{
+		int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		dskFile.master=new DskMaster();
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
@@ -37,18 +38,15 @@ public class DskManager {
 			dskTrack.scan(fos);
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
-					DskSectorCatalogs sector = new DskSectorCatalogs(dskFile.master, i, dskFile.master.sectorId[j]);
-					sector.scan(fos);
-					dskTrack.sectors.add(sector);
-					dskFile.master.allSectors.add(sector);
-				} else {
-					DskSector sector = new DskSector(dskFile.master, i, dskFile.master.sectorId[j]);
-					sector.scan(fos);
-					dskTrack.sectors.add(sector);
-					dskFile.master.allSectors.add(sector);
+				// bon on est sur du 0xX1 0xX2 0xX3 0xX4
+				DskSector sector = new DskSector(dskFile.master, i);
+				sector.sectorIdR=sectorId[j];
+				sector.scan(fos);
+				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
+					sector = new DskSectorCatalogs(sector);
 				}
-					
+				dskTrack.sectors.add(sector);
+				dskFile.master.allSectors.add(sector);
 			}
 			//garbage "0" at end of Track-Info
 			int garbage=0x1D-dskTrack.nbSectors;
@@ -73,13 +71,13 @@ public class DskManager {
 		fos.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
+		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC1);
 		sectorCatalogC1.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
+		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC2);
 		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
+		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC3);
 		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
+		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC4);
 		sectorCatalogC4.scanCatalogFromData();
 		return dskFile;
 	}
@@ -102,21 +100,13 @@ public class DskManager {
 			System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				// avant 0xC4 et track0
-				if (dskFile.master.sectorId[j] <= 0xC4 && i==0) {
-					DskSector sector = new DskSectorCatalogs(dskFile.master,i, dskFile.master.sectorId[j]);
-					System.out.println("avant scan sector : "+fis.getChannel().position());
-					sector.scan(fis);
-					dskTrack.sectors.add(sector);
-					dskFile.master.allSectors.add(sector);
-				} else {
-					DskSector sector = new DskSector(dskFile.master,i, dskFile.master.sectorId[j]);
-					System.out.println("avant scan sector : "+fis.getChannel().position());
-					sector.scan(fis);
-					dskTrack.sectors.add(sector);
-					dskFile.master.allSectors.add(sector);
+				DskSector sector = new DskSector(dskFile.master, i);
+				sector.scan(fis);
+				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
+					sector = new DskSectorCatalogs(sector);
 				}
-					
+				dskTrack.sectors.add(sector);
+				dskFile.master.allSectors.add(sector);
 			}
 			System.out.println("garbage 0 debut : "+fis.getChannel().position());
 			fis.skip(160);//0x100-0x60-dskTrack.nbSectors*8); // skip 0x00
@@ -131,13 +121,13 @@ public class DskManager {
 		fis.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find(track0,0xC1);
+		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC1);
 		sectorCatalogC1.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find(track0,0xC2);
+		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC2);
 		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find(track0,0xC3);
+		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC3);
 		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find(track0,0xC4);
+		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC4);
 		sectorCatalogC4.scanCatalogFromData();
 		
 		return dskFile;
@@ -155,10 +145,10 @@ public class DskManager {
 		DskTrack track0 = dskFile.tracks.get(0);
 		System.out.println("Récupération de C1-C2");
 		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
 		};
 
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
@@ -240,10 +230,10 @@ public class DskManager {
 		
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
 		};
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
@@ -271,10 +261,10 @@ public class DskManager {
 	public void eraseFile(DskFile dskFile, String fileName) throws IOException {
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
 		};
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
@@ -297,10 +287,10 @@ public class DskManager {
 		LinkedHashMap<String,ByteArrayOutputStream> listFiles = new LinkedHashMap<String,ByteArrayOutputStream>();
 		DskTrack track0 = dskFile.tracks.get(0);
 		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find(track0,0xC4)
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
+			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
 		};
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {

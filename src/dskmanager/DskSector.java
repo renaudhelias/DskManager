@@ -29,13 +29,20 @@ public class DskSector {
 	 * @param fdc1
 	 * @param fdc2
 	 */
-	public DskSector(DskMaster master, int track, int sectorId) {
+	public DskSector(DskMaster master, int track) {
 		this.master=master;
 		this.trackC = track; // aide au debug
-		this.sectorIdR = sectorId; // aide au debug
-		
 	}
 	
+
+	public DskSector(DskSector sector) {
+		master=sector.master;
+		trackC=sector.trackC;
+		sideH=sector.sideH;
+		sectorIdR=sector.sectorIdR;
+		sectorSizeN=sector.sectorSizeN;
+	}
+
 
 	public void scan(FileInputStream fis) throws IOException {
 		trackC=fis.read();

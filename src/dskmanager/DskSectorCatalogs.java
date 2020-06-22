@@ -27,8 +27,12 @@ import java.util.List;
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
-	public DskSectorCatalogs(DskMaster master,int track, int sectorId) {
-		super(master,track,sectorId);
+//	public DskSectorCatalogs(DskMaster master,int track) {
+//		super(master,track);
+//	}
+
+	public DskSectorCatalogs(DskSector sector) {
+		super(sector);
 	}
 
 	public void scanCatalog() throws IOException {

@@ -64,7 +64,7 @@ public class DskManagerTest {
 		DskTrack track0=dskFile.tracks.get(0);
 		assertEquals(track0.sectors.size() ,9);
 		assertEquals(track0.nbSectors,9);
-		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find(track0,0xC1);
+		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find0F(track0,0xC1);
 		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
 		assertEquals(track0.sectors.size(),9);
 		DskSector sector0 = cat0.catsSector.get(0);
