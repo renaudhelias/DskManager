@@ -6,6 +6,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -171,5 +172,17 @@ public class DskManagerTest {
 		assertNotNull(list);
 		assertTrue(list.contains("TRON.BAS"));
 		assertTrue(list.contains("MATRIX8F.SKS"));
+	}
+	
+	@Test
+	public void testDOSD2createNFiles() throws IOException {
+		File tmpFolder = new File("tmp");
+		tmpFolder.mkdirs();
+		for (int i=100;i<1000;i++) {
+			File f =new File(tmpFolder,"test"+i);
+			FileOutputStream fos = new FileOutputStream(f);
+			fos.write(0xAA);
+			fos.close();
+		}
 	}
 }
