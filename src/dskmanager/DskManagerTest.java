@@ -52,6 +52,7 @@ public class DskManagerTest {
 	public void testDMLoadDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
 		assertEquals(dskFile.tracks.size(),40);
+		assertEquals(dskFile.nbSides,1);
 		DskTrack track0=dskFile.tracks.get(0);
 		assertEquals(track0.sectors.size() ,9);
 		assertEquals(track0.side,0);
@@ -65,7 +66,8 @@ public class DskManagerTest {
 	@Test
 	public void testDMLoadDskDOSD2() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "dosd2.dsk");
-		assertEquals(dskFile.tracks.size(),80); // so SIZE * 2
+		assertEquals(dskFile.tracks.size(),80*dskFile.nbSides); // so SIZE * 4
+		assertEquals(dskFile.nbSides,2);
 		DskTrack track0=dskFile.tracks.get(0);
 		assertEquals(track0.sectors.size() ,9);
 		assertEquals(track0.nbSectors,9);

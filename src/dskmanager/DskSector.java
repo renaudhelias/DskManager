@@ -29,9 +29,8 @@ public class DskSector {
 	 * @param fdc1
 	 * @param fdc2
 	 */
-	public DskSector(DskMaster master, int track) {
+	public DskSector(DskMaster master) {
 		this.master=master;
-		this.trackC = track; // aide au debug
 	}
 	
 

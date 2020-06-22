@@ -22,9 +22,8 @@ public class DskTrack {
 
 	
 	
-	public DskTrack(DskMaster master,int noTrack) {
+	public DskTrack(DskMaster master) {
 		this.master = master;
-		this.noTrack = noTrack;
 	}
 	
 	public void scan(FileInputStream fis) throws IOException {

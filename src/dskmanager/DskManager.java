@@ -32,14 +32,17 @@ public class DskManager {
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		dskFile.master.allSectors.clear();
-		for (int i=0; i<dskFile.nbTracks; i++) {
-			DskTrack dskTrack = new DskTrack(dskFile.master, i);
+		for (int i=0; i<dskFile.nbTracks*dskFile.nbSides; i++) {
+			DskTrack dskTrack = new DskTrack(dskFile.master);
+			dskTrack.noTrack=i;
 			dskFile.tracks.add(dskTrack);
 			dskTrack.scan(fos);
 			
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				// bon on est sur du 0xX1 0xX2 0xX3 0xX4
-				DskSector sector = new DskSector(dskFile.master, i);
+				DskSector sector = new DskSector(dskFile.master);
+				sector.sideH=0;
+				sector.trackC=i;
 				sector.sectorIdR=sectorId[j];
 				sector.scan(fos);
 				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
@@ -94,13 +97,13 @@ public class DskManager {
 		FileInputStream fis = new FileInputStream(dskFile.file);
 		dskFile.scan(fis);
 		dskFile.master.allSectors.clear();
-		for (int i=0; i<dskFile.nbTracks; i++) {
-			DskTrack dskTrack= new DskTrack(dskFile.master,i);
+		for (int i=0; i<dskFile.nbTracks*dskFile.nbSides; i++) {
+			DskTrack dskTrack= new DskTrack(dskFile.master);
 			dskFile.tracks.add(dskTrack);
 			System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
 			dskTrack.scan(fis);
 			for (int j=0;j<dskTrack.nbSectors;j++) {
-				DskSector sector = new DskSector(dskFile.master, i);
+				DskSector sector = new DskSector(dskFile.master);
 				sector.scan(fis);
 				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
 					sector = new DskSectorCatalogs(sector);
