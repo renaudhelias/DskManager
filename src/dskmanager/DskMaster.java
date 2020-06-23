@@ -3,7 +3,6 @@ package dskmanager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -20,6 +19,8 @@ public class DskMaster {
 	List<Integer> allCatsId= new ArrayList<Integer>();
 	List<DskSector> allCatsSector= new ArrayList<DskSector>();
 	
+	DskType type;
+
 	public DskMaster() {
 	}
 	
@@ -41,6 +42,11 @@ public class DskMaster {
 	public List<Integer> findCatsId(byte[] entriesSector) {
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
+		if (type==DskType.SS40) {
+			k=4/2; // nb cats
+		} else if (type==DskType.DOSD2) {
+			k=(9+7)/2; // nb cats
+		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
@@ -91,6 +97,11 @@ public class DskMaster {
 	public List<DskSector> findCatsSector(byte[] entriesSector) {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
+		if (type==DskType.SS40) {
+			k=4/2; // nb cats
+		} else if (type==DskType.DOSD2) {
+			k=(9+7)/2; // nb cats
+		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
 		Collections.sort(allCSectors, new Comparator<DskSector>() {
@@ -139,7 +150,11 @@ public class DskMaster {
 	public NewFreeCatResult nextFreeCat() {
 		NewFreeCatResult cats= new NewFreeCatResult();
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
-		cats.catId=2;
+		if (type==DskType.SS40) {
+			cats.catId=4/2; // nb cats
+		} else if (type==DskType.DOSD2) {
+			cats.catId=(9+7)/2; // nb cats
+		}
 		int catIdModulo2=2;
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
@@ -244,7 +259,7 @@ public class DskMaster {
 	
 	
 	
-	public boolean catalogToCreate(DskType type, int trackC, int sideH,int sectorIdR) {
+	public boolean catalogToCreate(int trackC, int sideH,int sectorIdR) {
 		if (type==DskType.SS40) {
 			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=4) {
 				return true;

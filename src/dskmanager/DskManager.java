@@ -29,8 +29,8 @@ public class DskManager {
 	public DskFile newDsk(File currentDir, String dskName) throws IOException{
 		int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		DskFile dskFile=new DskFile(currentDir, dskName);
-		dskFile.type=DskType.SS40;
 		dskFile.master=new DskMaster();
+		dskFile.master.type=DskType.SS40;
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		dskFile.master.allSectors.clear();
@@ -48,7 +48,7 @@ public class DskManager {
 					sector.sideH=s;
 					sector.sectorIdR=sectorId[j];
 					sector.scan(fos);
-					if (dskFile.master.catalogToCreate(dskFile.type,sector.trackC, sector.sideH, sector.sectorIdR)) {
+					if (dskFile.master.catalogToCreate(sector.trackC, sector.sideH, sector.sectorIdR)) {
 						sector = new DskSectorCatalogs(sector);
 					}
 					dskTrack.sectors.add(sector);
@@ -109,12 +109,12 @@ public class DskManager {
 					sector.scan(fis);
 					if (i==0 && s==0 && j==0) {
 						if ((sector.sectorIdR & 0xF0)==0xC0) {
-							dskFile.type=DskType.SS40;
+							dskFile.master.type=DskType.SS40;
 						} else if ((sector.sectorIdR & 0xF0)==0x20) {
-							dskFile.type=DskType.DOSD2;
+							dskFile.master.type=DskType.DOSD2;
 						}
 					}
-					if (dskFile.master.catalogToCreate(dskFile.type, sector.trackC, sector.sideH, sector.sectorIdR)) {
+					if (dskFile.master.catalogToCreate(sector.trackC, sector.sideH, sector.sectorIdR)) {
 						sector = new DskSectorCatalogs(sector);
 					}
 					dskTrack.sectors.add(sector);
@@ -155,14 +155,36 @@ public class DskManager {
 	 * @throws IOException
 	 */
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
-		DskTrack track0 = dskFile.tracks.get(0);
 		System.out.println("Récupération de C1-C2");
-		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
-		};
+		List<DskSectorCatalogs> catalogsC1C4=new ArrayList<DskSectorCatalogs>();
+		if (dskFile.master.type==DskType.SS40) {
+			DskTrack track0 = dskFile.tracks.get(0);
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC1));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC2));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC3));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC4));
+		} else if (dskFile.master.type==DskType.DOSD2) {
+			DskTrack track0 = dskFile.tracks.get(0);
+			DskTrack track0side1 = dskFile.tracks.get(1);
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x21));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x22));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x23));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x24));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x25));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x26));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x27));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x28));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x29));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x21));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x22));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x23));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x24));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x25));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x26));
+			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x27));
+			
+		}
+
 
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			catalogC1C4.scanCatalog();
