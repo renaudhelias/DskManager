@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class DskManager {
 	public DskFile newDsk(File currentDir, String dskName) throws IOException{
 		int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		DskFile dskFile=new DskFile(currentDir, dskName);
+		dskFile.type=DskType.SS40;
 		dskFile.master=new DskMaster();
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
@@ -41,12 +43,13 @@ public class DskManager {
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				// bon on est sur du 0xX1 0xX2 0xX3 0xX4
 				DskSector sector = new DskSector(dskFile.master);
-				sector.sideH=0;
 				sector.trackC=i;
+				sector.sideH=0;
 				sector.sectorIdR=sectorId[j];
 				sector.scan(fos);
-				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
+				if (dskFile.master.catalogToCreate(dskFile.type,sector.trackC, sector.sideH, sector.sectorIdR)) {
 					sector = new DskSectorCatalogs(sector);
+					System.out.println("catalog");
 				}
 				dskTrack.sectors.add(sector);
 				dskFile.master.allSectors.add(sector);
@@ -105,7 +108,14 @@ public class DskManager {
 			for (int j=0;j<dskTrack.nbSectors;j++) {
 				DskSector sector = new DskSector(dskFile.master);
 				sector.scan(fis);
-				if (i==0 && (sector.sectorIdR & 0x0F) <=4) {
+				if (i==0 && j==0) {
+					if ((sector.sectorIdR & 0xF0)==0xC0) {
+						dskFile.type=DskType.SS40;
+					} else if ((sector.sectorIdR & 0xF0)==0x20) {
+						dskFile.type=DskType.DOSD2;
+					}
+				}
+				if (dskFile.master.catalogToCreate(dskFile.type, sector.trackC, sector.sideH, sector.sectorIdR)) {
 					sector = new DskSectorCatalogs(sector);
 				}
 				dskTrack.sectors.add(sector);

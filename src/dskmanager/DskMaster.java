@@ -3,6 +3,7 @@ package dskmanager;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -239,5 +240,24 @@ public class DskMaster {
         }
     	return cpcname;
     }
+
+	
+	
+	
+	public boolean catalogToCreate(DskType type, int trackC, int sideH,int sectorIdR) {
+		if (type==DskType.SS40) {
+			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=4) {
+				return true;
+			}
+		} else if (type==DskType.DOSD2) {
+			if (trackC==0 && sideH==0) {
+				return true;
+			}
+			if (trackC==0 && sideH==1 && (sectorIdR & 0x0F)<=7) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 }

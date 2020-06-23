@@ -20,6 +20,8 @@ public class DskFile {
 	int nbSides=1;
 	int sizeOfTrack=19;
 	
+	DskType type;
+	
 	DskMaster master;
 	File file;
 	List<DskTrack> tracks=new ArrayList<DskTrack>();
