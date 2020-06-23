@@ -275,4 +275,35 @@ public class DskMaster {
 		return false;
 	}
 
+	public List<DskSectorCatalogs> buildCatalogs(List<DskTrack> tracks) {
+		List<DskSectorCatalogs>catalogs= new ArrayList<DskSectorCatalogs>(); 
+		if (type==DskType.SS40) {
+			DskTrack track0 = tracks.get(0);
+			catalogs.add((DskSectorCatalogs) find0F(track0,0xC1));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0xC2));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0xC3));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0xC4));
+		} else if (type==DskType.DOSD2) {
+			DskTrack track0 = tracks.get(0);
+			DskTrack track0side1 = tracks.get(1);
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x21));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x22));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x23));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x24));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x25));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x26));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x27));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x28));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x29));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x21));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x22));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x23));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x24));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x25));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x26));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x27));
+		}
+		return catalogs;
+	}
+
 }

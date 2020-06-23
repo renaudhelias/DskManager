@@ -156,38 +156,11 @@ public class DskManager {
 	 */
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
 		System.out.println("Récupération de C1-C2");
-		List<DskSectorCatalogs> catalogsC1C4=new ArrayList<DskSectorCatalogs>();
-		if (dskFile.master.type==DskType.SS40) {
-			DskTrack track0 = dskFile.tracks.get(0);
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC1));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC2));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC3));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0xC4));
-		} else if (dskFile.master.type==DskType.DOSD2) {
-			DskTrack track0 = dskFile.tracks.get(0);
-			DskTrack track0side1 = dskFile.tracks.get(1);
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x21));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x22));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x23));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x24));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x25));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x26));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x27));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x28));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0,0x29));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x21));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x22));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x23));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x24));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x25));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x26));
-			catalogsC1C4.add((DskSectorCatalogs) dskFile.master.find0F(track0side1,0x27));
-			
-		}
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 
 
-		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
-			catalogC1C4.scanCatalog();
+		for (DskSectorCatalogs catalog : catalogsC1C4) {
+			catalog.scanCatalog();
 		}
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
@@ -263,13 +236,8 @@ public class DskManager {
 		
 		List<DskSector> sectors= new ArrayList<DskSector>();
 		
-		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
-		};
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+		
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
@@ -294,13 +262,8 @@ public class DskManager {
 	}
 
 	public void eraseFile(DskFile dskFile, String fileName) throws IOException {
-		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
-		};
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
@@ -320,13 +283,8 @@ public class DskManager {
 
 	public LinkedHashMap<String,ByteArrayOutputStream> listFiles(DskFile dskFile) throws IOException {
 		LinkedHashMap<String,ByteArrayOutputStream> listFiles = new LinkedHashMap<String,ByteArrayOutputStream>();
-		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs [] catalogsC1C4= {
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC1),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC2),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC3),
-			(DskSectorCatalogs) dskFile.master.find0F(track0,0xC4)
-		};
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				
