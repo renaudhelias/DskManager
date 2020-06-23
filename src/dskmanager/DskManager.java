@@ -133,16 +133,9 @@ public class DskManager {
 		}
 		fis.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
-		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC1);
-		sectorCatalogC1.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC2);
-		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC3);
-		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC4);
-		sectorCatalogC4.scanCatalogFromData();
-		
+		for(DskSectorCatalogs catalog :dskFile.master.buildCatalogs(dskFile.tracks)){
+			catalog.scanCatalogFromData();
+		}
 		return dskFile;
 	}
 
