@@ -14,6 +14,7 @@ import javax.swing.DropMode;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -64,7 +65,13 @@ public class DskManagerEditor extends JFrame {
 				if (response == JFileChooser.APPROVE_OPTION) {
 				    File fileToSave = jfc.getSelectedFile();
 				    try {
-				    	dskFile=dm.newDsk(fileToSave.getParentFile(), fileToSave.getName());
+				    	int dialogButton = JOptionPane.YES_NO_OPTION;
+				    	int dialogResult = JOptionPane.showConfirmDialog (null, "Format DOSD2 (or else let SS40)","WARNING", dialogButton);
+				    	if(dialogResult == 0) {
+					    	dskFile=dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
+				    	} else {
+					    	dskFile=dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
+				    	} 
 				    	updateTable();
 				    	setTitle("CPC Dsk Manager - "+dskFile.file.getName()+" - "+dskFile.master.type);
 					} catch (IOException e1) {

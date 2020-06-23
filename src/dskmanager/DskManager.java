@@ -23,14 +23,24 @@ public class DskManager {
 	 * .data puis scan(fos)
 	 * @param currentDir
 	 * @param dskName
+	 * @param type 
 	 * @return
 	 * @throws IOException
 	 */
-	public DskFile newDsk(File currentDir, String dskName) throws IOException{
-		int [] sectorId={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
+	public DskFile newDsk(File currentDir, String dskName, DskType type) throws IOException{
+		int [] sectorId_SS40={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
+		int [] sectorId_DOSD2={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
+		int [] sectorId=null;
 		DskFile dskFile=new DskFile(currentDir, dskName);
+		if (type == DskType.DOSD2) {
+			sectorId=sectorId_DOSD2;
+			dskFile.nbSides=2;
+			dskFile.nbTracks=80;
+		} else if (type == DskType.SS40) {
+			sectorId=sectorId_SS40;
+		}
 		dskFile.master=new DskMaster();
-		dskFile.master.type=DskType.SS40;
+		dskFile.master.type=type;
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		dskFile.master.allSectors.clear();
@@ -74,15 +84,9 @@ public class DskManager {
 		}
 		fos.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
-		DskTrack track0 = dskFile.tracks.get(0);
-		DskSectorCatalogs sectorCatalogC1 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC1);
-		sectorCatalogC1.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC2 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC2);
-		sectorCatalogC2.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC3 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC3);
-		sectorCatalogC3.scanCatalogFromData();
-		DskSectorCatalogs sectorCatalogC4 = (DskSectorCatalogs) dskFile.master.find0F(track0,0xC4);
-		sectorCatalogC4.scanCatalogFromData();
+		for(DskSectorCatalogs catalog :dskFile.master.buildCatalogs(dskFile.tracks)){
+			catalog.scanCatalogFromData();
+		}
 		return dskFile;
 	}
 	

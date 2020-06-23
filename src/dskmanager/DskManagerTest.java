@@ -44,11 +44,19 @@ public class DskManagerTest {
 	public void testDMCreateAddDsk() throws IOException {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
 		
-		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk");
+		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk", DskType.SS40);
 		dm.addFile(toto,currentDir,"main2.bin",false);
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test1.dsk");
 	}
-	
+
+	@Test
+	public void testDMCreateAddDskDOSD2() throws IOException {
+		System.out.println(new File(currentDir,"jdvpa10_test4.dsk").delete());
+		
+		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test4.dsk", DskType.DOSD2);
+		dm.addFile(toto,currentDir,"main2.bin",false);
+	}
+
 	@Test
 	public void testDMLoadDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
@@ -141,7 +149,7 @@ public class DskManagerTest {
 	
 	@Test
 	public void testDMEraseDsk() throws IOException {
-		DskFile dskFile=dm.newDsk(currentDir, "jdvpa10_test3.dsk");
+		DskFile dskFile=dm.newDsk(currentDir, "jdvpa10_test3.dsk", DskType.SS40);
 		File original=new File(currentDir,"main.bin");
 		File tmp=new File(currentDir,"main3.bin");
 		tmp.delete();
