@@ -76,7 +76,13 @@ public class DskMaster {
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
+				int pair=0;
 				for (byte b : entriesSector) {
+					pair=(pair+1)%2;
+					if (type==DskType.DOSD2 && pair==0) {
+						//FIXME : peut être plus gros que 0xFF normalement, moi je coupe. 
+						continue;
+					}
 					if ((b & 0xff) ==k) {
 						cats.add((int)b);
 						allCatsId.add((int)b);
@@ -134,7 +140,13 @@ public class DskMaster {
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
+				int pair=0;
 				for (byte b : entriesSector) {
+					pair=(pair+1)%2;
+					if (type==DskType.DOSD2 && pair==0) {
+						//FIXME : peut être plus gros que 0xFF normalement, moi je coupe. 
+						continue;
+					}
 					if ((b & 0xff) == Math.floor(k)) {
 						cats.add(sector);
 						allCatsSector.add(sector);

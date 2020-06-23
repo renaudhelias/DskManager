@@ -63,11 +63,15 @@ public class DskSectorCatalog {
 		bos.write(new byte[]{0,0});
 		bos.write(new byte[]{(byte)sectorLength});
 		
+		int nbTrou=0;
 		for (Integer cat:catsId) {
 			bos.write(new byte[]{(byte)cat.intValue()});
+			if (master.type==DskType.DOSD2) {
+				bos.write(0x00);nbTrou++;
+			}
 		}
-		for (int j=0;j<0x10-catsId.size();j++) {
-			bos.write(new byte[]{0});					
+		for (int j=0;j<0x10-(catsId.size()+nbTrou);j++) {
+			bos.write(new byte[]{0});
 		}
 		
 	}

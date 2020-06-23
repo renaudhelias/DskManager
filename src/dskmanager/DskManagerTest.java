@@ -67,16 +67,25 @@ public class DskManagerTest {
 	@Test
 	public void testDMLoadDskDOSD2() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "dosd2.dsk");
-		assertEquals(dskFile.tracks.size(),80*dskFile.nbSides); // so SIZE * 4
+		assertEquals(dskFile.tracks.size(),80*dskFile.nbSides);
 		assertEquals(dskFile.nbSides,2);
 		DskTrack track0=dskFile.tracks.get(0);
 		assertEquals(track0.sectors.size() ,9);
 		assertEquals(track0.nbSectors,9);
+		DskSectorCatalogs track0secC1=(DskSectorCatalogs)dskFile.master.find0F(track0,0xC1);
+		DskSectorCatalog cat0 = track0secC1.cats.get(0) ;
+		assertEquals(track0.sectors.size(),9);
+		DskSector sector0 = cat0.catsSector.get(0);
+		assertNotNull(sector0);
+		assertEquals(cat0.catsSector.size(),2);
+		assertEquals(cat0.catsId.size(),1);
 		assertEquals(track0.side,0);
+		DskTrack track1=dskFile.tracks.get(1);
+		assertEquals(track1.side,1);
 		assertEquals(track0.sectorSize,2);
 		assertEquals(track0.sectors.size(),9);
-		DskTrack track1=dskFile.tracks.get(1);
-		assertEquals(track1.side,1); // so SIZE * 2 * 2
+		DskSectorCatalogs cat00 = (DskSectorCatalogs)(track0.sectors.get(0));
+		assertEquals(cat00.cats.get(0).catsId.size(),1);
 	}
 	
 	@Test
@@ -92,6 +101,7 @@ public class DskManagerTest {
 		DskSector sector0 = cat0.catsSector.get(0);
 		assertNotNull(sector0);
 		assertEquals(cat0.catsSector.size(),9*2);
+		assertEquals(cat0.catsId.size(),9);
 	}
 
 	private void compare(File currentDir, String file1, String file2) throws IOException {

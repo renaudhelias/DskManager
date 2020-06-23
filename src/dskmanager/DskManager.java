@@ -170,7 +170,11 @@ public class DskManager {
 		while (nbEntry>0) {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
 				// un cat a 10 entrées
-				for (int j=0;j<Math.min(nbEntry,0x10);j++) {
+				int entriesSectorCount=0x10;
+				if (dskFile.master.type==DskType.DOSD2) {
+					entriesSectorCount=0x08;
+				}
+				for (int j=0;j<Math.min(nbEntry,entriesSectorCount);j++) {
 					NewFreeCatResult cats = dskFile.master.nextFreeCat();
 					// petit malin
 					cat.catsId.add(cats.catId);
