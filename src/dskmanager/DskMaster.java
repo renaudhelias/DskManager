@@ -43,9 +43,9 @@ public class DskMaster {
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
 		if (type==DskType.SS40) {
-			k=4/2; // nb cats
+			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
-			k=(9+7)/2; // nb cats
+			k=4; // min(catId)
 		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
@@ -77,13 +77,16 @@ public class DskMaster {
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
 				for (byte b : entriesSector) {
-					if (b==k) {
+					if ((b & 0xff) ==k) {
 						cats.add((int)b);
 						allCatsId.add((int)b);
 					}
 				}
 				k++;
 			}
+		}
+		if (cats.size()==0) {
+			System.out.println("rien dans ce catalog");
 		}
 		return cats;
 	}
@@ -98,9 +101,9 @@ public class DskMaster {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
 		if (type==DskType.SS40) {
-			k=4/2; // nb cats
+			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
-			k=(9+7)/2; // nb cats
+			k=4; // min(catId)
 		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
@@ -132,7 +135,7 @@ public class DskMaster {
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
 				for (byte b : entriesSector) {
-					if (b==Math.floor(k)) {
+					if ((b & 0xff) == Math.floor(k)) {
 						cats.add(sector);
 						allCatsSector.add(sector);
 					}
@@ -151,9 +154,9 @@ public class DskMaster {
 		NewFreeCatResult cats= new NewFreeCatResult();
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
 		if (type==DskType.SS40) {
-			cats.catId=4/2; // nb cats
+			cats.catId=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
-			cats.catId=(9+7)/2; // nb cats
+			cats.catId=4; // min(catId)
 		}
 		int catIdModulo2=2;
 		

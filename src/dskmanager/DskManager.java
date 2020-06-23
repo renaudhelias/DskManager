@@ -135,6 +135,7 @@ public class DskManager {
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		for(DskSectorCatalogs catalog :dskFile.master.buildCatalogs(dskFile.tracks)){
 			catalog.scanCatalogFromData();
+			System.out.println("sectorId:"+catalog.sectorIdR+" side:"+catalog.sideH);
 		}
 		return dskFile;
 	}

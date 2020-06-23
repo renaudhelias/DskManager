@@ -40,6 +40,8 @@ public class DskSector {
 		sideH=sector.sideH;
 		sectorIdR=sector.sectorIdR;
 		sectorSizeN=sector.sectorSizeN;
+		data=sector.data;
+		dataPosition=sector.dataPosition;
 	}
 
 
