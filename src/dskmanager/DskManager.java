@@ -34,45 +34,43 @@ public class DskManager {
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
 		dskFile.master.allSectors.clear();
-		for (int i=0; i<dskFile.nbTracks*dskFile.nbSides; i++) {
-			DskTrack dskTrack = new DskTrack(dskFile.master);
-			dskTrack.noTrack=i;
-			dskFile.tracks.add(dskTrack);
-			dskTrack.scan(fos);
-			
-			for (int j=0;j<dskTrack.nbSectors;j++) {
-				// bon on est sur du 0xX1 0xX2 0xX3 0xX4
-				DskSector sector = new DskSector(dskFile.master);
-				sector.trackC=i;
-				sector.sideH=0;
-				sector.sectorIdR=sectorId[j];
-				sector.scan(fos);
-				if (dskFile.master.catalogToCreate(dskFile.type,sector.trackC, sector.sideH, sector.sectorIdR)) {
-					sector = new DskSectorCatalogs(sector);
-					System.out.println("catalog");
+		for (int i=0; i<dskFile.nbTracks; i++) {
+			for (int s=0; s<dskFile.nbSides; s++) {
+				DskTrack dskTrack = new DskTrack(dskFile.master);
+				dskTrack.noTrack=i;
+				dskFile.tracks.add(dskTrack);
+				dskTrack.scan(fos);
+				
+				for (int j=0;j<dskTrack.nbSectors;j++) {
+					// bon on est sur du 0xX1 0xX2 0xX3 0xX4
+					DskSector sector = new DskSector(dskFile.master);
+					sector.trackC=i;
+					sector.sideH=s;
+					sector.sectorIdR=sectorId[j];
+					sector.scan(fos);
+					if (dskFile.master.catalogToCreate(dskFile.type,sector.trackC, sector.sideH, sector.sectorIdR)) {
+						sector = new DskSectorCatalogs(sector);
+					}
+					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				}
-				dskTrack.sectors.add(sector);
-				dskFile.master.allSectors.add(sector);
-			}
-			//garbage "0" at end of Track-Info
-			int garbage=0x1D-dskTrack.nbSectors;
-			for (int j=0;j<garbage;j++) {
-				for (int k=0;k<8;k++) {
-					fos.write(0);
+				//garbage "0" at end of Track-Info
+				int garbage=0x1D-dskTrack.nbSectors;
+				for (int j=0;j<garbage;j++) {
+					for (int k=0;k<8;k++) {
+						fos.write(0);
+					}
+				}
+				
+				// garbage "E5" as data of each sector
+				for (int j=0;j<dskTrack.nbSectors;j++) {
+					dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
+					for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
+						dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
+					}
+					dskTrack.sectors.get(j).scanData(fos);
 				}
 			}
-			
-			// garbage "E5" as data of each sector
-			for (int j=0;j<dskTrack.nbSectors;j++) {
-				dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
-				for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
-					dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
-				}
-				dskTrack.sectors.get(j).scanData(fos);
-			}
-			
-			
-			
 		}
 		fos.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
@@ -100,36 +98,38 @@ public class DskManager {
 		FileInputStream fis = new FileInputStream(dskFile.file);
 		dskFile.scan(fis);
 		dskFile.master.allSectors.clear();
-		for (int i=0; i<dskFile.nbTracks*dskFile.nbSides; i++) {
-			DskTrack dskTrack= new DskTrack(dskFile.master);
-			dskFile.tracks.add(dskTrack);
-			System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
-			dskTrack.scan(fis);
-			for (int j=0;j<dskTrack.nbSectors;j++) {
-				DskSector sector = new DskSector(dskFile.master);
-				sector.scan(fis);
-				if (i==0 && j==0) {
-					if ((sector.sectorIdR & 0xF0)==0xC0) {
-						dskFile.type=DskType.SS40;
-					} else if ((sector.sectorIdR & 0xF0)==0x20) {
-						dskFile.type=DskType.DOSD2;
+		for (int i=0; i<dskFile.nbTracks; i++) {
+			for (int s=0; s<dskFile.nbSides; s++) {
+				DskTrack dskTrack= new DskTrack(dskFile.master);
+				dskFile.tracks.add(dskTrack);
+				System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
+				dskTrack.scan(fis);
+				for (int j=0;j<dskTrack.nbSectors;j++) {
+					DskSector sector = new DskSector(dskFile.master);
+					sector.scan(fis);
+					if (i==0 && s==0 && j==0) {
+						if ((sector.sectorIdR & 0xF0)==0xC0) {
+							dskFile.type=DskType.SS40;
+						} else if ((sector.sectorIdR & 0xF0)==0x20) {
+							dskFile.type=DskType.DOSD2;
+						}
 					}
+					if (dskFile.master.catalogToCreate(dskFile.type, sector.trackC, sector.sideH, sector.sectorIdR)) {
+						sector = new DskSectorCatalogs(sector);
+					}
+					dskTrack.sectors.add(sector);
+					dskFile.master.allSectors.add(sector);
 				}
-				if (dskFile.master.catalogToCreate(dskFile.type, sector.trackC, sector.sideH, sector.sectorIdR)) {
-					sector = new DskSectorCatalogs(sector);
+				System.out.println("garbage 0 debut : "+fis.getChannel().position());
+				fis.skip(160);//0x100-0x60-dskTrack.nbSectors*8); // skip 0x00
+				
+				System.out.println("garbage 0 fin : "+fis.getChannel().position());
+				for (DskSector sector : dskTrack.sectors) {
+					System.out.println("avant scanData sector : "+fis.getChannel().position());
+					sector.scanData(fis);
 				}
-				dskTrack.sectors.add(sector);
-				dskFile.master.allSectors.add(sector);
+				System.out.print("haouh");
 			}
-			System.out.println("garbage 0 debut : "+fis.getChannel().position());
-			fis.skip(160);//0x100-0x60-dskTrack.nbSectors*8); // skip 0x00
-			
-			System.out.println("garbage 0 fin : "+fis.getChannel().position());
-			for (DskSector sector : dskTrack.sectors) {
-				System.out.println("avant scanData sector : "+fis.getChannel().position());
-				sector.scanData(fis);
-			}
-			System.out.print("haouh");
 		}
 		fis.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
