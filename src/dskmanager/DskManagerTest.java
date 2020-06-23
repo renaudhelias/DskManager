@@ -55,6 +55,7 @@ public class DskManagerTest {
 		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test4.dsk", DskType.DOSD2);
 		dm.addFile(toto,currentDir,"main2.bin",false);
+		compare(currentDir, "jdvpa10_test4.dsk", "jdvpa10_test5.dsk");
 	}
 
 	@Test
