@@ -21,6 +21,7 @@ public class DskSectorCatalog {
 	List<DskSector> catsSector= new ArrayList<DskSector>();
 	int sectorIncrement;
 	int sectorLength;
+	byte [] entriesSector = new byte[0x10];
 	
 	public DskSectorCatalog(DskMaster master) {
 		this.master = master;
@@ -39,7 +40,7 @@ public class DskSectorCatalog {
 		bis.read();bis.read();
 		sectorLength=bis.read();
 		
-		byte[] entriesSector = new byte[0x10];
+		entriesSector = new byte[0x10];
 		bis.read(entriesSector);
 		
 		this.catsId=master.findCatsId(entriesSector);

@@ -143,6 +143,9 @@ public class DskMaster {
 				k+=0.5;
 			}
 		}
+		if (cats.size()==0) {
+			System.out.println("rien dans ce catalog sectors list");
+		}
 		return cats;
 	}
 	
