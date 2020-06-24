@@ -18,7 +18,7 @@ public class DskFile {
 	String creator="CPCDiskXP v2.5";
 	int nbTracks=40;
 	int nbSides=1;
-	int sizeOfTrack=19;
+	int sizeOfTrack=0x13;
 	
 	DskMaster master;
 	File file;
@@ -62,7 +62,7 @@ public class DskFile {
 		fos.write(0);
 		fos.write(0);//sizeOfTrack);
 		int i=0;
-		for (i=0;i<nbTracks;i++) {
+		for (i=0;i<nbTracks*nbSides;i++) {
 			fos.write(sizeOfTrack);
 		}
 		for (;i<204;i++) {

@@ -47,6 +47,9 @@ public class DskManager {
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			for (int s=0; s<dskFile.nbSides; s++) {
 				DskTrack dskTrack = new DskTrack(dskFile.master);
+				if (type==DskType.DOSD2) {
+					dskTrack.gap=0x52; // for tests
+				}
 				dskTrack.noTrack=i;
 				dskFile.tracks.add(dskTrack);
 				dskTrack.scan(fos);
@@ -155,7 +158,7 @@ public class DskManager {
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
 		System.out.println("Récupération de C1-C2");
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
-
+		DskType type = dskFile.master.type;
 
 		for (DskSectorCatalogs catalog : catalogsC1C4) {
 			catalog.scanCatalog();
@@ -163,6 +166,7 @@ public class DskManager {
 		
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
+		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
 		int nbEntry = (int)(file.length()/(0x400));
 		int lastEntry = (int)(file.length()%(0x400));
 		if (lastEntry>0) {
@@ -175,7 +179,7 @@ public class DskManager {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
 				// un cat a 10 entrées
 				int entriesSectorCount=0x10;
-				if (dskFile.master.type==DskType.DOSD2) {
+				if (type==DskType.DOSD2) {
 					entriesSectorCount=0x08;
 				}
 				for (int j=0;j<Math.min(nbEntry,entriesSectorCount);j++) {
@@ -189,7 +193,10 @@ public class DskManager {
 				cat.filename=fileName;
 				catalogs.add(cat);
 			
-			nbEntry=nbEntry-0x10;
+			// travail ici avec entriesSector de taille 0x10
+				
+			
+			nbEntry=nbEntry-entriesSectorCount;
 			if (nbEntry>0) {
 				// full cat
 				cat.sectorLength=0x80;
@@ -200,7 +207,7 @@ public class DskManager {
 				//cat.catsId.size()=9
 				//9       =>0x48 72
 				//16 0x10 =>0x80 128
-				cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/0x10);
+				cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/entriesSectorCount);
 			}
 		}
 		
