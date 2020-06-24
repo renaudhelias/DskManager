@@ -212,18 +212,32 @@ public class DskMaster {
 					// et le suivant est un DskSectorCatalogs
 					DskSector nextSector=allCSectors.get(i+1);
 					if (nextSector instanceof DskSectorCatalogs) {
-						nextSector=allCSectors.get(i+2);
-					}
-					if (nextSector instanceof DskSectorCatalogs) {
+						// avoir confiance au tri de la liste allCSectors
 						System.out.println("galere");
 					}
 
-					allCatsSector.add(sector);
+					allCatsSector.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
-					allCatsSector.add(nextSector);
-					cats.catSectors.add(sector);
-					// et le suivant
-					cats.catSectors.add(nextSector);
+					allCatsSector.add(allCSectors.get(i+1));
+					if (type==DskType.DOSD2) {
+						allCatsSector.add(allCSectors.get(i+2));
+						allCatsSector.add(allCSectors.get(i+3));
+//						allCatsSector.add(allCSectors.get(i+4));
+//						allCatsSector.add(allCSectors.get(i+5));
+//						allCatsSector.add(allCSectors.get(i+6));
+//						allCatsSector.add(allCSectors.get(i+7));
+					}
+					cats.catSectors.add(allCSectors.get(i));
+					// et le suivant 1 catsId <=> 2 catsSector
+					cats.catSectors.add(allCSectors.get(i+1));
+					if (type==DskType.DOSD2) {
+						cats.catSectors.add(allCSectors.get(i+2));
+						cats.catSectors.add(allCSectors.get(i+3));
+//						cats.catSectors.add(allCSectors.get(i+4));
+//						cats.catSectors.add(allCSectors.get(i+5));
+//						cats.catSectors.add(allCSectors.get(i+6));
+//						cats.catSectors.add(allCSectors.get(i+7));
+					}
 					return cats;
 				}
 				

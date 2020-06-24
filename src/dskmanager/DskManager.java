@@ -43,6 +43,8 @@ public class DskManager {
 		dskFile.master.type=type;
 		FileOutputStream fos= new FileOutputStream(dskFile.file);
 		dskFile.scan(fos);
+		dskFile.master.allCatsId.clear();
+		dskFile.master.allCatsSector.clear();
 		dskFile.master.allSectors.clear();
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			for (int s=0; s<dskFile.nbSides; s++) {
@@ -51,6 +53,8 @@ public class DskManager {
 					dskTrack.gap=0x52; // for tests
 				}
 				dskTrack.noTrack=i;
+				dskTrack.side=s;
+				
 				dskFile.tracks.add(dskTrack);
 				dskTrack.scan(fos);
 				
@@ -104,6 +108,8 @@ public class DskManager {
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		FileInputStream fis = new FileInputStream(dskFile.file);
 		dskFile.scan(fis);
+		dskFile.master.allCatsId.clear();
+		dskFile.master.allCatsSector.clear();
 		dskFile.master.allSectors.clear();
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			for (int s=0; s<dskFile.nbSides; s++) {
@@ -167,21 +173,28 @@ public class DskManager {
 		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
 		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
-		int nbEntry = (int)(file.length()/(0x400));
-		int lastEntry = (int)(file.length()%(0x400));
+		long entryDataSize=0;
+		if (type==DskType.DOSD2) {
+			// pour un catId, sectoreSize=512Ko *2 *nbSize
+			entryDataSize=dskFile.master.sectorSizes[2] * 4;
+		} else if (type==DskType.SS40) {
+			entryDataSize=dskFile.master.sectorSizes[2] * 2;
+		}
+		int nbEntry = (int)(file.length()/entryDataSize);
+		int lastEntry = (int)(file.length()%entryDataSize);
 		if (lastEntry>0) {
 			nbEntry++;
 		}
 		// le transformer en cats
 		List<DskSectorCatalog> catalogs = new ArrayList<DskSectorCatalog>();
 		int countSectorIncrement=0;
+		// un cat a 10 entrées
+		int entriesSectorCount=0x10;
+		if (type==DskType.DOSD2) {
+			entriesSectorCount=0x08;
+		}
 		while (nbEntry>0) {
 			DskSectorCatalog cat = new DskSectorCatalog(dskFile.master);
-				// un cat a 10 entrées
-				int entriesSectorCount=0x10;
-				if (type==DskType.DOSD2) {
-					entriesSectorCount=0x08;
-				}
 				for (int j=0;j<Math.min(nbEntry,entriesSectorCount);j++) {
 					NewFreeCatResult cats = dskFile.master.nextFreeCat();
 					// petit malin
@@ -200,7 +213,7 @@ public class DskManager {
 			if (nbEntry>0) {
 				// full cat
 				cat.sectorLength=0x80;
-			} else if (nbEntry%0x10==0) {
+			} else if (nbEntry%entriesSectorCount==0) {
 				// last full cat
 				cat.sectorLength=0x80;
 			} else {
@@ -215,7 +228,7 @@ public class DskManager {
 		List<DskSectorCatalog> catalogsData= new ArrayList<DskSectorCatalog>(catalogs);
 		// depile cat
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
-			while (catalogC1C4.cats.size()<0x10 && !catalogs.isEmpty()) {
+			while (catalogC1C4.cats.size()<entriesSectorCount && !catalogs.isEmpty()) {
 				catalogC1C4.cats.add(catalogs.get(0));
 				catalogs.remove(0);
 				// data from cats
