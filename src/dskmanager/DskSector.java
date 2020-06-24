@@ -100,7 +100,7 @@ public class DskSector {
 	}
 	
 	public String toString() {
-		return "track "+trackC+ " head " + sideH +" id:"+String.format("#%02X", sectorIdR)+"\n"+data.length+"\n";
+		return "track "+trackC+ " head " + sideH +" id:"+String.format("#%02X", sectorIdR)+"\n"+data.length+" position "+dataPosition+"\n";
 	}
 
 }

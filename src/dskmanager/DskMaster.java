@@ -19,6 +19,31 @@ public class DskMaster {
 	List<Integer> allCatsId= new ArrayList<Integer>();
 	List<DskSector> allCatsSector= new ArrayList<DskSector>();
 	
+	Comparator<DskSector> sectorComparator = new Comparator<DskSector>() {
+		@Override
+		public int compare(DskSector o1, DskSector o2) {
+			if (o1.trackC<o2.trackC) {
+				return -1;
+			}
+			if (o1.trackC>o2.trackC) {
+				return 1;
+			}
+			if (o1.sideH<o2.sideH) {
+				return -1;
+			}
+			if (o1.sideH>o2.sideH) {
+				return 1;
+			}
+			if (o1.sectorIdR<o2.sectorIdR) {
+				return -1;
+			}
+			if (o1.sectorIdR>o2.sectorIdR) {
+				return 1;
+			}
+			return 0;
+		}
+	};
+	
 	DskType type;
 
 	public DskMaster() {
@@ -49,30 +74,7 @@ public class DskMaster {
 		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
-		Collections.sort(allCSectors, new Comparator<DskSector>() {
-			@Override
-			public int compare(DskSector o1, DskSector o2) {
-				if (o1.trackC<o2.trackC) {
-					return -1;
-				}
-				if (o1.trackC>o2.trackC) {
-					return 1;
-				}
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
-				if (o1.sectorIdR<o2.sectorIdR) {
-					return -1;
-				}
-				if (o1.sectorIdR>o2.sectorIdR) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(allCSectors, sectorComparator);
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
@@ -113,30 +115,7 @@ public class DskMaster {
 		}
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
-		Collections.sort(allCSectors, new Comparator<DskSector>() {
-			@Override
-			public int compare(DskSector o1, DskSector o2) {
-				if (o1.trackC<o2.trackC) {
-					return -1;
-				}
-				if (o1.trackC>o2.trackC) {
-					return 1;
-				}
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
-				if (o1.sectorIdR<o2.sectorIdR) {
-					return -1;
-				}
-				if (o1.sectorIdR>o2.sectorIdR) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(allCSectors, sectorComparator);
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
@@ -173,33 +152,20 @@ public class DskMaster {
 		} else if (type==DskType.DOSD2) {
 			cats.catId=4; // min(catId)
 		}
-		int catIdModulo2=2;
+		int catIdModulo=0;
+		int catIdModuloMod=0;
+		if (type==DskType.SS40) {
+			cats.catId=2; // min(catId)
+			catIdModuloMod=2;
+		} else if (type==DskType.DOSD2) {
+			cats.catId=4; // min(catId)
+			catIdModuloMod=4;
+		}
+		
+		
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
-		Collections.sort(allCSectors, new Comparator<DskSector>() {
-			@Override
-			public int compare(DskSector o1, DskSector o2) {
-				if (o1.trackC<o2.trackC) {
-					return -1;
-				}
-				if (o1.trackC>o2.trackC) {
-					return 1;
-				}
-				if (o1.sideH<o2.sideH) {
-					return -1;
-				}
-				if (o1.sideH>o2.sideH) {
-					return 1;
-				}
-				if (o1.sectorIdR<o2.sectorIdR) {
-					return -1;
-				}
-				if (o1.sectorIdR>o2.sectorIdR) {
-					return 1;
-				}
-				return 0;
-			}
-		});
+		Collections.sort(allCSectors, sectorComparator);
 		
 		
 		for (int i=0;i<allCSectors.size();i++) {
@@ -241,8 +207,8 @@ public class DskMaster {
 					return cats;
 				}
 				
-				catIdModulo2++;
-				if (catIdModulo2%2==0) {
+				catIdModulo++;
+				if (catIdModulo%catIdModuloMod==0) {
 					cats.catId++;
 				}
 			}
