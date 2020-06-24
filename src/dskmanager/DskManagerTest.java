@@ -111,8 +111,8 @@ public class DskManagerTest {
 		assertEquals(track0.sectors.size(),9);
 		DskSector sector0 = cat0.catsSector.get(0);
 		assertNotNull(sector0);
-		assertEquals(cat0.catsSector.size(),9*2);
-		assertEquals(cat0.catsId.size(),9);
+		assertEquals(cat0.catsSector.size(),10*2);
+		assertEquals(cat0.catsId.size(),10);
 	}
 
 	private void compare(File currentDir, String file1, String file2) throws IOException {
