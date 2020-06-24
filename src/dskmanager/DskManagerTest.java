@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -11,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
@@ -86,7 +88,7 @@ public class DskManagerTest {
 		assertEquals(track0.sectors.size(),9);
 		DskSector sector0 = cat0.catsSector.get(0);
 		assertNotNull(sector0);
-		assertEquals(cat0.catsSector.size(),2);
+		assertEquals(cat0.catsSector.size(),4);
 		assertEquals(cat0.catsId.size(),1);
 		assertEquals(track0.side,0);
 		DskTrack track1=dskFile.tracks.get(1);
@@ -187,10 +189,26 @@ public class DskManagerTest {
 	@Test
 	public void testDMListDsk() throws IOException {
 		DskFile dskFile=dm.loadDsk(currentDir, "TRON-PIXEL.dsk");
-		Set<String> list=dm.listFiles(dskFile).keySet();
+		LinkedHashMap<String, ByteArrayOutputStream> listWithDATA = dm.listFiles(dskFile);
+		Set<String> list=listWithDATA.keySet();
 		assertNotNull(list);
 		assertTrue(list.contains("TRON.BAS"));
 		assertTrue(list.contains("MATRIX8F.SKS"));
+		assertEquals(listWithDATA.get("TRON.BAS").size(),1024);
+	}
+	
+	@Test
+	public void testDMListDskDOSD2() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "jdvpa10_test5.dsk");
+		LinkedHashMap<String, ByteArrayOutputStream> listWithDATA = dm.listFiles(dskFile);
+		Set<String> list=listWithDATA.keySet();
+		assertNotNull(list);
+		assertTrue(list.contains("MAIN2.BIN"));
+		assertEquals(listWithDATA.get("MAIN2.BIN").size(),10240);
+		
+		File fichier = dm.readFile(dskFile, currentDir, "MAIN2.BIN");
+		assertEquals(fichier.getName(),"MAIN2.BIN");
+		assertEquals(fichier.length(),10240);
 	}
 	
 	@Test
