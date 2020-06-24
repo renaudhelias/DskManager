@@ -218,6 +218,10 @@ public class DskManager {
 				// last full cat
 				cat.sectorLength=0x80;
 			} else {
+				// lastEntry          => 5 => A
+				// entryDataSize      => 8 => 0x80
+				//Here I found 0x50 instead of 0x48 (WinAPE)
+				//
 				//cat.catsId.size()=9
 				//9       =>0x48 72
 				//16 0x10 =>0x80 128
