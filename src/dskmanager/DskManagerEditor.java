@@ -128,11 +128,7 @@ public class DskManagerEditor extends JFrame {
 		
 		model.addColumn("Filename");
 		model.addColumn("Size");
-		
-		model.addRow(new Object[]{"TRON.BAS", "2KB"});
-		model.addRow(new Object[]{"FRUITY.BAS", "3KB"});
-	
-		model.removeRow(0);
+		model.addColumn("Binary");
 	}
 	
 	public void updateTable() throws IOException {
@@ -140,7 +136,9 @@ public class DskManagerEditor extends JFrame {
 		
 		list = dm.listFiles(dskFile);
 		for (String filename: list.keySet()) {
-			model.addRow(new Object[]{filename, list.get(filename).size()});
+			// has AMSDOS Header, so is a binary (like ManageDsk)
+			boolean isBinary=dskFile.master.CheckAMSDOS(list.get(filename).toByteArray());
+			model.addRow(new Object[]{filename, list.get(filename).size(), isBinary? "bin" : "asc"});
 		}
 	}
 	

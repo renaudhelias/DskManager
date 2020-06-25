@@ -7,13 +7,11 @@ import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -47,7 +45,7 @@ public class DskManagerTest {
 		System.out.println(new File(currentDir,"jdvpa10_test2.dsk").delete());
 		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk", DskType.SS40);
-		dm.addFile(toto,currentDir,"main2.bin",false);
+		dm.addFile(toto,currentDir,"main2.bin",true);
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test1.dsk");
 	}
 

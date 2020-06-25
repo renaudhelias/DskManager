@@ -6,6 +6,11 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -163,6 +168,29 @@ public class DskManager {
 	 * @throws IOException
 	 */
 	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
+		// file ici est le fichier dans le cat. Faut ouvrir le fichier lui même.
+		File file = new File(currentDir,fileName);
+		if (generateAMSDOSHeader) {
+			byte[] pHeader=new byte[128];
+			FileInputStream fis= new FileInputStream(file);
+			fis.read(pHeader);
+			fis.close();
+			if (dskFile.master.CheckAMSDOS(pHeader)) {
+				System.out.println("AMSDOS is here");
+				generateAMSDOSHeader=false;
+			}
+			if (generateAMSDOSHeader) {
+				Path path = file.toPath();
+				pHeader=dskFile.master.GenerateAMSDOSHeader(file.getName(), file.length());
+				byte [] content = Files.readAllBytes(path);
+				FileOutputStream fos = new FileOutputStream(file);
+				fos.write(pHeader);
+				fos.write(content);
+				fos.close();
+			}
+		}
+		
+		
 		System.out.println("Récupération de C1-C2");
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 		DskType type = dskFile.master.type;
@@ -171,12 +199,11 @@ public class DskManager {
 			catalog.scanCatalog();
 		}
 		
-		// file ici est la fichier dans le cat. Faut ouvrir le fichier lui même.
-		File file = new File(currentDir,fileName);
+		
 		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
 		long entryDataSize=0;
 		if (type==DskType.DOSD2) {
-			// pour un catId, sectoreSize=512Ko *2 *nbSize
+			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
 		} else if (type==DskType.SS40) {
 			entryDataSize=dskFile.master.sectorSizes[2] * 2;

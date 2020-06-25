@@ -310,4 +310,67 @@ public class DskMaster {
 		return catalogs;
 	}
 
+	
+	public int ChecksumAMSDOS(byte[] pHeader) {
+	    int Checksum = 0;
+	    for (int i = 0; i < 67; i++) {
+	      int CheckSumByte = pHeader[i] & 0xFF;
+	      Checksum += CheckSumByte;
+	    }
+	    return Checksum;
+	  }
+	  public boolean CheckAMSDOS(byte[] pHeader) {
+	    int CalculatedChecksum;
+	    try {
+	      CalculatedChecksum = ChecksumAMSDOS(pHeader);
+	    } catch (Exception e) {
+	      return false;
+	    }
+	    int ChecksumFromHeader = pHeader[67] & 0xFF | (pHeader[68] & 0xFF) << 8;
+	    if (ChecksumFromHeader == CalculatedChecksum && ChecksumFromHeader != 0) {
+	      System.out.println("Has AMSDOS header");
+	      return true;
+	    }
+	    System.out.println("Without header");
+	    return false;
+	  }
+
+	public byte[] GenerateAMSDOSHeader(String filename, long fileLength) {
+		byte[] pHeader=new byte[128];
+//		Byte 00: User number (value from 0 to 15 or #E5 for deleted entries)
+		pHeader[0]=0x00;
+//		Byte 01 to 08: filename (fill unused char with spaces)
+		byte name[]=realname2cpcname(filename).substring(0, 8).getBytes();
+		System.arraycopy(name, 0, pHeader, 1,8);
+//		Byte 09 to 11: Extension (fill unused char with spaces)
+		byte ext[]=realname2cpcname(filename).substring(8, 11).getBytes();
+		System.arraycopy(ext, 0, pHeader, 1+8,3);
+//		Byte 16: first block (tape only)
+		pHeader[16]=0x00;
+//		Byte 17: first block (tape only)
+		pHeader[17]=0x00;
+//		Byte 18: file type (0:basic 1:protected 2:binary)
+		pHeader[18]=0x02;
+//		Byte 21 and 22: loading address LSB first
+		pHeader[21]=0x00;
+		pHeader[22]=0x01;
+//		Byte 23: first block (tape only?)
+		pHeader[23]=0x00;
+//		Byte 24 and 25: file length LSB first
+		pHeader[24] = (byte) (fileLength & 0xff);  
+		pHeader[25] = (byte)((fileLength & 0xff00) >> 8);  
+//		Byte 26 and 27: execution address for machine code program LSB first
+		pHeader[26] = 0x00;
+		pHeader[27] = 0x01;
+//		Byte 64 and 66: 24 bits file length LSB first. Just a copy, not used!
+		pHeader[64] = (byte) (fileLength& 0xff);  
+		pHeader[65] = (byte)((fileLength & 0xff00) >> 8);  
+		pHeader[66] = (byte)((fileLength & 0xff0000) >> 16);  
+//		Byte 67 and 68: checksum for bytes 00-66 stored LSB first
+		int check=ChecksumAMSDOS(pHeader);
+		pHeader[67] = (byte) (check &0xff);  
+		pHeader[68] = (byte)((check &0xff00) >> 8);
+//		Byte 69 to 127: undefined content, free to use
+		return pHeader;
+	}
 }
