@@ -2,6 +2,7 @@ package dskmanager;
 
 import java.awt.BorderLayout;
 import java.awt.ComponentOrientation;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +21,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -34,6 +36,8 @@ public class DskManagerEditor extends JFrame {
     LinkedHashMap<String, ByteArrayOutputStream> list;
 
     JPanel bottomMenu = new JPanel();
+    JPanel infoContent = new JPanel();
+    JTextArea info = new JTextArea();
     private JButton buttonNew = new JButton("New");
     private JButton buttonLoad = new JButton("Load");
     public JTable table;
@@ -61,14 +65,19 @@ public class DskManagerEditor extends JFrame {
         };
         Font font = new Font("Monospaced", 1, 11);
         table.setFont(font);
+        info.setFont(font);
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         table.setTransferHandler(new TransferHelper(this));
         table.setDragEnabled(true);
         table.setDropMode(DropMode.USE_SELECTION);
         table.setFillsViewportHeight(true);
 
-        add(scrollPane, BorderLayout.CENTER);
-        add(table.getTableHeader(), BorderLayout.NORTH);
+        infoContent.setLayout(new BorderLayout());
+        infoContent.add(scrollPane, BorderLayout.CENTER);
+        infoContent.add(table.getTableHeader(), BorderLayout.NORTH);
+        info.setPreferredSize(new Dimension(-1,20));
+        infoContent.add(info, BorderLayout.SOUTH);
+        add(infoContent, BorderLayout.CENTER);
         add(bottomMenu, BorderLayout.SOUTH);
         bottomMenu.setLayout(new BorderLayout());
         bottomMenu.add(buttonNew, BorderLayout.WEST);
@@ -147,12 +156,20 @@ public class DskManagerEditor extends JFrame {
         model.addColumn("Filename");
         model.addColumn("Size");
         model.addColumn("Type");
+        model.addColumn("Protected");
+        model.addColumn("System");
     }
 
     public void updateTable() throws IOException {
         model.setRowCount(0);
 
         list = dm.listFiles(dskFile);
+        int size=0;
+        if (dskFile.master.type==DskType.SS40) {
+        	size = 178;
+        } else if (dskFile.master.type==DskType.DOSD2) {
+        	size = 712;
+        }
         for (String filename : list.keySet()) {
             // has AMSDOS Header, so is a binary (like ManageDsk)
             boolean isBinary = dskFile.master.CheckAMSDOS(list.get(filename).toByteArray());
@@ -175,21 +192,35 @@ public class DskManagerEditor extends JFrame {
                 }
 
             }
-            StringBuilder nameBuilder = new StringBuilder();;
+            StringBuilder nameBuilder = new StringBuilder();
+            boolean Protected = false;
+            boolean System = false;
             for (int i = 0; i < filename.length(); i++) {
+                int check = (char) (filename.charAt(i)) & 0xff;
+                if (i == 9 && check > 0x7f) {
+                    Protected = true;
+                }
+                if (i == 10 && check > 0x7f) {
+                    System = true;
+                }
                 nameBuilder.append((char) ((filename.charAt(i)) & 0x7f));
             }
             String fname = nameBuilder.toString();
-            fname = fname.replace(".", "~");
-            String[] test = fname.split("~");
-            if (test.length>1 && test[1] != null) {
+            fname = fname.replace(".", "~~~");
+            String[] test = fname.split("~~~");
+            if (test.length > 1 && test[1] != null) {
                 while (test[1].length() < 3) {
                     test[1] += " ";
                 }
-                fname = test[0]+"."+test[1];
+                fname = test[0].replace(" ", "");
+                fname+= "." + test[1];
             }
-            model.addRow(new Object[]{fname, (list.get(filename).size() / 1024) + "Kb", isBinary ? Type : "ASC"});
+            String prot = Protected?"*":"";
+            String sys = System?"*":"";
+            model.addRow(new Object[]{fname, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",prot,sys});
+            size-=(list.get(filename).size() / 1024);
         }
+        info.setText("Free: "+size+"kb");
     }
 
     public static void main(String[] args) {

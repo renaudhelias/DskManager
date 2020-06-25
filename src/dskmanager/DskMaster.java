@@ -236,7 +236,6 @@ public class DskMaster {
 	
 	public String cpcname2realname(String cpcname) {
     	String realname=cpcname.substring(0,8)+"."+cpcname.substring(8,11);
-    	realname=realname.replaceAll(" ", "");
     	return realname;
     }
 
