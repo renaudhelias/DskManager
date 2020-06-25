@@ -135,9 +135,9 @@ public class DskManagerTest {
 		new File(currentDir,"CHIEFTAI.SKS").delete();
 		File r2=dm.readFile(dskFile,currentDir,"CHIEFTAI.SKS");
 		new File(currentDir,"PAN.SKS").delete();
-		File r3=dm.readFile(dskFile,currentDir,"PAN.SKS");
+		File r3=dm.readFile(dskFile,currentDir,"PAN     .SKS");
 		new File(currentDir,"THRONES.SKS").delete();
-		File r4=dm.readFile(dskFile,currentDir,"THRONES.SKS");
+		File r4=dm.readFile(dskFile,currentDir,"THRONES .SKS");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
 		assertNotNull(r2);
@@ -168,17 +168,17 @@ public class DskManagerTest {
 		in.close();
 		
 		dm.addFile(dskFile, currentDir, "main3.bin", false);
-		File r1=dm.readFile(dskFile,currentDir,"MAIN3.BIN");
+		File r1=dm.readFile(dskFile,currentDir,"MAIN3   .BIN");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
 		tmp.delete();
-		dm.eraseFile(dskFile, "MAIN3.BIN");
-		r1=dm.readFile(dskFile,currentDir,"MAIN3.BIN");
+		dm.eraseFile(dskFile, "MAIN3   .BIN");
+		r1=dm.readFile(dskFile,currentDir,"MAIN3   .BIN");
 		assertNull(r1);
 		
 		Set<String> list=dm.listFiles(dskFile).keySet();
 		for(String notErased:list) {
-			if (notErased.equals("MAIN3.BIN")) {
+			if (notErased.equals("MAIN3.BIN   ")) {
 				fail("still here");
 			}
 		}
@@ -190,9 +190,9 @@ public class DskManagerTest {
 		LinkedHashMap<String, ByteArrayOutputStream> listWithDATA = dm.listFiles(dskFile);
 		Set<String> list=listWithDATA.keySet();
 		assertNotNull(list);
-		assertTrue(list.contains("TRON.BAS"));
+		assertTrue(list.contains("TRON    .BAS"));
 		assertTrue(list.contains("MATRIX8F.SKS"));
-		assertEquals(listWithDATA.get("TRON.BAS").size(),1024);
+		assertEquals(listWithDATA.get("TRON    .BAS").size(),1024);
 	}
 	
 	@Test
@@ -201,11 +201,11 @@ public class DskManagerTest {
 		LinkedHashMap<String, ByteArrayOutputStream> listWithDATA = dm.listFiles(dskFile);
 		Set<String> list=listWithDATA.keySet();
 		assertNotNull(list);
-		assertTrue(list.contains("MAIN2.BIN"));
-		assertEquals(listWithDATA.get("MAIN2.BIN").size(),10240);
+		assertTrue(list.contains("MAIN2   .BIN"));
+		assertEquals(listWithDATA.get("MAIN2   .BIN").size(),10240);
 		
-		File fichier = dm.readFile(dskFile, currentDir, "MAIN2.BIN");
-		assertEquals(fichier.getName(),"MAIN2.BIN");
+		File fichier = dm.readFile(dskFile, currentDir, "MAIN2   .BIN");
+		assertEquals(fichier.getName(),"MAIN2   .BIN");
 		assertEquals(fichier.length(),10240);
 	}
 	
