@@ -1,1 +1,3 @@
-"java" -cp bin/ dskmanager.DskManagerEditor
+@echo off
+start javaw -cp bin/ dskmanager.DskManagerEditor
+exit
