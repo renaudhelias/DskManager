@@ -209,16 +209,6 @@ public class DskManagerEditor extends JFrame {
                 }
                 nameBuilder.append((char) ((filename.charAt(i)) & 0x7f));
             }
-//            String fname = nameBuilder.toString();
-//            fname = fname.replace(".", "~~~");
-//            String[] test = fname.split("~~~");
-//            if (test.length > 1 && test[1] != null) {
-//                while (test[1].length() < 3) {
-//                    test[1] += " ";
-//                }
-//                fname = test[0].replace(" ", "");
-//                fname+= "." + test[1];
-//            }
             String prot = Protected?"*":"";
             String sys = System?"*":"";
             model.addRow(new Object[]{filename, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",prot,sys});
@@ -229,7 +219,7 @@ public class DskManagerEditor extends JFrame {
 
     public static void main(String[] args) {
         jFrame = new DskManagerEditor();
-        jFrame.setSize(300, 200);
+        jFrame.setSize(500, 200);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
     }
