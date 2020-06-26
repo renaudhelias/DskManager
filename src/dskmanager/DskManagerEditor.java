@@ -74,18 +74,22 @@ public class DskManagerEditor extends JFrame {
         table.setDragEnabled(true);
         table.setDropMode(DropMode.USE_SELECTION);
         table.setFillsViewportHeight(true);
+        table.setBackground(Color.LIGHT_GRAY);
 
         infoContent.setLayout(new BorderLayout());
         infoContent.add(scrollPane, BorderLayout.CENTER);
         infoContent.add(table.getTableHeader(), BorderLayout.NORTH);
         info.setPreferredSize(new Dimension(-1,20));
         infoContent.add(info, BorderLayout.SOUTH);
-        info.setDisabledTextColor(new Color(0,0,0));
+        info.setDisabledTextColor(Color.BLACK);
+        info.setBackground(Color.LIGHT_GRAY);
         info.setEnabled(false);
 
         add(infoContent, BorderLayout.CENTER);
         add(bottomMenu, BorderLayout.SOUTH);
         bottomMenu.setLayout(new BorderLayout());
+        bottomMenu.setBackground(Color.LIGHT_GRAY);
+        
         bottomMenu.add(buttonNew, BorderLayout.WEST);
         bottomMenu.add(buttonLoad, BorderLayout.EAST);
 
@@ -105,6 +109,7 @@ public class DskManagerEditor extends JFrame {
                         } else {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
                         }
+                        table.setBackground(Color.WHITE);
                         updateTable();
                         setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                     } catch (IOException e1) {
@@ -124,6 +129,7 @@ public class DskManagerEditor extends JFrame {
                     File fileToLoad = jfc.getSelectedFile();
                     try {
                         dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
+                        table.setBackground(Color.WHITE);
                         updateTable();
                         setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                     } catch (IOException e1) {
