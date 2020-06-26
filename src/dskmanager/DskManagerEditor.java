@@ -10,7 +10,10 @@ import java.awt.event.KeyListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import javax.swing.DropMode;
 import javax.swing.JButton;
@@ -169,7 +172,9 @@ public class DskManagerEditor extends JFrame {
         } else if (dskFile.master.type==DskType.DOSD2) {
         	size = 712;
         }
-        for (String filename : list.keySet()) {
+        List<String>filenames = new ArrayList<String>(list.keySet());
+        Collections.sort(filenames);
+        for (String filename : filenames) {
             // has AMSDOS Header, so is a binary (like ManageDsk)
             boolean isBinary = dskFile.master.CheckAMSDOS(list.get(filename).toByteArray());
             int type = 0;
