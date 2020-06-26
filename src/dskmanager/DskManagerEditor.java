@@ -1,6 +1,7 @@
 package dskmanager;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -79,6 +80,9 @@ public class DskManagerEditor extends JFrame {
         infoContent.add(table.getTableHeader(), BorderLayout.NORTH);
         info.setPreferredSize(new Dimension(-1,20));
         infoContent.add(info, BorderLayout.SOUTH);
+        info.setDisabledTextColor(new Color(0,0,0));
+        info.setEnabled(false);
+
         add(infoContent, BorderLayout.CENTER);
         add(bottomMenu, BorderLayout.SOUTH);
         bottomMenu.setLayout(new BorderLayout());
