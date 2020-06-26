@@ -57,7 +57,7 @@ public class DskSectorCatalog {
 			return;
 		}
 		bos.write(new byte[]{(byte)jocker});
-		byte [] entryFileName = master.realname2cpcname(filename).getBytes();
+		byte [] entryFileName = master.stringToArray(master.realname2cpcname(filename));
 		bos.write(entryFileName);
 		bos.write(new byte[]{(byte)sectorIncrement});
 		bos.write(new byte[]{0,0});

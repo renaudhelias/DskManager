@@ -1,5 +1,6 @@
 package dskmanager;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -224,14 +225,11 @@ public class DskMaster {
 	
 	
 	public String arrayToString(byte[] bufferHeader) {
-		
-		StringBuilder sb = new StringBuilder();
-		for (byte b: bufferHeader) {
-			char ch = (char)b;
-			sb.append(ch);
-		}
-
-		return sb.toString();
+		return new String(bufferHeader,Charset.forName("ISO-8859-1"));
+	}
+	
+	public byte[] stringToArray(String realname2cpcname) {
+		return realname2cpcname.getBytes(Charset.forName("ISO-8859-1"));
 	}
 	
 	public String cpcname2realname(String cpcname) {
@@ -339,10 +337,10 @@ public class DskMaster {
 //		Byte 00: User number (value from 0 to 15 or #E5 for deleted entries)
 		pHeader[0]=0x00;
 //		Byte 01 to 08: filename (fill unused char with spaces)
-		byte name[]=realname2cpcname(filename).substring(0, 8).getBytes();
+		byte name[]=stringToArray(realname2cpcname(filename).substring(0, 8));
 		System.arraycopy(name, 0, pHeader, 1,8);
 //		Byte 09 to 11: Extension (fill unused char with spaces)
-		byte ext[]=realname2cpcname(filename).substring(8, 11).getBytes();
+		byte ext[]=stringToArray(realname2cpcname(filename).substring(8, 11));
 		System.arraycopy(ext, 0, pHeader, 1+8,3);
 //		Byte 16: first block (tape only)
 		pHeader[16]=0x00;
@@ -372,4 +370,5 @@ public class DskMaster {
 //		Byte 69 to 127: undefined content, free to use
 		return pHeader;
 	}
+
 }
