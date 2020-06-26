@@ -39,9 +39,6 @@ public class DskSectorCatalogs extends DskSector {
 		// fill data from cats
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (DskSectorCatalog cat:cats) {
-			if (cat.jocker != 0) {
-				System.out.println("outch");
-			}
 			cat.scan(baos);
 		}
 		for (int i=cats.size()*0x20;i<master.sectorSizes[sectorSizeN];i++) {

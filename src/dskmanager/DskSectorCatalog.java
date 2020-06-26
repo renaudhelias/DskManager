@@ -28,7 +28,8 @@ public class DskSectorCatalog {
 	}
 	public boolean scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
-		if (jocker !=0) {
+		if (jocker == 0xE5) {
+			// not a user
 			bis.skip(0x20-1);
 			return false;
 		}
@@ -49,7 +50,7 @@ public class DskSectorCatalog {
 	}
 	
 	public void scan(ByteArrayOutputStream bos) throws IOException {
-		if (jocker !=0) {
+		if (jocker == 0xE5) {
 			// fill 0xE5
 			for (int i = 0;i<0x20;i++) {
 				bos.write(0xE5);
