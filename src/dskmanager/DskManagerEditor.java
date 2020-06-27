@@ -27,6 +27,7 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -98,6 +99,20 @@ public class DskManagerEditor extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser();
                 jfc.setDialogTitle("Create new dsk file");
+                FileFilter ff=new FileFilter() {
+                    public String getDescription() {
+                        return "CPC DSK files (*.dsk)";
+                    }
+                    public boolean accept(File f) {
+                        if (f.isDirectory()) {
+                            return true;
+                        } else {
+                            return f.getName().toLowerCase().endsWith(".dsk");
+                        }
+                    }
+                };
+        		jfc.addChoosableFileFilter(ff);
+        		jfc.setFileFilter(ff);
                 int response = jfc.showSaveDialog(DskManagerEditor.this);
                 if (response == JFileChooser.APPROVE_OPTION) {
                     File fileToSave = jfc.getSelectedFile();
@@ -124,6 +139,20 @@ public class DskManagerEditor extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 JFileChooser jfc = new JFileChooser();
                 jfc.setDialogTitle("Load a dsk file");
+                FileFilter ff = new FileFilter() {
+                    public String getDescription() {
+                        return "CPC DSK files (*.dsk)";
+                    }
+                    public boolean accept(File f) {
+                        if (f.isDirectory()) {
+                            return true;
+                        } else {
+                            return f.getName().toLowerCase().endsWith(".dsk");
+                        }
+                    }
+                };
+        		jfc.addChoosableFileFilter(ff);
+        		jfc.setFileFilter(ff);
                 int response = jfc.showOpenDialog(DskManagerEditor.this);
                 if (response == JFileChooser.APPROVE_OPTION) {
                     File fileToLoad = jfc.getSelectedFile();
