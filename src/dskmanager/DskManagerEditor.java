@@ -46,7 +46,13 @@ public class DskManagerEditor extends JFrame {
     private JButton buttonLoad = new JButton("Load");
     public JTable table;
 
-    DefaultTableModel model = new DefaultTableModel();
+    DefaultTableModel model = new DefaultTableModel(){
+		@Override
+		public boolean isCellEditable(int row, int column) {
+			if (column == 0) return true;
+			return false;
+		}
+    };
 
     private static DskManagerEditor jFrame;
 
