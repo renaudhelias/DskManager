@@ -62,14 +62,16 @@ public class DskManagerEditor extends JFrame {
         setLayout(new BorderLayout());
 
         table = new JTable(model) {
-            DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
-
-            { // initializer block
-                renderRight.setHorizontalAlignment(SwingConstants.RIGHT);
-            }
-
             @Override
-            public TableCellRenderer getCellRenderer(int arg0, int arg1) {
+            public TableCellRenderer getCellRenderer(int row, int column) {
+            	DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
+            	if (column == 1) {
+            		renderRight.setHorizontalAlignment(SwingConstants.RIGHT);
+            	} else if (column > 1 || column==0) {
+            		renderRight.setHorizontalAlignment(SwingConstants.CENTER);
+            	} else {
+            		renderRight.setHorizontalAlignment(SwingConstants.LEFT);
+            	}
                 return renderRight;
             }
         };
