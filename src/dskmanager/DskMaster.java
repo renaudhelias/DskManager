@@ -86,9 +86,9 @@ public class DskMaster {
 						//FIXME : peut être plus gros que 0xFF normalement, moi je coupe. 
 						continue;
 					}
-					if ((b & 0xff) ==k) {
-						cats.add((int)b);
-						allCatsId.add((int)b);
+					if ((b & 0xff) == k) {
+						cats.add((int)(b & 0xff));
+						allCatsId.add((int)(b & 0xff));
 					}
 				}
 				k++;
