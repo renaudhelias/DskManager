@@ -220,4 +220,15 @@ public class DskManagerTest {
 			fos.close();
 		}
 	}
+	
+	@Test
+	public void testRealname2realname() throws IOException {
+		DskFile dskFile=dm.loadDsk(currentDir, "jdvpa10_test5.dsk");
+		DskMaster master = new DskMaster();
+		String realname="ETOILE  .BAS";
+		assertEquals(master.realname2realname(realname),"ETOILE  .BAS");
+		realname="etoile.bas";
+		assertEquals(master.realname2realname(realname),"ETOILE  .BAS");
+	}
+	
 }

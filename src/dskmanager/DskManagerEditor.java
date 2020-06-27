@@ -221,12 +221,13 @@ public class DskManagerEditor extends JFrame {
         List<String>filenames = new ArrayList<String>(list.keySet());
         Collections.sort(filenames);
         for (String filename : filenames) {
+        	byte[] content = list.get(filename).toByteArray();
             // has AMSDOS Header, so is a binary (like ManageDsk)
-            boolean isBinary = dskFile.master.CheckAMSDOS(list.get(filename).toByteArray());
+            boolean isBinary = dskFile.master.CheckAMSDOS(content);
             int type = 0;
             String Type = "BAS";
             if (isBinary) {
-                type = list.get(filename).toByteArray()[18] & 0x0ff;
+                type = content[18] & 0x0ff;
                 switch (type) {
                     case 0:
                         Type = "BAS";
@@ -242,7 +243,6 @@ public class DskManagerEditor extends JFrame {
                 }
 
             }
-            StringBuilder nameBuilder = new StringBuilder();
             boolean Protected = false;
             boolean System = false;
             for (int i = 0; i < filename.length(); i++) {
@@ -253,7 +253,6 @@ public class DskManagerEditor extends JFrame {
                 if (i == 10 && check > 0x7f) {
                     System = true;
                 }
-                nameBuilder.append((char) ((filename.charAt(i)) & 0x7f));
             }
             String attr = Protected?"R ":"  ";
             attr = System?attr+"S":attr+" ";

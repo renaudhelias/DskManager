@@ -232,6 +232,10 @@ public class DskMaster {
 		return realname2cpcname.getBytes(Charset.forName("ISO-8859-1"));
 	}
 	
+	public String realname2realname(String realname) {
+		return cpcname2realname(realname2cpcname(realname));
+	}
+	
 	public String cpcname2realname(String cpcname) {
     	String realname=cpcname.substring(0,8)+"."+cpcname.substring(8,11);
     	return realname;

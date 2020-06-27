@@ -60,8 +60,10 @@ public class TransferHelper extends TransferHandler {
         Transferable t = info.getTransferable();
         try {
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
-        		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
-            	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+        		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
+            		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
+                	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+        		}
         	}
         	dskManagerEditor.updateTable();
         } 
