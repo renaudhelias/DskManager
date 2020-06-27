@@ -203,8 +203,7 @@ public class DskManagerEditor extends JFrame {
         model.addColumn("Filename");
         model.addColumn("Size");
         model.addColumn("Type");
-        model.addColumn("Protected");
-        model.addColumn("System");
+        model.addColumn("Attr");
     }
 
     public void updateTable() throws IOException {
@@ -254,9 +253,9 @@ public class DskManagerEditor extends JFrame {
                 }
                 nameBuilder.append((char) ((filename.charAt(i)) & 0x7f));
             }
-            String prot = Protected?"*":"";
-            String sys = System?"*":"";
-            model.addRow(new Object[]{filename, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",prot,sys});
+            String attr = Protected?"R ":"  ";
+            attr = System?attr+"S":attr+" ";
+            model.addRow(new Object[]{filename, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",attr});
             size-=(list.get(filename).size() / 1024);
         }
         info.setText("Free: "+size+"kb");
@@ -264,7 +263,7 @@ public class DskManagerEditor extends JFrame {
 
     public static void main(String[] args) {
         jFrame = new DskManagerEditor();
-        jFrame.setSize(500, 200);
+        jFrame.setSize(370, 400);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
     }
