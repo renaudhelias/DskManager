@@ -63,7 +63,7 @@ public class TransferHelper extends TransferHandler {
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
         		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
             		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
-                	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+//                	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
         		} else {
         			// FIXME replace
         			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
