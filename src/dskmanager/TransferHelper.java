@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JComponent;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.TransferHandler;
 
@@ -63,6 +64,9 @@ public class TransferHelper extends TransferHandler {
         		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
             		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
                 	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+        		} else {
+        			// FIXME replace
+        			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
         		}
         	}
         	dskManagerEditor.updateTable();
