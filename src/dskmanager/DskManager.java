@@ -255,7 +255,7 @@ public class DskManager {
 		List<DskSectorCatalog> catalogsData= new ArrayList<DskSectorCatalog>(catalogs);
 		// depile cat
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
-			while (catalogC1C4.cats.size()<entriesSectorCount && !catalogs.isEmpty()) {
+			while (catalogC1C4.cats.size()<16 && !catalogs.isEmpty()) {
 				catalogC1C4.cats.add(catalogs.get(0));
 				catalogs.remove(0);
 				// data from cats
