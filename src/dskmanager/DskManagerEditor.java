@@ -203,7 +203,7 @@ public class DskManagerEditor extends JFrame {
         model.addColumn("Filename");
         model.addColumn("Size");
         model.addColumn("Type");
-        model.addColumn("Attr");
+        model.addColumn("Attributes");
     }
 
     public void updateTable() throws IOException {
