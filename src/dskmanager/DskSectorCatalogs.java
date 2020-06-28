@@ -45,6 +45,7 @@ public class DskSectorCatalogs extends DskSector {
 			baos.write(0xE5);
 		}
 		data = baos.toByteArray();
+		baos.close();
 	}
 
 	

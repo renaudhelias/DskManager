@@ -350,6 +350,10 @@ public class DskManager {
 				}
 			}
 		}
+		for (String key : listFiles.keySet()) {
+			listFiles.get(key).flush();
+			listFiles.get(key).close();
+		}
 		return listFiles;
 	}
 	
