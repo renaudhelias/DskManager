@@ -41,7 +41,8 @@ public class DskMaster {
 			if (o1.sectorIdR>o2.sectorIdR) {
 				return 1;
 			}
-			return 0;
+			throw new Error("Damn");
+			//return 0;
 		}
 	};
 	
