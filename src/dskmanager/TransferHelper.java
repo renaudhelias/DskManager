@@ -62,7 +62,7 @@ public class TransferHelper extends TransferHandler {
         try {
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
         		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
-        			if (dskManagerEditor.freeSize >= file.length()/1024) {
+        			if (dskManagerEditor.freeSize*1024 >= file.length()) {
         				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
             		} else {
             			JOptionPane.showMessageDialog(dskManagerEditor, "Full disk.", "Warning", JOptionPane.ERROR_MESSAGE);

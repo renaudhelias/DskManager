@@ -257,8 +257,17 @@ public class DskManagerEditor extends JFrame {
             }
             String attr = Protected?"R ":"  ";
             attr = System?attr+"S":attr+" ";
-            model.addRow(new Object[]{filename, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",attr});
-            freeSize-=(list.get(filename).size() / 1024);
+            int taille = list.get(filename).size() / 1024;
+            if (list.get(filename).size() % 1024 >0) {
+            	taille+=1;
+            	if (dskFile.master.type==DskType.DOSD2) {
+            		if ((taille/2)*2 !=taille) {
+            			taille+=1; // DOSD2 min file size is 2KB
+            		}
+            	}
+            }
+            model.addRow(new Object[]{filename, (taille) + "kb", isBinary ? Type : "ASC",attr});
+            freeSize-=taille;
         }
         info.setText("Free: "+freeSize+"kb");
     }
