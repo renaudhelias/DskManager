@@ -98,9 +98,11 @@ public class TransferHelper extends TransferHandler {
         List<File> files= new ArrayList<File>();
         for (int v :values) {
         	File dossierTmp = new File("tmp");
+        	dossierTmp.deleteOnExit();
         	dossierTmp.mkdirs();
         	String filename = (String) dskManagerEditor.model.getValueAt(v, 0);
         	File tmpFile = new File(dossierTmp,filename);
+        	tmpFile.deleteOnExit();
         	
         	System.out.println("Creating File to move : "+tmpFile.getAbsolutePath());
         	try {
