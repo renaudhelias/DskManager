@@ -280,8 +280,8 @@ public class DskManagerTest {
 		}
 		assertEquals(lengthAllCatsSector, 1200000);
 		
-//		assertEquals(dskFile.master.allCatsSector.size(),count);
-		
+		//FIXME doublons dans la list allCatsSector.
+		//assertEquals(dskFile.master.allCatsSector.size(),count);
 		
 	}
 }

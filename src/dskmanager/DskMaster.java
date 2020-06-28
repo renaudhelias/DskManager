@@ -154,7 +154,7 @@ public class DskMaster {
 						}
 					}
 				}
-				//FIXME idem que moduloMod 2 de nextFreeCat()
+				// idem que moduloMod 2 de nextFreeCat()
 				if (type==DskType.SS40) {
 					k+=0.5;
 				} else if (type==DskType.DOSD2) {
