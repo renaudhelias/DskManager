@@ -264,7 +264,7 @@ public class DskManagerEditor extends JFrame {
 
     public static void main(String[] args) {
         jFrame = new DskManagerEditor();
-        jFrame.setSize(370, 400);
+        jFrame.setSize(380, 400);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
     }
