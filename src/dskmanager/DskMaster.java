@@ -85,7 +85,6 @@ public class DskMaster {
 				for (byte b : entriesSector) {
 					if (type==DskType.DOSD2) {
 						if (pair==0) {
-							//FIXME : peut être plus gros que 0xFF normalement, moi je coupe. 
 							k1=(b & 0xff);
 						} else {
 							k2=(b & 0xff);
@@ -114,6 +113,7 @@ public class DskMaster {
 	
 	/**
 	 * Repli allCats au passage
+	 * Il ya plus de secteurs que de catIds, d'où le +=0.5 / +=0.25
 	 * @param entriesSector
 	 * @param sectors
 	 * @return
@@ -133,15 +133,25 @@ public class DskMaster {
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
 				int pair=0;
+				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					pair=(pair+1)%2;
-					if (type==DskType.DOSD2 && pair==0) {
-						//FIXME : peut être plus gros que 0xFF normalement, moi je coupe. 
-						continue;
-					}
-					if ((b & 0xff) == Math.floor(k)) {
-						cats.add(sector);
-						allCatsSector.add(sector);
+					if (type==DskType.DOSD2) {
+						if (pair==0) {
+							k1=(b & 0xff);
+						} else {
+							k2=(b & 0xff);
+							k2=k2<<8;
+							if (k1+k2==Math.floor(k)) {
+								cats.add(sector);
+								allCatsSector.add(sector);
+							}
+						}
+						pair=(pair+1)%2;
+					} else if (type==DskType.SS40) {
+						if ((b & 0xff) == Math.floor(k)) {
+							cats.add(sector);
+							allCatsSector.add(sector);
+						}
 					}
 				}
 				//FIXME idem que moduloMod 2 de nextFreeCat()
@@ -150,7 +160,6 @@ public class DskMaster {
 				} else if (type==DskType.DOSD2) {
 					k+=0.25;
 				}
-				
 			}
 		}
 		if (cats.size()==0) {

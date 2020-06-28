@@ -11,7 +11,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Set;
 
 import org.junit.Test;
@@ -231,4 +233,55 @@ public class DskManagerTest {
 		assertEquals(master.realname2realname(realname),"ETOILE  .BAS");
 	}
 	
+	@Test
+	public void testBoumDOSD2() throws IOException {
+		File boum = new File(currentDir, "boum.txt");
+		assertEquals(boum.length(),600000);
+		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test6.dsk", DskType.DOSD2);
+		dm.addFile(dskFile, currentDir, "boum.txt", false);
+		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
+		ByteArrayOutputStream fileEntry = list.get("BOUM    .TXT");
+		//FIXME
+		assertEquals(fileEntry.toByteArray().length, 600000);
+		
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+		int length=0;
+		int count=0;
+		int countCatIds=0;
+		int countCatalog=0;
+		List<DskSector> sectorUsed = new ArrayList<DskSector>();
+		for (DskSectorCatalogs cats: catalogsC1C4) {
+			countCatalog++;
+			for (DskSectorCatalog cat:cats.cats) {
+				countCatIds++;
+				for (DskSector sector:cat.catsSector) {
+					length+=sector.data.length;
+					count++;
+					sectorUsed.add(sector);
+				}
+			}
+		}
+		// 37 catIds *4 *512
+		// 37 "BOUM    TXT" occurencies OK
+		assertEquals(countCatIds,37);
+		assertEquals(dskFile.master.allCatsId.size(),586);
+		assertTrue(dskFile.master.allCatsId.size()/countCatIds<=16);
+		assertEquals(dskFile.master.allCatsSector.size(),2344);
+		assertEquals(countCatalog,(9+7));
+		assertEquals(count,1172);
+		assertEquals(length, 600000);
+		assertEquals(length/count, 511);
+		int lengthAllCatsSector=0;
+		for (DskSector sector : dskFile.master.allCatsSector) {
+			if (!sectorUsed.contains(sector)) {
+				System.out.println(sector.toString());
+			}
+			lengthAllCatsSector+=sector.data.length;
+		}
+		assertEquals(lengthAllCatsSector, 1200000);
+		
+//		assertEquals(dskFile.master.allCatsSector.size(),count);
+		
+		
+	}
 }
