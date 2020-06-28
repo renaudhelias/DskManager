@@ -6,7 +6,7 @@ import java.io.FileOutputStream;
 import java.util.Properties;
 
 public class Settings {
-  private static File file = new File(System.getProperty("user.home"), "/JavaCPC/fsettings.dat");
+  private static File file = new File(System.getProperty("user.home"), "/.DskManager/Settings.ini");
   
   private static final Settings instance = new Settings();
   
@@ -70,7 +70,7 @@ public class Settings {
   
   private static void save() {
     try {
-      File f = new File(System.getProperty("user.home"), "JavaCPC");
+      File f = new File(System.getProperty("user.home"), ".DskManager");
       f.mkdir();
       if (System.getSecurityManager() != null)
         System.getSecurityManager().checkWrite(file.getAbsolutePath()); 
