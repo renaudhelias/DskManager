@@ -53,6 +53,7 @@ public class DskManagerEditor extends JFrame {
 			return false;
 		}
     };
+	public int freeSize=0;
 
     private static DskManagerEditor jFrame;
 
@@ -212,11 +213,11 @@ public class DskManagerEditor extends JFrame {
         model.setRowCount(0);
 
         list = dm.listFiles(dskFile);
-        int size=0;
+        freeSize=0;
         if (dskFile.master.type==DskType.SS40) {
-        	size = 178;
+        	freeSize = 178;
         } else if (dskFile.master.type==DskType.DOSD2) {
-        	size = 712;
+        	freeSize = 712;
         }
         List<String>filenames = new ArrayList<String>(list.keySet());
         Collections.sort(filenames);
@@ -257,9 +258,9 @@ public class DskManagerEditor extends JFrame {
             String attr = Protected?"R ":"  ";
             attr = System?attr+"S":attr+" ";
             model.addRow(new Object[]{filename, (list.get(filename).size() / 1024) + "kb", isBinary ? Type : "ASC",attr});
-            size-=(list.get(filename).size() / 1024);
+            freeSize-=(list.get(filename).size() / 1024);
         }
-        info.setText("Free: "+size+"kb");
+        info.setText("Free: "+freeSize+"kb");
     }
 
     public static void main(String[] args) {

@@ -62,10 +62,13 @@ public class TransferHelper extends TransferHandler {
         try {
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
         		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
-            		dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
-//                	dskManagerEditor.model.addRow(new Object []{file.getName(),file.length()});
+        			if (dskManagerEditor.freeSize >= file.length()/1024) {
+        				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), false);
+            		} else {
+            			JOptionPane.showMessageDialog(dskManagerEditor, "Full disk.", "Warning", JOptionPane.ERROR_MESSAGE);
+        			}
         		} else {
-        			// FIXME replace
+        			// replace ? no.
         			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
         		}
         	}
