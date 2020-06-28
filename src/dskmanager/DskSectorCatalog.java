@@ -66,9 +66,14 @@ public class DskSectorCatalog {
 		
 		int nbTrou=0;
 		for (Integer cat:catsId) {
-			bos.write(new byte[]{(byte)cat.intValue()});
 			if (master.type==DskType.DOSD2) {
-				bos.write(0x00);nbTrou++;
+				byte k1=(byte)(cat & 0xff);
+				byte k2=(byte)((cat & 0xff00) >> 8);
+				bos.write(k1);
+				bos.write(k2);
+				nbTrou++;
+			} else if (master.type==DskType.SS40) {
+				bos.write((byte) cat.intValue());
 			}
 		}
 		for (int j=0;j<0x10-(catsId.size()+nbTrou);j++) {
