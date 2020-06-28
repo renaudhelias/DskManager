@@ -3,6 +3,7 @@ package dskmanager;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -312,6 +313,27 @@ public class DskManager {
 		return output;
 	}
 
+	public void renameFile(DskFile dskFile, String oldFileName, String newFileName) throws IOException {
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+
+		for (DskSectorCatalogs cat : catalogsC1C4) {
+			for (DskSectorCatalog entryFile : cat.cats) {
+				if (dskFile.master.cpcname2realname(entryFile.filename).equals(oldFileName)){
+					entryFile.filename=newFileName;
+				}
+			}
+			RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
+			cat.scanCatalog();
+			cat.scanData(fos);
+			fos.close();
+		}
+		dskFile.master.allCatsId.clear();
+		dskFile.master.allCatsSector.clear();
+		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
+			catalogC1C4.scanCatalogFromData();
+		}
+	}
+	
 	public void eraseFile(DskFile dskFile, String fileName) throws IOException {
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 

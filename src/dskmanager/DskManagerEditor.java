@@ -27,6 +27,8 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -52,6 +54,22 @@ public class DskManagerEditor extends JFrame {
 			if (column == 0) return true;
 			return false;
 		}
+
+		@Override
+		public void setValueAt(Object value, int row, int column) {
+			String avant = (String) model.getValueAt(row, column);
+			String apres = (String) value;
+			apres = dskFile.master.realname2realname(apres);
+			try {
+				dm.renameFile(dskFile, avant, apres);
+				super.setValueAt(apres, row, column);
+				updateTable();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		
     };
 	public int freeSize=0;
 
