@@ -272,6 +272,8 @@ public class DskManager {
 				d.scanData(fos);
 			}
 		}
+		dskFile.master.allCatsId.clear();
+		dskFile.master.allCatsSector.clear();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			catalogC1C4.scanCatalogFromData();
 		}
@@ -325,6 +327,8 @@ public class DskManager {
 			cat.scanData(fos);
 			fos.close();
 		}
+		dskFile.master.allCatsId.clear();
+		dskFile.master.allCatsSector.clear();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			catalogC1C4.scanCatalogFromData();
 		}

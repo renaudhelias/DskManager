@@ -264,9 +264,9 @@ public class DskManagerTest {
 		// 37 catIds *4 *512
 		// 37 "BOUM    TXT" occurencies OK
 		assertEquals(countCatIds,37);
-		assertEquals(dskFile.master.allCatsId.size(),586);
+		assertEquals(dskFile.master.allCatsId.size(),293);
 		assertTrue(dskFile.master.allCatsId.size()/countCatIds<=16);
-		assertEquals(dskFile.master.allCatsSector.size(),2344);
+		assertEquals(dskFile.master.allCatsSector.size(),1172);
 		assertEquals(countCatalog,(9+7));
 		assertEquals(count,1172);
 		assertEquals(length, 600000);
@@ -278,10 +278,8 @@ public class DskManagerTest {
 			}
 			lengthAllCatsSector+=sector.data.length;
 		}
-		assertEquals(lengthAllCatsSector, 1200000);
+		assertEquals(lengthAllCatsSector, 600000);
 		
-		//FIXME doublons dans la list allCatsSector.
-		//assertEquals(dskFile.master.allCatsSector.size(),count);
-		
+		assertEquals(dskFile.master.allCatsSector.size(),count);
 	}
 }
