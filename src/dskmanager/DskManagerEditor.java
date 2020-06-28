@@ -11,12 +11,14 @@ import java.awt.event.KeyListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 
 import javax.swing.DropMode;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -77,7 +79,11 @@ public class DskManagerEditor extends JFrame {
 
     public DskManagerEditor() {
         super("CPC Dsk Manager");
-
+        URL iconURL = getClass().getResource("/dskmanager/Save-16x16.png");
+        // iconURL is null when not found
+        ImageIcon icon = new ImageIcon(iconURL);
+        setIconImage(icon.getImage());
+        
         setLayout(new BorderLayout());
 
         table = new JTable(model) {
