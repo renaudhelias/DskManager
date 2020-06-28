@@ -1,3 +1,4 @@
 @echo off
-start javaw -cp bin/ dskmanager.DskManagerEditor
+start javaw -jar DskManager.jar
+pause
 exit
