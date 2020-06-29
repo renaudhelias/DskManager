@@ -133,9 +133,9 @@ public class DskManager {
 				for (int j=0;j<dskTrack.nbSectors;j++) {
 					dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
 					for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
-	                    if (i<2) {
+						if (i<2 && dskFile.master.type == DskType.SYSTEM) {
 							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
-						} else {	
+						} else {
 							dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
 						}
 					}
