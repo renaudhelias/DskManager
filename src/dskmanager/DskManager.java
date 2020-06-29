@@ -32,6 +32,7 @@ public class DskManager {
 	public DskFile newDsk(File currentDir, String dskName, DskType type) throws IOException{
 		int [] sectorId_SS40={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		int [] sectorId_DOSD2={0x21,0x26,0x22,0x27,0x23,0x28,0x24,0x29,0x25};
+		int [] sectorId_SYSTEM={0x41,0x46,0x42,0x47,0x43,0x48,0x44,0x49,0x45};
 		int [] sectorId=null;
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		if (type == DskType.DOSD2) {
@@ -40,6 +41,8 @@ public class DskManager {
 			dskFile.nbTracks=80;
 		} else if (type == DskType.SS40) {
 			sectorId=sectorId_SS40;
+		} else if (type == DskType.SYSTEM) {
+			sectorId=sectorId_SYSTEM;
 		}
 		dskFile.master=new DskMaster();
 		dskFile.master.type=type;
@@ -51,8 +54,8 @@ public class DskManager {
 		for (int i=0; i<dskFile.nbTracks; i++) {
 			for (int s=0; s<dskFile.nbSides; s++) {
 				DskTrack dskTrack = new DskTrack(dskFile.master);
-				if (type==DskType.DOSD2) {
-					dskTrack.gap=0x52; // for tests
+				if (type==DskType.DOSD2 || type==DskType.SYSTEM) {
+					dskTrack.gap=0x52; // for tests (WinAPE)
 				}
 				dskTrack.noTrack=i;
 				dskTrack.side=s;
@@ -127,6 +130,8 @@ public class DskManager {
 							dskFile.master.type=DskType.SS40;
 						} else if ((sector.sectorIdR & 0xF0)==0x20) {
 							dskFile.master.type=DskType.DOSD2;
+						} else if ((sector.sectorIdR & 0xF0)==0x40) {
+							dskFile.master.type=DskType.SYSTEM;
 						}
 					}
 					if (dskFile.master.catalogToCreate(sector.trackC, sector.sideH, sector.sectorIdR)) {
@@ -201,7 +206,7 @@ public class DskManager {
 		if (type==DskType.DOSD2) {
 			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
-		} else if (type==DskType.SS40) {
+		} else if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			entryDataSize=dskFile.master.sectorSizes[2] * 2;
 		}
 		int nbEntry = (int)(file.length()/entryDataSize);

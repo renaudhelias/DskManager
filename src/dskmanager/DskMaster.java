@@ -69,7 +69,7 @@ public class DskMaster {
 	public List<Integer> findCatsId(byte[] entriesSector) {
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
-		if (type==DskType.SS40) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			k=4; // min(catId)
@@ -80,6 +80,7 @@ public class DskMaster {
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
+				if (type == DskType.SYSTEM && sector.trackC<2) continue;
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
@@ -95,7 +96,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.SS40) {
+					} else if (type==DskType.SS40 || type==DskType.SYSTEM) {
 						if ((b & 0xff) == k) {
 							cats.add((int)(b & 0xff));
 							allCatsId.add((int)(b & 0xff));
@@ -121,7 +122,7 @@ public class DskMaster {
 	public List<DskSector> findCatsSector(byte[] entriesSector) {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
-		if (type==DskType.SS40) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			k=4; // min(catId)
@@ -132,6 +133,7 @@ public class DskMaster {
 
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
+				if (type == DskType.SYSTEM && sector.trackC<2) continue;
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
@@ -147,7 +149,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.SS40) {
+					} else if (type==DskType.SS40 || type==DskType.SYSTEM) {
 						if ((b & 0xff) == Math.floor(k)) {
 							cats.add(sector);
 							allCatsSector.add(sector);
@@ -155,7 +157,7 @@ public class DskMaster {
 					}
 				}
 				// idem que moduloMod 2 de nextFreeCat()
-				if (type==DskType.SS40) {
+				if (type==DskType.SS40 || type==DskType.SYSTEM) {
 					k+=0.5;
 				} else if (type==DskType.DOSD2) {
 					k+=0.25;
@@ -175,14 +177,14 @@ public class DskMaster {
 	public NewFreeCatResult nextFreeCat() {
 		NewFreeCatResult cats= new NewFreeCatResult();
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
-		if (type==DskType.SS40) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			cats.catId=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			cats.catId=4; // min(catId)
 		}
 		int catIdModulo=0;
 		int catIdModuloMod=0;
-		if (type==DskType.SS40) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=2;
 		} else if (type==DskType.DOSD2) {
@@ -199,6 +201,7 @@ public class DskMaster {
 		for (int i=0;i<allCSectors.size();i++) {
 			DskSector sector= allCSectors.get(i);
 			if (!(sector instanceof DskSectorCatalogs)) {
+				if (type == DskType.SYSTEM && sector.trackC<2) continue;
 				if (!allCatsId.contains(cats.catId)) {
 //					allCats.put(k,sector);
 					allCatsId.add((int)cats.catId);
@@ -290,6 +293,10 @@ public class DskMaster {
 			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=4) {
 				return true;
 			}
+		} else if (type == DskType.SYSTEM) {
+			if (trackC==2 && sideH==0 && (sectorIdR & 0x0F)<=4) {
+				return true;
+			}
 		} else if (type==DskType.DOSD2) {
 			if (trackC==0 && sideH==0) {
 				return true;
@@ -303,12 +310,18 @@ public class DskMaster {
 
 	public List<DskSectorCatalogs> buildCatalogs(List<DskTrack> tracks) {
 		List<DskSectorCatalogs>catalogs= new ArrayList<DskSectorCatalogs>(); 
-		if (type==DskType.SS40) {
+		if (type==DskType.SS40){
 			DskTrack track0 = tracks.get(0);
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC1));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC2));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC3));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC4));
+		} else if (type==DskType.SYSTEM) {
+			DskTrack track2 = tracks.get(2);
+			catalogs.add((DskSectorCatalogs) find0F(track2,0x41));
+			catalogs.add((DskSectorCatalogs) find0F(track2,0x42));
+			catalogs.add((DskSectorCatalogs) find0F(track2,0x43));
+			catalogs.add((DskSectorCatalogs) find0F(track2,0x44));
 		} else if (type==DskType.DOSD2) {
 			DskTrack track0 = tracks.get(0);
 			DskTrack track0side1 = tracks.get(1);

@@ -72,7 +72,7 @@ public class DskSectorCatalog {
 				bos.write(k1);
 				bos.write(k2);
 				nbTrou++;
-			} else if (master.type==DskType.SS40) {
+			} else if (master.type==DskType.SS40 || master.type==DskType.SYSTEM) {
 				bos.write((byte) cat.intValue());
 			}
 		}

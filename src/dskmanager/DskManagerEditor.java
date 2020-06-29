@@ -161,11 +161,13 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2};
+                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.SYSTEM};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.SS40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
+                        } else if (DskType.SYSTEM.equals(dialogResult)) {
+                        	dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SYSTEM);
                         } else if (DskType.DOSD2.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
                         }
@@ -279,6 +281,8 @@ public class DskManagerEditor extends JFrame {
         freeSize = 0;
         if (dskFile.master.type == DskType.SS40) {
             freeSize = 178;
+        } else if (dskFile.master.type == DskType.SYSTEM) {
+        	freeSize = 169;
         } else if (dskFile.master.type == DskType.DOSD2) {
             freeSize = 712;
         }
