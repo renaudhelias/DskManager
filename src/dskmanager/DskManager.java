@@ -144,6 +144,7 @@ public class DskManager {
 				
 			}
 		}
+		if (baisCPM22SYS!=null) {baisCPM22SYS.close();}
 		fos.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		for(DskSectorCatalogs catalog :dskFile.master.buildCatalogs(dskFile.tracks)){
