@@ -66,7 +66,7 @@ public class DskSectorCatalog {
 		
 		int nbTrou=0;
 		for (Integer cat:catsId) {
-			if (master.type==DskType.DOSD2) {
+			if (master.type==DskType.DOSD2 || master.type==DskType.VORTEX) {
 				byte k1=(byte)(cat & 0xff);
 				byte k2=(byte)((cat & 0xff00) >> 8);
 				bos.write(k1);

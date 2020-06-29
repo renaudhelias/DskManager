@@ -31,5 +31,5 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  * Formats marked 'E' in the format list above are ELECTRO formats (so exploited by hackers ParaDOS RSX)
 **/
 public enum DskType {
-	SS40, DOSD2, SYSTEM;
+	SS40, DOSD2, SYSTEM, VORTEX;
 }

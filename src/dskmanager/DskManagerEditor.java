@@ -29,8 +29,6 @@ import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 import javax.swing.WindowConstants;
-import javax.swing.event.TableModelEvent;
-import javax.swing.event.TableModelListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -161,13 +159,15 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.SYSTEM};
+                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.SS40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
                         } else if (DskType.SYSTEM.equals(dialogResult)) {
                         	dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SYSTEM);
+                        } else if (DskType.VORTEX.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.VORTEX);
                         } else if (DskType.DOSD2.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
                         }
@@ -283,6 +283,8 @@ public class DskManagerEditor extends JFrame {
             freeSize = 178;
         } else if (dskFile.master.type == DskType.SYSTEM) {
         	freeSize = 169;
+        } else if (dskFile.master.type == DskType.VORTEX) {
+        	freeSize = 716;
         } else if (dskFile.master.type == DskType.DOSD2) {
             freeSize = 712;
         }
@@ -327,10 +329,10 @@ public class DskManagerEditor extends JFrame {
             int taille = list.get(filename).size() / 1024;
             if (list.get(filename).size() % 1024 > 0) {
                 taille += 1;
-                if (dskFile.master.type == DskType.DOSD2) {
-                    if ((taille / 2) * 2 != taille) {
-                        taille += 1; // DOSD2 min file size is 2KB
-                    }
+            }
+            if (dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.VORTEX) {
+                if ((taille / 2) * 2 != taille) {
+                    taille += 1; // DOSD2 min file size is 2KB
                 }
             }
             model.addRow(new Object[]{filename, (taille) + "kb", isBinary ? Type : "ASC", attr});
