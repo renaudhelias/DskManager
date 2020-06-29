@@ -157,6 +157,9 @@ public class DskManagerEditor extends JFrame {
                 int response = jfc.showSaveDialog(DskManagerEditor.this);
                 if (response == JFileChooser.APPROVE_OPTION) {
                     File fileToSave = jfc.getSelectedFile();
+                    if (!fileToSave.getName().toLowerCase().endsWith(".dsk")) {
+                    	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
+                    }
                     try {
                         int dialogButton = JOptionPane.YES_NO_OPTION;
                         int dialogResult = JOptionPane.showConfirmDialog(null, "Format DOSD2 (or else let SS40)", "WARNING", dialogButton);
