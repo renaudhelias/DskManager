@@ -176,8 +176,8 @@ public class DskManagerEditor extends JFrame {
 	                        updateTable();
 	                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                         }
-                        Settings.set(Settings.lastpath, jfc.getSelectedFile().getParent() + "/");
-                        Settings.set(Settings.lastopened, jfc.getSelectedFile().getAbsolutePath());
+                        Settings.set(Settings.lastpath, fileToSave.getParent() + "/");
+                        Settings.set(Settings.lastopened, fileToSave.getAbsolutePath());
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
