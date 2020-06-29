@@ -82,7 +82,7 @@ public class DskManagerEditor extends JFrame {
         super("CPC Dsk Manager");
         URL iconURL = getClass().getResource("/dskmanager/Save-16x16.png");
         // iconURL is null when not found
-        ImageIcon icon = new ImageIcon(iconURL);
+        final ImageIcon icon = new ImageIcon(iconURL);
         setIconImage(icon.getImage());
 
         setLayout(new BorderLayout());
@@ -161,16 +161,19 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        int dialogButton = JOptionPane.YES_NO_OPTION;
-                        int dialogResult = JOptionPane.showConfirmDialog(null, "Format DOSD2 (or else let SS40)", "WARNING", dialogButton);
-                        if (dialogResult == 0) {
-                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
-                        } else {
+                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2};
+						Object value = DskType.SS40;
+						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
+                        if (DskType.SS40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
+                        } else if (DskType.DOSD2.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
                         }
-                        table.setBackground(Color.WHITE);
-                        updateTable();
-                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
+                        if (dialogResult != null) {
+	                        table.setBackground(Color.WHITE);
+	                        updateTable();
+	                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
+                        }
                         Settings.set(Settings.lastpath, jfc.getSelectedFile().getParent() + "/");
                         Settings.set(Settings.lastopened, jfc.getSelectedFile().getAbsolutePath());
                     } catch (IOException e1) {
