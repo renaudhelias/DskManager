@@ -1,11 +1,13 @@
 package dskmanager;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,14 +17,49 @@ import java.util.List;
 
 public class DskManager {
 	
+    protected byte[] CPM22SYS = null;
 	private static DskManager instance=null;
 	public static DskManager getInstance(){
-		if (instance==null) {instance=new DskManager();}
+        if (instance == null) {
+            instance = new DskManager();
+        }
 		return instance;
 	}
 	
+    private void initCPM() {
+        CPM22SYS = this.getData("CPM22.SYS", 9216);
+    }
+
+    private byte[] getData(String name, int size) {
+        byte[] buffer = new byte[size];
+        int offs = 0;
+        try {
+            InputStream stream = null;
+            try {
+                InputStream is = getClass().getResourceAsStream(name);
+                stream = is;
+                while (size > 0) {
+                    int read = stream.read(buffer, offs, size);
+                    if (read == -1) {
+                        break;
+                    } else {
+                        offs += read;
+                        size -= read;
+                    }
+                }
+            } finally {
+                if (stream != null) {
+                    stream.close();
+                }
+            }
+        } catch (Exception e) {
+        }
+        return buffer;
+    }
+
 	/**
 	 * .data puis scan(fos)
+	 *
 	 * @param currentDir
 	 * @param dskName
 	 * @param type 
@@ -36,6 +73,7 @@ public class DskManager {
 		int [] sectorId_SYSTEM={0x41,0x46,0x42,0x47,0x43,0x48,0x44,0x49,0x45};
 		int [] sectorId=null;
 		DskFile dskFile=new DskFile(currentDir, dskName);
+		ByteArrayInputStream baisCPM22SYS=null;
 		if (type == DskType.DOSD2) {
 			sectorId=sectorId_DOSD2;
 			dskFile.nbSides=2;
@@ -48,6 +86,8 @@ public class DskManager {
 			sectorId=sectorId_SS40;
 		} else if (type == DskType.SYSTEM) {
 			sectorId=sectorId_SYSTEM;
+			this.initCPM();
+			baisCPM22SYS = new ByteArrayInputStream(CPM22SYS);
 		}
 		dskFile.master=new DskMaster();
 		dskFile.master.type=type;
@@ -93,10 +133,15 @@ public class DskManager {
 				for (int j=0;j<dskTrack.nbSectors;j++) {
 					dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
 					for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
-						dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
+	                    if (i<2) {
+							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
+						} else {	
+							dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();
+						}
 					}
 					dskTrack.sectors.get(j).scanData(fos);
-				}
+					}
+				
 			}
 		}
 		fos.close();
