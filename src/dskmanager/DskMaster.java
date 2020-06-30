@@ -69,7 +69,7 @@ public class DskMaster {
 	public List<Integer> findCatsId(byte[] entriesSector) {
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
-		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			k=4; // min(catId)
@@ -84,7 +84,7 @@ public class DskMaster {
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -122,7 +122,7 @@ public class DskMaster {
 	public List<DskSector> findCatsSector(byte[] entriesSector) {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
-		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			k=4; // min(catId)
@@ -137,7 +137,7 @@ public class DskMaster {
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -177,7 +177,7 @@ public class DskMaster {
 	public NewFreeCatResult nextFreeCat() {
 		NewFreeCatResult cats= new NewFreeCatResult();
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
-		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX) {
+		if (type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD10 || type==DskType.VORTEX) {
 			cats.catId=2; // min(catId)
 		} else if (type==DskType.DOSD2) {
 			cats.catId=4; // min(catId)
@@ -191,7 +191,7 @@ public class DskMaster {
 		if (type==DskType.SS40 || type==DskType.SYSTEM) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=2;
-		} else if (type==DskType.VORTEX) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=4;
 		} else if (type==DskType.DOSD2) {
@@ -223,7 +223,7 @@ public class DskMaster {
 					allCatsSector.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					allCatsSector.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						allCatsSector.add(allCSectors.get(i+2));
 						allCatsSector.add(allCSectors.get(i+3));
 //						allCatsSector.add(allCSectors.get(i+4));
@@ -234,7 +234,7 @@ public class DskMaster {
 					cats.catSectors.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					cats.catSectors.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						cats.catSectors.add(allCSectors.get(i+2));
 						cats.catSectors.add(allCSectors.get(i+3));
 //						cats.catSectors.add(allCSectors.get(i+4));
@@ -304,7 +304,7 @@ public class DskMaster {
 			if (trackC==2 && sideH==0 && (sectorIdR & 0x0F)<=4) {
 				return true;
 			}
-		} else if (type==DskType.VORTEX) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10) {
 			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=8) {
 				return true;
 			}
@@ -333,7 +333,7 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x42));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x43));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x44));
-		} else if (type==DskType.VORTEX) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10) {
 			DskTrack track0 = tracks.get(0);
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x21));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x22));

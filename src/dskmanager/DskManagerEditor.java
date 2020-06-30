@@ -159,7 +159,7 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.SYSTEM, DskType.VORTEX};
+                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.SS40.equals(dialogResult)) {
@@ -170,6 +170,8 @@ public class DskManagerEditor extends JFrame {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.VORTEX);
                         } else if (DskType.DOSD2.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD2);
+                        } else if (DskType.DOSD10.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD10);
                         }
                         if (dialogResult != null) {
 	                        table.setBackground(Color.WHITE);
@@ -268,7 +270,7 @@ public class DskManagerEditor extends JFrame {
                         setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                         Settings.set(Settings.lastpath, fileToLoad.getParent()+"/");
                         Settings.set(Settings.lastopened, fileToLoad.getAbsolutePath());
-                    } catch (IOException e1) {
+                    } catch (Exception e1) {
                         e1.printStackTrace();
                     }
         }
@@ -287,6 +289,8 @@ public class DskManagerEditor extends JFrame {
         	freeSize = 716;
         } else if (dskFile.master.type == DskType.DOSD2) {
             freeSize = 712;
+        } else if (dskFile.master.type == DskType.DOSD10) {
+        	freeSize = 796;
         }
         List<String> filenames = new ArrayList<String>(list.keySet());
         Collections.sort(filenames);

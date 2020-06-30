@@ -28,7 +28,7 @@ public class DskSectorCatalog {
 	}
 	public boolean scan(ByteArrayInputStream bis) throws IOException {
 		jocker = bis.read();
-		if (jocker == 0xE5) {
+		if ((jocker & 0xFF) == 0xE5) {
 			// not a user
 			bis.skip(0x20-1);
 			return false;
@@ -66,7 +66,7 @@ public class DskSectorCatalog {
 		
 		int nbTrou=0;
 		for (Integer cat:catsId) {
-			if (master.type==DskType.DOSD2 || master.type==DskType.VORTEX) {
+			if (master.type==DskType.DOSD2 || master.type==DskType.DOSD10 || master.type==DskType.VORTEX) {
 				byte k1=(byte)(cat & 0xff);
 				byte k2=(byte)((cat & 0xff00) >> 8);
 				bos.write(k1);

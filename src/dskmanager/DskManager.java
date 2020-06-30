@@ -69,12 +69,18 @@ public class DskManager {
 	public DskFile newDsk(File currentDir, String dskName, DskType type) throws IOException{
 		int [] sectorId_SS40={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		int [] sectorId_DOSD2={0x21,0x26,0x22,0x27,0x23,0x28,0x24,0x29,0x25};
+		int [] sectorId_DOSD10={0x11,0x16,0x12,0x17,0x13,0x18,0x14,0x19,0x15,0x1A};
 		int [] sectorId_VORTEX={0x01,0x06,0x02,0x07,0x03,0x08,0x04,0x09,0x05}; // same as DOSD1
 		int [] sectorId_SYSTEM={0x41,0x46,0x42,0x47,0x43,0x48,0x44,0x49,0x45};
 		int [] sectorId=null;
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		ByteArrayInputStream baisCPM22SYS=null;
-		if (type == DskType.DOSD2) {
+		if (type == DskType.DOSD10) {
+			sectorId=sectorId_DOSD10;
+			dskFile.nbSides=2;
+			dskFile.nbTracks=80;
+			dskFile.sizeOfTrack=0x15;
+		} else if (type == DskType.DOSD2) {
 			sectorId=sectorId_DOSD2;
 			dskFile.nbSides=2;
 			dskFile.nbTracks=80;
@@ -101,6 +107,9 @@ public class DskManager {
 				DskTrack dskTrack = new DskTrack(dskFile.master);
 				if (type==DskType.DOSD2 || type==DskType.SYSTEM || type==DskType.VORTEX) {
 					dskTrack.gap=0x52; // for tests (WinAPE)
+				} else if (type==DskType.DOSD10) {
+					dskTrack.gap=0x10; // for tests (WinAPE)
+					dskTrack.nbSectors=0xA;
 				}
 				dskTrack.noTrack=i;
 				dskTrack.side=s;
@@ -175,12 +184,15 @@ public class DskManager {
 				dskTrack.scan(fis);
 				for (int j=0;j<dskTrack.nbSectors;j++) {
 					DskSector sector = new DskSector(dskFile.master);
+					System.out.println("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					if (i==0 && s==0 && j==0) {
 						if ((sector.sectorIdR & 0xF0)==0xC0) {
 							dskFile.master.type=DskType.SS40;
 						} else if ((sector.sectorIdR & 0xF0)==0x20) {
 							dskFile.master.type=DskType.DOSD2;
+						} else if ((sector.sectorIdR & 0xF0)==0x10) {
+							dskFile.master.type=DskType.DOSD10;
 						} else if ((sector.sectorIdR & 0xF0)==0x00) {
 							dskFile.master.type=DskType.VORTEX;
 						} else if ((sector.sectorIdR & 0xF0)==0x40) {
@@ -194,8 +206,7 @@ public class DskManager {
 					dskFile.master.allSectors.add(sector);
 				}
 				System.out.println("garbage 0 debut : "+fis.getChannel().position());
-				fis.skip(160);//0x100-0x60-dskTrack.nbSectors*8); // skip 0x00
-				
+				fis.skip(0xE8-dskTrack.nbSectors*8);
 				System.out.println("garbage 0 fin : "+fis.getChannel().position());
 				for (DskSector sector : dskTrack.sectors) {
 					System.out.println("avant scanData sector : "+fis.getChannel().position());
@@ -256,7 +267,7 @@ public class DskManager {
 		
 		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
 		long entryDataSize=0;
-		if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
 		} else if (type==DskType.SS40 || type==DskType.SYSTEM) {
@@ -272,7 +283,7 @@ public class DskManager {
 		int countSectorIncrement=0;
 		// un cat a 10 entrées
 		int entriesSectorCount=0x10;
-		if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 			entriesSectorCount=0x08;
 		}
 		while (nbEntry>0) {
