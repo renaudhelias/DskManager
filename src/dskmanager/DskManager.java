@@ -195,7 +195,7 @@ public class DskManager {
 							dskFile.master.type=DskType.DOSD2;
 						} else if ((sector.sectorIdR & 0xF0)==0x10) {
 							dskFile.master.type=DskType.DOSD10;
-						} else if ((sector.sectorIdR & 0xF0)==0x00) {
+						} else if ((sector.sectorIdR & 0xF0)==0x00 && dskTrack.nbSectors == 9) {
 							dskFile.master.type=DskType.VORTEX;
 						} else if ((sector.sectorIdR & 0xF0)==0x40) {
 							dskFile.master.type=DskType.SYSTEM;

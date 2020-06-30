@@ -29,6 +29,8 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
 -------------------------------------------------------------------------------------
  *
  * Formats marked 'E' in the format list above are ELECTRO formats (so exploited by hackers ParaDOS RSX)
+ *
+ * IBM : save"hello.bas" cat:nothing ! ùcpm:nothing also
 **/
 public enum DskType {
 	SS40, DOSD2, DOSD10, SYSTEM, VORTEX;
