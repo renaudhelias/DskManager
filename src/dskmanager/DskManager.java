@@ -1,5 +1,7 @@
 package dskmanager;
 
+import static org.junit.Assert.assertEquals;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -342,6 +344,7 @@ public class DskManager {
 				d.scanData(fos);
 			}
 		}
+		
 		dskFile.master.allCatsId.clear();
 		dskFile.master.allCatsSector.clear();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {

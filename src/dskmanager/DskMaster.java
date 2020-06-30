@@ -159,7 +159,7 @@ public class DskMaster {
 				// idem que moduloMod 2 de nextFreeCat()
 				if (type==DskType.SS40 || type==DskType.SYSTEM) {
 					k+=0.5;
-				} else if (type==DskType.DOSD2 || type==DskType.VORTEX) {
+				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 					k+=0.25;
 				}
 			}
