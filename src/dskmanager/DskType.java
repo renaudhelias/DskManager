@@ -34,5 +34,5 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  * PARADOS80 : track 1 contains DATA+emptyDATA, track 2 contains DATA+emptyDATA
 **/
 public enum DskType {
-	PARADOS41, SS40, DOSD2, DOSD10, SYSTEM, VORTEX;
+	PARADOS41, PARADOS40D, SS40, DOSD2, DOSD10, SYSTEM, VORTEX;
 }

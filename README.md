@@ -17,4 +17,4 @@ and ManageDsk.exe
  PARADOS41 : 1024<=>1 idCat donc 2*512<=>1 idCat
 5. nombre de secteur dans le catalog
  Remplir la disquette de petit fichiers 1 octet tmp/test100 tmp/test101...
- PARADOS41 : que 4 blocs pour le catalog.
+ PARADOS41 : 4 blocs pour le catalog.
