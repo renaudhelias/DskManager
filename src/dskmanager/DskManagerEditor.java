@@ -342,7 +342,7 @@ public class DskManagerEditor extends JFrame {
             if (list.get(filename).size() % 1024 > 0) {
                 taille += 1;
             }
-            if (dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.VORTEX) {
+            if (dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.VORTEX) {
                 if ((taille / 2) * 2 != taille) {
                     taille += 1; // DOSD2 min file size is 2KB
                 }
