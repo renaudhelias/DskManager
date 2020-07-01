@@ -32,7 +32,8 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  *
  * IBM : save"hello.bas" cat:nothing ! ùcpm:nothing also, 2 catList
  * PARADOS80 : track 1 contains DATA+emptyDATA, track 2 contains DATA+emptyDATA
+ * PARADOS40D : track 1 contains DATA+emptyDATA, track 2 contains DATA+emptyDATA
 **/
 public enum DskType {
-	PARADOS41, PARADOS40D, SS40, DOSD2, DOSD10, SYSTEM, VORTEX;
+	PARADOS41, SS40, DOSD2, DOSD10, SYSTEM, VORTEX;
 }

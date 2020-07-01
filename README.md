@@ -4,17 +4,17 @@ An alternative for CPCDiskXP.exe command line (not physical 3.5 part)
 and ManageDsk.exe
 
 1. Nombre de track et side : offset 30 et 31
- PARADOS41 : 41 track et 1 side
+ PARADOS40D : 40 track et 2 side
 2. Début du catalog
  idCat=2 ou idCat=4 (ex pour DOSD2 c'est 4)
- PARADOS41 : idCat=2
+ PARADOS40D : idCat=2
 3. nombre de idCat par entryCat
  02 03 04.. FF
  02 00 03 00 ... FF 00 00 01 00 02
- PARADOS41 : 02 03 donc 16 idCat par entryCat
+ PARADOS40D : 02 03 donc 16 idCat par entryCat
 4. nombre de secteur 512 d'un idCat
  Placer les fichiers BOUM1024.txt BOUM2048.txt BOUM4096.txt et regarder le nombre d'idCat correspondant
- PARADOS41 : 1024<=>1 idCat donc 2*512<=>1 idCat
+ PARADOS41 : 2048<=>1 idCat donc 4*512<=>1 idCat
 5. nombre de secteur dans le catalog
  Remplir la disquette de petit fichiers 1 octet tmp/test100 tmp/test101...
- PARADOS41 : 4 blocs pour le catalog.
+ PARADOS41 : 2 trou parmis 10 sector donc 8 blocs pour le catalog.
