@@ -159,10 +159,12 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.SYSTEM, DskType.VORTEX};
+                        Object[] values = new Object[] {DskType.PARADOS41, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
-                        if (DskType.SS40.equals(dialogResult)) {
+                        if (DskType.PARADOS41.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.PARADOS41);
+                        } else if (DskType.SS40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
                         } else if (DskType.SYSTEM.equals(dialogResult)) {
                         	dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SYSTEM);
@@ -281,7 +283,9 @@ public class DskManagerEditor extends JFrame {
 
         list = dm.listFiles(dskFile);
         freeSize = 0;
-        if (dskFile.master.type == DskType.SS40) {
+        if (dskFile.master.type == DskType.PARADOS41) {
+            freeSize = 203;
+        } else if (dskFile.master.type == DskType.SS40) {
             freeSize = 178;
         } else if (dskFile.master.type == DskType.SYSTEM) {
         	freeSize = 169;
