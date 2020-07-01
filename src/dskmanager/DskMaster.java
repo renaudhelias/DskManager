@@ -71,7 +71,7 @@ public class DskMaster {
 		int k=2;
 		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10) {
 			k=2; // min(catId)
-		} else if (type==DskType.DOSD2) {
+		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
 		}
 		
@@ -84,7 +84,7 @@ public class DskMaster {
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -124,7 +124,7 @@ public class DskMaster {
 		float k=2;
 		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10) {
 			k=2; // min(catId)
-		} else if (type==DskType.DOSD2) {
+		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
 		}
 		
@@ -137,7 +137,7 @@ public class DskMaster {
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -159,7 +159,7 @@ public class DskMaster {
 				// idem que moduloMod 2 de nextFreeCat()
 				if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 					k+=0.5; // 512*2<=>1 idCat
-				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
 					k+=0.25; // 512*4<=>1 idCat
 				}
 			}
@@ -185,11 +185,10 @@ public class DskMaster {
 		} else if (type==DskType.VORTEX || type==DskType.DOSD10) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=4; // 1 idCat<=>4*512 sector
-		} else if (type==DskType.DOSD2) {
+		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			cats.catId=4; // min(catId)
 			catIdModuloMod=4; // 1 idCat<=>4*512 sector
 		}
-		
 		
 		
 		List<DskSector> allCSectors = new ArrayList<DskSector>(allSectors);
@@ -214,7 +213,7 @@ public class DskMaster {
 					allCatsSector.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					allCatsSector.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						allCatsSector.add(allCSectors.get(i+2));
 						allCatsSector.add(allCSectors.get(i+3));
 //						allCatsSector.add(allCSectors.get(i+4));
@@ -225,7 +224,7 @@ public class DskMaster {
 					cats.catSectors.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					cats.catSectors.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						cats.catSectors.add(allCSectors.get(i+2));
 						cats.catSectors.add(allCSectors.get(i+3));
 //						cats.catSectors.add(allCSectors.get(i+4));
@@ -306,6 +305,13 @@ public class DskMaster {
 			if (trackC==0 && sideH==1 && (sectorIdR & 0x0F)<=7) {
 				return true;
 			}
+		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
+			if (trackC==0 && sideH==0) {
+				return true;
+			}
+			if (trackC==0 && sideH==1 && (sectorIdR & 0x0F)<=6) {
+				return true;
+			}
 		}
 		return false;
 	}
@@ -353,6 +359,25 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x25));
 			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x26));
 			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x27));
+		} else if (type==DskType.DOSD20) {
+			DskTrack track0 = tracks.get(0);
+			DskTrack track0side1 = tracks.get(1);
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x31));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x32));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x33));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x34));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x35));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x36));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x37));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x38));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x39));
+			catalogs.add((DskSectorCatalogs) find0F(track0,0x3A));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x31));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x32));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x33));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x34));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x35));
+			catalogs.add((DskSectorCatalogs) find0F(track0side1,0x36));
 		}
 		return catalogs;
 	}
