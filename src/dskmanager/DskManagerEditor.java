@@ -251,11 +251,15 @@ public class DskManagerEditor extends JFrame {
                     for (int t : table.getSelectedRows()) {
                         try {
                             dm.eraseFile(dskFile, (String) table.getValueAt(t, 0));
-                            updateTable();
                         } catch (IOException e1) {
                             e1.printStackTrace();
                         }
                     }
+                    try {
+						updateTable();
+					} catch (IOException e1) {
+						e1.printStackTrace();
+					}
                 }
             }
         });
