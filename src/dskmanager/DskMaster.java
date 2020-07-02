@@ -75,7 +75,7 @@ public class DskMaster {
 		
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
-		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40) {
+		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
@@ -102,7 +102,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.DOSD40 || type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
+					} else if (type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 						if ((b & 0xff) == k) {
 							cats.add((int)(b & 0xff));
 							allCatsId.add((int)(b & 0xff));
@@ -128,7 +128,7 @@ public class DskMaster {
 	public List<DskSector> findCatsSector(byte[] entriesSector) {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
-		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40) {
+		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
@@ -155,7 +155,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD40) {
+					} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD40 || type==DskType.SDOS) {
 						if ((b & 0xff) == Math.floor(k)) {
 							cats.add(sector);
 							allCatsSector.add(sector);
@@ -165,7 +165,7 @@ public class DskMaster {
 				// idem que moduloMod 2 de nextFreeCat()
 				if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 					k+=0.5; // 512*2<=>1 idCat
-				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.VORTEX) {
+				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.VORTEX) {
 					k+=0.25; // 512*4<=>1 idCat
 				}
 			}
@@ -188,7 +188,7 @@ public class DskMaster {
 		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=2; // 1 idCat<=>2*512 sector
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=4; // 1 idCat<=>4*512 sector
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
@@ -219,7 +219,7 @@ public class DskMaster {
 					allCatsSector.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					allCatsSector.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.SDOS || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						allCatsSector.add(allCSectors.get(i+2));
 						allCatsSector.add(allCSectors.get(i+3));
 //						allCatsSector.add(allCSectors.get(i+4));
@@ -230,7 +230,7 @@ public class DskMaster {
 					cats.catSectors.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
 					cats.catSectors.add(allCSectors.get(i+1));
-					if (type==DskType.DOSD2 || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.SDOS || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						cats.catSectors.add(allCSectors.get(i+2));
 						cats.catSectors.add(allCSectors.get(i+3));
 //						cats.catSectors.add(allCSectors.get(i+4));
@@ -300,7 +300,7 @@ public class DskMaster {
 			if (trackC==2 && sideH==0 && (sectorIdR & 0x0F)<=4) {
 				return true;
 			}
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=8) {
 				return true;
 			}
@@ -336,7 +336,7 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x42));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x43));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x44));
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40) {
+		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			DskTrack track0 = tracks.get(0);
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x21));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x22));

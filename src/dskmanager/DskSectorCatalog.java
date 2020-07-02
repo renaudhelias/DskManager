@@ -67,7 +67,7 @@ public class DskSectorCatalog {
 		bos.write(new byte[]{(byte)sectorLength});
 		
 		int nbTrou=0;
-		if (master.type==DskType.DOSD40) {
+		if (master.type==DskType.DOSD40 || master.type==DskType.SDOS) {
 			if (previousCats != null && previousCats.get(filename)!=null) {
 				leftEntries = !previousCats.get(filename).leftEntries;
 				previousCats.put(filename, this);
@@ -83,7 +83,7 @@ public class DskSectorCatalog {
 			}
 		}
 		for (Integer cat:catsId) {
-			if (master.type==DskType.DOSD40) {
+			if (master.type==DskType.DOSD40 || master.type==DskType.SDOS) {
 				// first part of entriesSector or else last part of entrieSector
 				// 8 catIds by here only.
 				bos.write((byte) cat.intValue());

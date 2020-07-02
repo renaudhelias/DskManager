@@ -159,7 +159,7 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.PARADOS41, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.DOSD20, DskType.DOSD40, DskType.SYSTEM, DskType.VORTEX};
+                        Object[] values = new Object[] {DskType.PARADOS41, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.DOSD20, DskType.DOSD40, DskType.SDOS,  DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.PARADOS41.equals(dialogResult)) {
@@ -178,6 +178,8 @@ public class DskManagerEditor extends JFrame {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD20);
                         } else if (DskType.DOSD40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.DOSD40);
+                        } else if (DskType.SDOS.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SDOS);
                         }
                         if (dialogResult != null) {
 	                        table.setBackground(Color.WHITE);
@@ -307,6 +309,8 @@ public class DskManagerEditor extends JFrame {
         	freeSize = 792;
         } else if (dskFile.master.type == DskType.DOSD40) {
         	freeSize = 396;
+        } else if (dskFile.master.type == DskType.SDOS) {
+        	freeSize = 396;
         }
         List<String> filenames = new ArrayList<String>(list.keySet());
         Collections.sort(filenames);
@@ -350,7 +354,7 @@ public class DskManagerEditor extends JFrame {
             if (list.get(filename).size() % 1024 > 0) {
                 taille += 1;
             }
-            if (dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.DOSD40 || dskFile.master.type == DskType.VORTEX) {
+            if (dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.DOSD40 || dskFile.master.type == DskType.SDOS || dskFile.master.type == DskType.VORTEX) {
                 if ((taille / 2) * 2 != taille) {
                     taille += 1; // DOSD2 min file size is 2KB
                 }
