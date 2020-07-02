@@ -31,6 +31,7 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  * Formats marked 'E' in the format list above are ELECTRO formats (so exploited by hackers ParaDOS RSX)
  *
  * IBM : save"hello.bas" cat:nothing ! ucpm:nothing also, 2 catList
+ * DOSD10 : idem que VORTEX.
  * PARADOS80 : countSectorIncrement commence a 1 pour les fichiers sur plusieurs entryCats, puis devient anarchique
  * PARADOS80 : la taille arrive a 0x80 2 fois plus tot.
  * PARADOS80 : test import PDF via DskManager et export PDF via WinAPE : KO 
