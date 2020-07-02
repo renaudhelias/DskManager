@@ -91,12 +91,7 @@ public class DskSectorCatalog {
 				byte k1=(byte)(cat & 0xff);
 				byte k2=(byte)((cat & 0xff00) >> 8);
 				bos.write(k1);
-				if (master.type==DskType.DOSD40) {
-					// only half of entriesSector is used :p
-					bos.write(0);
-				} else {
-					bos.write(k2);
-				}
+				bos.write(k2);
 				nbTrou++;
 			} else if (master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM) {
 				bos.write((byte) cat.intValue());
