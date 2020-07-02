@@ -376,4 +376,40 @@ public class DskManagerTest {
 		DskFile dskFile = dm.loadDsk(currentDir, "jdvpa10_test8.dsk");
 		assertEquals(dskFile.master.type,DskType.DOSD10);
 	}
+
+	@Test
+	public void testDOSD40() throws IOException {
+		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test9.dsk", DskType.DOSD40);
+		dm.addFile(dskFile, currentDir, "boum4096.txt", false);
+		dskFile = dm.loadDsk(currentDir, "jdvpa10_test9.dsk");
+		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
+		ByteArrayOutputStream fileEntry = list.get("BOUM4096.TXT");
+		assertEquals(fileEntry.toByteArray().length, 4096);
+		
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+		List<DskSector> sectorUsed = new ArrayList<DskSector>();
+		int length=0;
+		int count=0;
+		int countCatIds=0;
+		int countCatalog=0;
+		for (DskSectorCatalogs cats: catalogsC1C4) {
+			countCatalog++;
+			for (DskSectorCatalog cat:cats.cats) {
+				countCatIds+=cat.catsId.size();
+				for (DskSector sector:cat.catsSector) {
+					length+=sector.data.length;
+					count++;
+					sectorUsed.add(sector);
+				}
+			}
+		}
+		assertEquals(dskFile.master.allCatsId.size(),2);
+		assertEquals(dskFile.master.allCatsSector.size(),4*2);
+		assertEquals(countCatIds,2);
+		assertEquals(countCatalog,8);
+		assertEquals(count,8);
+		assertEquals(length, 4096);
+		assertEquals(length/count, 512);
+	}
+
 }

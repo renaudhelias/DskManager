@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * le cat vise des paquets de 1024
@@ -27,19 +28,16 @@ import java.util.List;
 public class DskSectorCatalogs extends DskSector {
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
-//	public DskSectorCatalogs(DskMaster master,int track) {
-//		super(master,track);
-//	}
-
+	
 	public DskSectorCatalogs(DskSector sector) {
 		super(sector);
 	}
 
-	public void scanCatalog() throws IOException {
+	public void scanCatalog(Map<String, DskSectorCatalog> previousCats) throws IOException {
 		// fill data from cats
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		for (DskSectorCatalog cat:cats) {
-			cat.scan(baos);
+			cat.scan(baos, previousCats);
 		}
 		for (int i=cats.size()*0x20;i<master.sectorSizes[sectorSizeN];i++) {
 			baos.write(0xE5);
@@ -69,6 +67,7 @@ public class DskSectorCatalogs extends DskSector {
 		for (int c=0;c<data.length/0x20;c++) {
 			DskSectorCatalog cat = new DskSectorCatalog(master);
 			if (cat.scan(bis)) {
+				System.out.println("DskSectorCatalog entry");
 				cats.add(cat);
 			}
 		}

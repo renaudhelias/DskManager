@@ -5,6 +5,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * One per filename
@@ -22,6 +23,7 @@ public class DskSectorCatalog {
 	int sectorIncrement;
 	int sectorLength;
 	byte [] entriesSector = new byte[0x10];
+	boolean leftEntries=true;
 	
 	public DskSectorCatalog(DskMaster master) {
 		this.master = master;
@@ -49,7 +51,7 @@ public class DskSectorCatalog {
 		return true;
 	}
 	
-	public void scan(ByteArrayOutputStream bos) throws IOException {
+	public void scan(ByteArrayOutputStream bos, Map<String, DskSectorCatalog> previousCats) throws IOException {
 		if (jocker == 0xE5) {
 			// fill 0xE5
 			for (int i = 0;i<0x20;i++) {
@@ -65,12 +67,36 @@ public class DskSectorCatalog {
 		bos.write(new byte[]{(byte)sectorLength});
 		
 		int nbTrou=0;
+		if (master.type==DskType.DOSD40) {
+			if (previousCats != null && previousCats.get(filename)!=null) {
+				leftEntries = !previousCats.get(filename).leftEntries;
+				previousCats.put(filename, this);
+			} else {
+				leftEntries = true;
+				previousCats.put(filename, this);
+			}
+			if (!leftEntries) {
+				for (int k=0;k<8;k++) {
+					bos.write(0);
+					nbTrou++;
+				}
+			}
+		}
 		for (Integer cat:catsId) {
-			if (master.type==DskType.DOSD2 || master.type==DskType.DOSD10 || master.type==DskType.DOSD20 || master.type==DskType.VORTEX) {
+			if (master.type==DskType.DOSD40) {
+				// first part of entriesSector or else last part of entrieSector
+				// 8 catIds by here only.
+				bos.write((byte) cat.intValue());
+			} else if (master.type==DskType.DOSD2 || master.type==DskType.DOSD10 || master.type==DskType.DOSD20 || master.type==DskType.VORTEX) {
 				byte k1=(byte)(cat & 0xff);
 				byte k2=(byte)((cat & 0xff00) >> 8);
 				bos.write(k1);
-				bos.write(k2);
+				if (master.type==DskType.DOSD40) {
+					// only half of entriesSector is used :p
+					bos.write(0);
+				} else {
+					bos.write(k2);
+				}
 				nbTrou++;
 			} else if (master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM) {
 				bos.write((byte) cat.intValue());

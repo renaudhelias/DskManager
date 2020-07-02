@@ -14,8 +14,10 @@ import java.io.RandomAccessFile;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DskManager {
 	
@@ -74,6 +76,7 @@ public class DskManager {
 		int [] sectorId_DOSD2={0x21,0x26,0x22,0x27,0x23,0x28,0x24,0x29,0x25};
 		int [] sectorId_DOSD10={0x11,0x16,0x12,0x17,0x13,0x18,0x14,0x19,0x15,0x1A};
 		int [] sectorId_DOSD20={0x31,0x36,0x32,0x37,0x33,0x38,0x34,0x39,0x35,0x3A};
+		int [] sectorId_DOSD40={0x51,0x56,0x52,0x57,0x53,0x58,0x54,0x59,0x55,0x5A};
 		int [] sectorId_VORTEX={0x01,0x06,0x02,0x07,0x03,0x08,0x04,0x09,0x05}; // same as DOSD1
 		int [] sectorId_SYSTEM={0x41,0x46,0x42,0x47,0x43,0x48,0x44,0x49,0x45};
 		int [] sectorId=null;
@@ -92,6 +95,10 @@ public class DskManager {
 			sectorId=sectorId_DOSD20;
 			dskFile.nbSides=2;
 			dskFile.nbTracks=80;
+			dskFile.sizeOfTrack=0x15;
+		} else if (type == DskType.DOSD40) {
+			sectorId=sectorId_DOSD40;
+			dskFile.nbSides=2;
 			dskFile.sizeOfTrack=0x15;
 		} else if (type == DskType.DOSD2) {
 			sectorId=sectorId_DOSD2;
@@ -120,7 +127,7 @@ public class DskManager {
 				DskTrack dskTrack = new DskTrack(dskFile.master);
 				if (type==DskType.DOSD2 || type==DskType.SYSTEM || type==DskType.VORTEX) {
 					dskTrack.gap=0x52; // for tests (WinAPE)
-				} else if (type==DskType.PARADOS41 || type==DskType.DOSD10 || type==DskType.DOSD20) {
+				} else if (type==DskType.PARADOS41 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40) {
 					dskTrack.gap=0x10; // for tests (WinAPE)
 					dskTrack.nbSectors=0xA;
 				}
@@ -144,12 +151,6 @@ public class DskManager {
 					dskFile.master.allSectors.add(sector);
 				}
 				//garbage "0" at end of Track-Info
-//				int garbage=0x1D-dskTrack.nbSectors;
-//				for (int j=0;j<garbage;j++) {
-//					for (int k=0;k<8;k++) {
-//						fos.write(0);
-//					}
-//				}
 				for (int j=0;j<0xE8-dskTrack.nbSectors*8;j++) {
 					fos.write(0);
 				}
@@ -213,6 +214,8 @@ public class DskManager {
 							dskFile.master.type=DskType.DOSD10;
 						} else if ((sector.sectorIdR & 0xF0)==0x30) {
 							dskFile.master.type=DskType.DOSD20;
+						} else if ((sector.sectorIdR & 0xF0)==0x50) {
+							dskFile.master.type=DskType.DOSD40;
 						} else if ((sector.sectorIdR & 0xF0)==0x00 && dskTrack.nbSectors == 9) {
 							dskFile.master.type=DskType.VORTEX;
 						} else if ((sector.sectorIdR & 0xF0)==0x40) {
@@ -225,6 +228,7 @@ public class DskManager {
 					dskTrack.sectors.add(sector);
 					dskFile.master.allSectors.add(sector);
 				}
+				//garbage "0" at end of Track-Info
 				System.out.println("garbage 0 debut : "+fis.getChannel().position());
 				fis.skip(0xE8-dskTrack.nbSectors*8);
 				System.out.println("garbage 0 fin : "+fis.getChannel().position());
@@ -232,7 +236,7 @@ public class DskManager {
 					System.out.println("avant scanData sector : "+fis.getChannel().position());
 					sector.scanData(fis);
 				}
-				System.out.print("haouh");
+				System.out.println("haouh");
 			}
 		}
 		fis.close();
@@ -280,14 +284,15 @@ public class DskManager {
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 		DskType type = dskFile.master.type;
 
+		Map<String,DskSectorCatalog>previousCats = new HashMap<String,DskSectorCatalog>();
 		for (DskSectorCatalogs catalog : catalogsC1C4) {
-			catalog.scanCatalog();
+			catalog.scanCatalog(previousCats);
 		}
-		
+		previousCats.clear();
 		
 		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
 		long entryDataSize=0;
-		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
+		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.VORTEX) {
 			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
 		} else if (type==DskType.PARADOS41  || type==DskType.SS40 || type==DskType.SYSTEM) {
@@ -303,7 +308,7 @@ public class DskManager {
 		int countSectorIncrement=0;
 		// un cat a 10 entrées
 		int entriesSectorCount=0x10;
-		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
+		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.VORTEX) {
 			entriesSectorCount=0x08;
 		}
 		while (nbEntry>0) {
@@ -344,15 +349,17 @@ public class DskManager {
 		RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
 		List<DskSectorCatalog> catalogsData= new ArrayList<DskSectorCatalog>(catalogs);
 		// depile cat
+		previousCats = new HashMap<String,DskSectorCatalog>();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
 			while (catalogC1C4.cats.size()<16 && !catalogs.isEmpty()) {
 				catalogC1C4.cats.add(catalogs.get(0));
 				catalogs.remove(0);
 				// data from cats
-				catalogC1C4.scanCatalog();
+				catalogC1C4.scanCatalog(previousCats);
 				catalogC1C4.scanData(fos);
 			}
 		}
+		previousCats.clear();
 		
 		FileInputStream fis = new FileInputStream(file);
 		for (DskSectorCatalog e:catalogsData) {
@@ -406,6 +413,7 @@ public class DskManager {
 	public void renameFile(DskFile dskFile, String oldFileName, String newFileName) throws IOException {
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 
+		Map<String,DskSectorCatalog> previousCats = new HashMap<String,DskSectorCatalog>();
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				if (dskFile.master.cpcname2realname(entryFile.filename).equals(oldFileName)){
@@ -413,10 +421,12 @@ public class DskManager {
 				}
 			}
 			RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
-			cat.scanCatalog();
+			cat.scanCatalog(previousCats);
 			cat.scanData(fos);
 			fos.close();
 		}
+		previousCats.clear();
+		
 		dskFile.master.allCatsId.clear();
 		dskFile.master.allCatsSector.clear();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
@@ -427,18 +437,20 @@ public class DskManager {
 	public void eraseFile(DskFile dskFile, String fileName) throws IOException {
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 
+		Map<String,DskSectorCatalog> previousCats = new HashMap<String,DskSectorCatalog>();
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				if (dskFile.master.cpcname2realname(entryFile.filename).equals(fileName)){
 					entryFile.jocker=0xE5;
 				}
 			}
-			
 			RandomAccessFile fos = new RandomAccessFile(dskFile.file, "rw");
-			cat.scanCatalog();
+			cat.scanCatalog(previousCats);
 			cat.scanData(fos);
 			fos.close();
 		}
+		previousCats.clear();
+		
 		dskFile.master.allCatsId.clear();
 		dskFile.master.allCatsSector.clear();
 		for (DskSectorCatalogs catalogC1C4 : catalogsC1C4) {
