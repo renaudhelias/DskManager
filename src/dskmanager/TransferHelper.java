@@ -60,6 +60,8 @@ public class TransferHelper extends TransferHandler {
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
         try {
+        	boolean generateAMSDOSHeader = false;
+        	boolean generateAMSDOSHeaderDone = false;
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
         		String realrealname = dskManagerEditor.dskFile.master.realname2realname(file.getName());
         		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
@@ -68,11 +70,16 @@ public class TransferHelper extends TransferHandler {
         				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
         				dskManagerEditor.setTitle("CPC Dsk Manager - " + dskManagerEditor.dskFile.file.getName() + " - " + dskManagerEditor.dskFile.master.type);
         			} else if (dskManagerEditor.freeSize*1024 >= file.length()) {
-        				boolean generateAMSDOSHeader = (JOptionPane.showConfirmDialog(dskManagerEditor, "Add AMSDOS Header", "WARNING",
+        				if (!generateAMSDOSHeaderDone) {
+        					// Ask only one time this question
+        					generateAMSDOSHeader = (JOptionPane.showConfirmDialog(dskManagerEditor, "Add AMSDOS Header", "WARNING",
         				        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
+        					generateAMSDOSHeaderDone = true;
+        				}
         				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), generateAMSDOSHeader ? true : null);
             		} else {
             			JOptionPane.showMessageDialog(dskManagerEditor, "Full disk.", "Warning", JOptionPane.ERROR_MESSAGE);
+            			break;
         			}
         		} else {
         			// replace ? no.
