@@ -163,7 +163,7 @@ public class DskManagerEditor extends JFrame {
                     try {
                         Object[] values = new Object[] {DskType.PARADOS41, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.DOSD20, DskType.DOSD40, DskType.SDOS,  DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
-						Object dialogResult = JOptionPane.showInputDialog(null, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
+						Object dialogResult = JOptionPane.showInputDialog(DskManagerEditor.this, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.PARADOS41.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.PARADOS41);
                         } else if (DskType.SS40.equals(dialogResult)) {

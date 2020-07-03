@@ -68,7 +68,7 @@ public class TransferHelper extends TransferHandler {
         				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
         				dskManagerEditor.setTitle("CPC Dsk Manager - " + dskManagerEditor.dskFile.file.getName() + " - " + dskManagerEditor.dskFile.master.type);
         			} else if (dskManagerEditor.freeSize*1024 >= file.length()) {
-        				boolean generateAMSDOSHeader = (JOptionPane.showConfirmDialog(null, "Add AMSDOS Header", "WARNING",
+        				boolean generateAMSDOSHeader = (JOptionPane.showConfirmDialog(dskManagerEditor, "Add AMSDOS Header", "WARNING",
         				        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
         				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), generateAMSDOSHeader);
             		} else {
