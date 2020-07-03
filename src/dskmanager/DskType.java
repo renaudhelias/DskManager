@@ -35,7 +35,8 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  * PARADOS80 : countSectorIncrement commence a 1 pour les fichiers sur plusieurs entryCats, puis devient anarchique
  * PARADOS80 : la taille arrive a 0x80 2 fois plus tot.
  * PARADOS80 : test import PDF via DskManager et export PDF via WinAPE : KO 
- * PARADOS40D : track 1 contains DATA+emptyDATA, track 2 contains DATA+emptyDATA
+ * PARADOS40D : countSectorIncrement commence a 1 pour les fichiers sur plusieurs entryCats, puis devient anarchique
+ * PARADOS40D : la taille arrive a 0x80 2 fois plus tot.
  * ULTRAFORM : sector 0x10 0x11 0x12 0x13. WinAPE write 0x10 and read catalog 0x11. 
 **/
 public enum DskType {
