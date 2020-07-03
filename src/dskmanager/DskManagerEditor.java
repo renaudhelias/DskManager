@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -40,6 +41,7 @@ public class DskManagerEditor extends JFrame {
     protected DskFile dskFile;
     // filename=> baos
     LinkedHashMap<String, ByteArrayOutputStream> list;
+	Map<String, Integer> users;
 
     JPanel bottomMenu = new JPanel();
     JPanel infoContent = new JPanel();
@@ -89,9 +91,9 @@ public class DskManagerEditor extends JFrame {
             @Override
             public TableCellRenderer getCellRenderer(int row, int column) {
                 DefaultTableCellRenderer renderRight = new DefaultTableCellRenderer();
-                if (column == 1) {
+                if (column == 2) {
                     renderRight.setHorizontalAlignment(SwingConstants.RIGHT);
-                } else if (column > 1 || column == 0) {
+                } else if (column > 2 || column == 0) {
                     renderRight.setHorizontalAlignment(SwingConstants.CENTER);
                 } else {
                     renderRight.setHorizontalAlignment(SwingConstants.LEFT);
@@ -267,6 +269,7 @@ public class DskManagerEditor extends JFrame {
         });
 
         model.addColumn("Filename");
+        model.addColumn("User");
         model.addColumn("Size");
         model.addColumn("Type");
         model.addColumn("Attributes");
@@ -292,6 +295,7 @@ public class DskManagerEditor extends JFrame {
         model.setRowCount(0);
 
         list = dm.listFiles(dskFile);
+        users = dm.getUserPerFile(dskFile);
         freeSize = 0;
         if (dskFile.master.type == DskType.PARADOS41) {
             freeSize = 203;
@@ -315,6 +319,7 @@ public class DskManagerEditor extends JFrame {
         List<String> filenames = new ArrayList<String>(list.keySet());
         Collections.sort(filenames);
         for (String filename : filenames) {
+        	Integer user = users.get(filename);
             byte[] content = list.get(filename).toByteArray();
             // has AMSDOS Header, so is a binary (like ManageDsk)
             boolean isBinary = dskFile.master.CheckAMSDOS(content);
@@ -359,7 +364,7 @@ public class DskManagerEditor extends JFrame {
                     taille += 1; // DOSD2 min file size is 2KB
                 }
             }
-            model.addRow(new Object[]{filename, (taille) + "kb", isBinary ? Type : "ASC", attr});
+            model.addRow(new Object[]{filename, ":"+user, (taille) + "kb", isBinary ? Type : "ASC", attr});
             freeSize -= taille;
         }
         info.setText("Free: " + freeSize + "kb");
@@ -367,7 +372,7 @@ public class DskManagerEditor extends JFrame {
 
     public static void main(String[] args) {
         jFrame = new DskManagerEditor();
-        jFrame.setSize(380, 400);
+        jFrame.setSize(475, 400);
         jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         jFrame.setVisible(true);
     }

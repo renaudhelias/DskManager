@@ -478,7 +478,7 @@ public class DskManager {
 					if (listFiles.containsKey(key)) {
 						if (checkAMSDOS) {
 							listFiles.get(key).write(sector.data,0,Math.min(sector.data.length,fileLength));
-							fileLength-=sector.data.length;
+							fileLength-=Math.min(sector.data.length,fileLength);
 						} else {
 							listFiles.get(key).write(sector.data);
 						}
@@ -494,7 +494,7 @@ public class DskManager {
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
 						if (checkAMSDOS) {
 							baos.write(sector.data,0,Math.min(sector.data.length,fileLength));
-							fileLength-=sector.data.length;
+							fileLength-=Math.min(sector.data.length,fileLength);
 						} else {
 							baos.write(sector.data);
 						}
@@ -511,4 +511,14 @@ public class DskManager {
 		return listFiles;
 	}
 	
+	Map<String,Integer> getUserPerFile(DskFile dskFile) {
+		HashMap<String,Integer> users = new HashMap<String,Integer>();
+		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
+		for (DskSectorCatalogs cat : catalogsC1C4) {
+			for (DskSectorCatalog entryFile : cat.cats) {
+				users.put(dskFile.master.cpcname2realname(entryFile.filename), entryFile.jocker);
+			}
+		}
+		return users;
+	}
 }
