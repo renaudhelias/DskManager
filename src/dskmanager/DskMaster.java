@@ -271,7 +271,7 @@ public class DskMaster {
 	public String realname2cpcname(String realname) {
     	String cpcname = realname.toUpperCase();
     	if (cpcname.contains(".")) {
-            int point = cpcname.indexOf(".");
+            int point = cpcname.lastIndexOf(".");
             String filename = cpcname.substring(0, point);
             filename = filename + "        ";
             filename = filename.substring(0, 8);
