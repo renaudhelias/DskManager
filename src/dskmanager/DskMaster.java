@@ -413,6 +413,14 @@ public class DskMaster {
 	    return false;
 	  }
 
+	public int getFileLengthAMSDOSHeader(byte[] pHeader) {
+		int length=0;
+		length+=pHeader[25] & 0xff;
+		length=length << 8;
+		length+=pHeader[24] & 0xff;
+		return length;
+	}
+	  
 	public byte[] GenerateAMSDOSHeader(String filename, long fileLength) {
 		byte[] pHeader=new byte[128];
 //		Byte 00: User number (value from 0 to 15 or #E5 for deleted entries)

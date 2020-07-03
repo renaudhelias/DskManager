@@ -468,17 +468,36 @@ public class DskManager {
 	public LinkedHashMap<String,ByteArrayOutputStream> listFiles(DskFile dskFile) throws IOException {
 		LinkedHashMap<String,ByteArrayOutputStream> listFiles = new LinkedHashMap<String,ByteArrayOutputStream>();
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
-
+		int fileLength=0;
+		boolean checkAMSDOS=false;
 		for (DskSectorCatalogs cat : catalogsC1C4) {
 			for (DskSectorCatalog entryFile : cat.cats) {
 				
 				for (DskSector sector:entryFile.catsSector) {
 					String key = dskFile.master.cpcname2realname(entryFile.filename);
 					if (listFiles.containsKey(key)) {
-						listFiles.get(key).write(sector.data);
+						if (checkAMSDOS) {
+							listFiles.get(key).write(sector.data,0,Math.min(sector.data.length,fileLength));
+							fileLength-=sector.data.length;
+						} else {
+							listFiles.get(key).write(sector.data);
+						}
 					} else {
+						
+						//getFileLengthAMSDOSHeader
+						checkAMSDOS=dskFile.master.CheckAMSDOS(sector.data);
+						if (checkAMSDOS) {
+							// taille reel
+							fileLength=128+dskFile.master.getFileLengthAMSDOSHeader(sector.data);
+						}
+						
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
-						baos.write(sector.data);
+						if (checkAMSDOS) {
+							baos.write(sector.data,0,Math.min(sector.data.length,fileLength));
+							fileLength-=sector.data.length;
+						} else {
+							baos.write(sector.data);
+						}
 						listFiles.put(key,baos);
 					}
 					
