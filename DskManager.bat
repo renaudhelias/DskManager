@@ -1,4 +1,4 @@
 @echo off
-start javaw -jar DskManager.jar
+java -jar DskManager.jar
 pause
 exit
