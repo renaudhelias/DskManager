@@ -70,7 +70,7 @@ public class TransferHelper extends TransferHandler {
         			} else if (dskManagerEditor.freeSize*1024 >= file.length()) {
         				boolean generateAMSDOSHeader = (JOptionPane.showConfirmDialog(dskManagerEditor, "Add AMSDOS Header", "WARNING",
         				        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
-        				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), generateAMSDOSHeader);
+        				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), generateAMSDOSHeader ? true : null);
             		} else {
             			JOptionPane.showMessageDialog(dskManagerEditor, "Full disk.", "Warning", JOptionPane.ERROR_MESSAGE);
         			}
@@ -82,6 +82,7 @@ public class TransferHelper extends TransferHandler {
         	dskManagerEditor.updateTable();
         } 
         catch (Exception e) {
+        	e.printStackTrace();
         	return false;
         }
          

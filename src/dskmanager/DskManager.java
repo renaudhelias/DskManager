@@ -260,29 +260,28 @@ public class DskManager {
 	 * @param dskFile
 	 * @param currentDir
 	 * @param fileName
-	 * @param generateAMSDOSHeader
+	 * @param generateAMSDOSHeader true : generate, null : nothing, false : remove
 	 * @throws IOException
 	 */
-	public void addFile(DskFile dskFile, File currentDir, String fileName, boolean generateAMSDOSHeader) throws IOException {
+	public void addFile(DskFile dskFile, File currentDir, String fileName, Boolean generateAMSDOSHeader) throws IOException {
 		// file ici est le fichier dans le cat. Faut ouvrir le fichier lui même.
 		File file = new File(currentDir,fileName);
-		if (generateAMSDOSHeader) {
-			byte[] pHeader=new byte[128];
+		byte[] pHeader=new byte[0];
+		boolean skipHeader128=false;
+		if (generateAMSDOSHeader != null) {
+			pHeader=new byte[128];
 			FileInputStream fis= new FileInputStream(file);
 			fis.read(pHeader);
 			fis.close();
 			if (dskFile.master.CheckAMSDOS(pHeader)) {
 				System.out.println("AMSDOS is here");
-				generateAMSDOSHeader=false;
-			}
-			if (generateAMSDOSHeader) {
-				Path path = file.toPath();
+				pHeader=new byte[0];
+				if (!generateAMSDOSHeader) {
+					// remove AMSDOS (hidden feature)
+					skipHeader128 = true;
+				}
+			} else if (generateAMSDOSHeader) {
 				pHeader=dskFile.master.GenerateAMSDOSHeader(file.getName(), file.length());
-				byte [] content = Files.readAllBytes(path);
-				FileOutputStream fos = new FileOutputStream(file);
-				fos.write(pHeader);
-				fos.write(content);
-				fos.close();
 			}
 		}
 		
@@ -305,8 +304,8 @@ public class DskManager {
 		} else if (type==DskType.PARADOS41  || type==DskType.SS40 || type==DskType.SYSTEM) {
 			entryDataSize=dskFile.master.sectorSizes[2] * 2;
 		}
-		int nbEntry = (int)(file.length()/entryDataSize);
-		int lastEntry = (int)(file.length()%entryDataSize);
+		int nbEntry = (int)((file.length()+pHeader.length)/entryDataSize);
+		int lastEntry = (int)((file.length()+pHeader.length)%entryDataSize);
 		if (lastEntry>0) {
 			nbEntry++;
 		}
@@ -369,10 +368,19 @@ public class DskManager {
 		previousCats.clear();
 		
 		FileInputStream fis = new FileInputStream(file);
+		if (skipHeader128) {
+			fis.skip(128);
+		}
 		for (DskSectorCatalog e:catalogsData) {
 			for (DskSector d:e.catsSector) {
-				d.data=new byte[Math.min(dskFile.master.sectorSizes[d.sectorSizeN],fis.available())];
-				fis.read(d.data);
+				d.data=new byte[Math.min(dskFile.master.sectorSizes[d.sectorSizeN],fis.available()+pHeader.length)];
+				if (pHeader.length>0) {
+					System.arraycopy(pHeader, 0, d.data, 0, 128);
+				}
+				fis.read(d.data,pHeader.length,Math.min(d.data.length-pHeader.length,fis.available()));
+				if (pHeader.length>0) {
+					pHeader=new byte [0];
+				}
 				d.scanData(fos);
 			}
 		}
