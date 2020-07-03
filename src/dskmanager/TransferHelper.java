@@ -61,8 +61,12 @@ public class TransferHelper extends TransferHandler {
         Transferable t = info.getTransferable();
         try {
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
-        		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(dskManagerEditor.dskFile.master.realname2realname(file.getName()))) {
-        			if (dskManagerEditor.freeSize*1024 >= file.length()) {
+        		String realrealname = dskManagerEditor.dskFile.master.realname2realname(file.getName());
+        		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
+        			if (realrealname.endsWith(".DSK")) {
+        				// load dsk
+        				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
+        			} else if (dskManagerEditor.freeSize*1024 >= file.length()) {
         				boolean generateAMSDOSHeader = (JOptionPane.showConfirmDialog(null, "Add AMSDOS Header", "WARNING",
         				        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION);
         				dskManagerEditor.dm.addFile(dskManagerEditor.dskFile,file.getParentFile(), file.getName(), generateAMSDOSHeader);
