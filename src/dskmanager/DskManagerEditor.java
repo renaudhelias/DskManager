@@ -10,11 +10,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -200,9 +197,7 @@ public class DskManagerEditor extends JFrame {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SDOS);
                         }
                         if (dialogResult != null) {
-	                        table.setBackground(Color.WHITE);
 	                        updateTable();
-	                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                         }
                         Settings.set(Settings.lastpath, fileToSave.getParent() + "/");
                         Settings.set(Settings.lastopened, fileToSave.getAbsolutePath());
@@ -242,9 +237,7 @@ public class DskManagerEditor extends JFrame {
                     File fileToLoad = jfc.getSelectedFile();
                     try {
                         dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
-                        table.setBackground(Color.WHITE);
                         updateTable();
-                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                         Settings.set(Settings.lastpath, jfc.getSelectedFile().getParent()+"/");
                         Settings.set(Settings.lastopened, jfc.getSelectedFile().getAbsolutePath());
                     } catch (IOException e1) {
@@ -296,9 +289,7 @@ public class DskManagerEditor extends JFrame {
                     File fileToLoad = new File(file);
                     try {
                         dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
-                        table.setBackground(Color.WHITE);
                         updateTable();
-                        setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
                         Settings.set(Settings.lastpath, fileToLoad.getParent()+"/");
                         Settings.set(Settings.lastopened, fileToLoad.getAbsolutePath());
                     } catch (Exception e1) {
@@ -383,7 +374,18 @@ public class DskManagerEditor extends JFrame {
             model.addRow(new Object[]{filename, ":"+user, (taille) + "kb", isBinary ? Type : "ASC", attr});
             freeSize -= taille;
         }
-        info.setText("Free: " + freeSize + "kb");
+        
+        if (dskFile.master.type == null) {
+            info.setText("");
+        	setTitle("CPC Dsk Manager - " + dskFile.file.getName());
+        	table.setBackground(Color.LIGHT_GRAY);
+        	JOptionPane.showMessageDialog(DskManagerEditor.this, "Disk unknown");
+        } else {
+            info.setText("Free: " + freeSize + "kb");
+        	setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
+        	table.setBackground(Color.WHITE);
+        }
+        
     }
 
     public static void main(String[] args) throws SecurityException, IOException {

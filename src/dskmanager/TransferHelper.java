@@ -66,13 +66,13 @@ public class TransferHelper extends TransferHandler {
         	boolean generateAMSDOSHeader = false;
         	boolean generateAMSDOSHeaderDone = false;
         	for (File file : (List<File>)t.getTransferData(DataFlavor.javaFileListFlavor)) {
-        		String realrealname = dskManagerEditor.dskFile.master.realname2realname(file.getName());
-        		if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
-        			if (realrealname.endsWith(".DSK")) {
-        				// load dsk
-        				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
-        				dskManagerEditor.setTitle("CPC Dsk Manager - " + dskManagerEditor.dskFile.file.getName() + " - " + dskManagerEditor.dskFile.master.type);
-        			} else if (dskManagerEditor.freeSize*1024 >= file.length()) {
+        		String realrealname = (dskManagerEditor.dskFile == null ? null : dskManagerEditor.dskFile.master.realname2realname(file.getName()));
+    			if (file.getName().toUpperCase().endsWith(".DSK")) {
+    				// load dsk
+    				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
+    				dskManagerEditor.setTitle("CPC Dsk Manager - " + dskManagerEditor.dskFile.file.getName() + " - " + dskManagerEditor.dskFile.master.type);
+    			} else if (dskManagerEditor.dskFile != null && !dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
+        			if (dskManagerEditor.freeSize*1024 >= file.length()) {
         				if (!generateAMSDOSHeaderDone) {
         					// Ask only one time this question
         					generateAMSDOSHeader = (JOptionPane.showConfirmDialog(dskManagerEditor, "Add AMSDOS Header", "WARNING",
