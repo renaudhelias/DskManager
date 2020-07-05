@@ -99,7 +99,7 @@ public class TransferHelper extends TransferHandler {
         			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
         		}
         	}
-        	if (dskManagerEditor.dskFile != null || dskManagerEditor.dskFile.master.type != null) {
+        	if (dskManagerEditor.dskFile != null && dskManagerEditor.dskFile.master.type != null) {
         		dskManagerEditor.updateTable();
         	}
         } 
