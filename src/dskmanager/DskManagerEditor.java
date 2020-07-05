@@ -376,17 +376,25 @@ public class DskManagerEditor extends JFrame {
         }
         
         if (dskFile.master.type == null) {
-            info.setText("");
-        	setTitle("CPC Dsk Manager - " + dskFile.file.getName());
-        	table.setBackground(Color.LIGHT_GRAY);
-        	JOptionPane.showMessageDialog(DskManagerEditor.this, "Disk unknown");
+        	ejectTable();
         } else {
             info.setText("Free: " + freeSize + "kb");
         	setTitle("CPC Dsk Manager - " + dskFile.file.getName() + " - " + dskFile.master.type);
         	table.setBackground(Color.WHITE);
         }
-        
     }
+    
+	public void ejectTable() {
+		model.setRowCount(0);
+		info.setText("");
+		if (dskFile != null) {
+			setTitle("CPC Dsk Manager - " + dskFile.file.getName());
+		} else {
+			setTitle("CPC Dsk Manager");
+		}
+    	table.setBackground(Color.LIGHT_GRAY);
+	}
+
 
     public static void main(String[] args) throws SecurityException, IOException {
     	if (args.length == 0) {
@@ -403,5 +411,6 @@ public class DskManagerEditor extends JFrame {
     		LOGGER.info("OK");
     	}
     }
+
 
 }

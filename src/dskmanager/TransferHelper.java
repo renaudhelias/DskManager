@@ -1,5 +1,6 @@
 package dskmanager;
 
+import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -70,8 +71,14 @@ public class TransferHelper extends TransferHandler {
     			if (file.getName().toUpperCase().endsWith(".DSK")) {
     				// load dsk
     				dskManagerEditor.dskFile = dskManagerEditor.dm.loadDsk(file.getParentFile(), file.getName());
-    				dskManagerEditor.setTitle("CPC Dsk Manager - " + dskManagerEditor.dskFile.file.getName() + " - " + dskManagerEditor.dskFile.master.type);
-    			} else if (dskManagerEditor.dskFile != null && !dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
+    				if (dskManagerEditor.dskFile.master.type == null) {
+    					dskManagerEditor.ejectTable();
+    					JOptionPane.showMessageDialog(dskManagerEditor, "Disk unknown");
+    				}
+    			} else if (dskManagerEditor.dskFile == null || dskManagerEditor.dskFile.master.type == null) {
+    				dskManagerEditor.ejectTable();
+    				JOptionPane.showMessageDialog(dskManagerEditor, "Disk unknown");
+    			} else if (!dskManagerEditor.dm.listFiles(dskManagerEditor.dskFile).containsKey(realrealname)) {
         			if (dskManagerEditor.freeSize*1024 >= file.length()) {
         				if (!generateAMSDOSHeaderDone) {
         					// Ask only one time this question
@@ -89,7 +96,9 @@ public class TransferHelper extends TransferHandler {
         			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
         		}
         	}
-        	dskManagerEditor.updateTable();
+        	if (dskManagerEditor.dskFile!= null) {
+        		dskManagerEditor.updateTable();
+        	}
         } 
         catch (Exception e) {
         	e.printStackTrace();
