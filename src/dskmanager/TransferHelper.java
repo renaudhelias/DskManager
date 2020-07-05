@@ -12,6 +12,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Logger;
 
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
@@ -20,6 +21,8 @@ import javax.swing.TransferHandler;
 
 public class TransferHelper extends TransferHandler {
 
+	private final static Logger LOGGER = Logger.getLogger(DskManager.class.getName());
+	
 	private DskManagerEditor dskManagerEditor;
 
     public TransferHelper(DskManagerEditor dskManagerEditor) {
@@ -28,7 +31,7 @@ public class TransferHelper extends TransferHandler {
     
 	public boolean canImport(TransferHandler.TransferSupport info) {
         // Spammed => bien pour le curseur
-//    	System.out.println("canImport?");
+    	LOGGER.finest("canImport?");
         if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
         	dskManagerEditor.table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
@@ -51,10 +54,10 @@ public class TransferHelper extends TransferHandler {
          
         // Check for String flavor
         if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
-            System.out.println("List doesn't accept a drop of this type.");
+        	LOGGER.info("List doesn't accept a drop of this type.");
             return false;
         }
-//        System.out.println("from Desktop");
+        LOGGER.finer("from Desktop");
         dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 
         // Get the string that is being dropped.
@@ -102,7 +105,7 @@ public class TransferHelper extends TransferHandler {
      
     @Override
     protected Transferable createTransferable(JComponent c) {
-//    	System.out.println("to Desktop");
+    	LOGGER.finer("to Desktop");
     	
     	JTable list = (JTable)c;
         int[] values = list.getSelectedRows();
@@ -119,7 +122,7 @@ public class TransferHelper extends TransferHandler {
         	File tmpFile = new File(dossierTmp,filename);
         	tmpFile.deleteOnExit();
         	
-        	System.out.println("Creating File to move : "+tmpFile.getAbsolutePath());
+        	LOGGER.finer("Creating File to move : "+tmpFile.getAbsolutePath());
         	try {
 				FileOutputStream fos = new FileOutputStream(tmpFile);
 				fos.write(dskManagerEditor.list.get(filename).toByteArray());
@@ -136,7 +139,7 @@ public class TransferHelper extends TransferHandler {
 	@Override
 	protected void exportDone(JComponent c, Transferable t, int act) {
 		// Spammed => bien pour le curseur
-//		System.out.println("exportDone?");
+		LOGGER.finest("exportDone?");
 		if ((act == TransferHandler.MOVE) || (act == TransferHandler.NONE)) {
 			dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
 	    }

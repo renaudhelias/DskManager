@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.Properties;
+import java.util.logging.Logger;
 
 public class Settings {
+	
+	private final static Logger LOGGER = Logger.getLogger(DskManager.class.getName());
+	
   private static File file = new File(System.getProperty("user.home"), "/.DskManager/Settings.ini");
   
   private static final Settings instance = new Settings();
@@ -21,9 +25,9 @@ public class Settings {
       if (System.getSecurityManager() != null)
         System.getSecurityManager().checkRead(file.getAbsolutePath()); 
       this.props.load(new FileInputStream(file));
-      System.out.println("loaded " + this.props.size() + " favourites");
+      LOGGER.finer("loaded " + this.props.size() + " favourites");
     } catch (Throwable t) {
-      System.out.println("can't load user settings (" + t.getMessage() + ")");
+    	LOGGER.info("can't load user settings (" + t.getMessage() + ")");
     } 
   }
   
@@ -64,7 +68,7 @@ public class Settings {
     try {
       instance.props.clear();
       save();
-      System.out.println("Fsettings deleted...");
+      LOGGER.fine("Fsettings deleted...");
     } catch (Throwable throwable) {}
   }
   
@@ -78,7 +82,7 @@ public class Settings {
       instance.props.store(fos, "[Settings]");
       fos.close();
     } catch (Throwable t) {
-      System.out.println("can't save user settings (" + t.getMessage() + ")");
+    	LOGGER.info("can't save user settings (" + t.getMessage() + ")");
     } 
   }
 }

@@ -5,7 +5,7 @@
   <jar>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\DskManager.jar</jar>
   <outfile>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\DskManager_v1.1.4.exe</outfile>
   <errTitle></errTitle>
-  <cmdLine>--l4j-debug-all</cmdLine>
+  <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>

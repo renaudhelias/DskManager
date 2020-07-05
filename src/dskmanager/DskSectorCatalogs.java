@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 /**
  * le cat vise des paquets de 1024
@@ -26,6 +27,8 @@ import java.util.Map;
  *
  */
 public class DskSectorCatalogs extends DskSector {
+	
+	private final static Logger LOGGER = Logger.getLogger(DskManager.class.getName());
 	
 	List<DskSectorCatalog> cats = new ArrayList<DskSectorCatalog>();
 	
@@ -67,7 +70,7 @@ public class DskSectorCatalogs extends DskSector {
 		for (int c=0;c<data.length/0x20;c++) {
 			DskSectorCatalog cat = new DskSectorCatalog(master);
 			if (cat.scan(bis)) {
-				System.out.println("DskSectorCatalog entry");
+				LOGGER.fine("DskSectorCatalog entry");
 				cats.add(cat);
 			}
 		}

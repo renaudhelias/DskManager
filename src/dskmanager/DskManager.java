@@ -18,8 +18,11 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
 public class DskManager {
+	
+	private final static Logger LOGGER = Logger.getLogger(DskManager.class.getName());
 	
     protected byte[] CPM22SYS = null;
 	private static DskManager instance=null;
@@ -202,11 +205,11 @@ public class DskManager {
 			for (int s=0; s<dskFile.nbSides; s++) {
 				DskTrack dskTrack= new DskTrack(dskFile.master);
 				dskFile.tracks.add(dskTrack);
-				System.out.println("avant scan sdkTrack : "+fis.getChannel().position());
+				LOGGER.info("avant scan sdkTrack : "+fis.getChannel().position());
 				dskTrack.scan(fis);
 				for (int j=0;j<dskTrack.nbSectors;j++) {
 					DskSector sector = new DskSector(dskFile.master);
-					System.out.println("avant scan sector : "+fis.getChannel().position());
+					LOGGER.info("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					if (i==0 && s==0 && j==0) {
 						if ((sector.sectorIdR & 0xF0)==0x80) {
@@ -236,21 +239,20 @@ public class DskManager {
 					dskFile.master.allSectors.add(sector);
 				}
 				//garbage "0" at end of Track-Info
-				System.out.println("garbage 0 debut : "+fis.getChannel().position());
+				LOGGER.info("garbage 0 debut : "+fis.getChannel().position());
 				fis.skip(0xE8-dskTrack.nbSectors*8);
-				System.out.println("garbage 0 fin : "+fis.getChannel().position());
+				LOGGER.info("garbage 0 fin : "+fis.getChannel().position());
 				for (DskSector sector : dskTrack.sectors) {
-					System.out.println("avant scanData sector : "+fis.getChannel().position());
+					LOGGER.info("avant scanData sector : "+fis.getChannel().position());
 					sector.scanData(fis);
 				}
-				System.out.println("haouh");
 			}
 		}
 		fis.close();
 		// cats : on attache les secteurs pointé par la liste de sector cat
 		for(DskSectorCatalogs catalog :dskFile.master.buildCatalogs(dskFile.tracks)){
 			catalog.scanCatalogFromData();
-			System.out.println("sectorId:"+catalog.sectorIdR+" side:"+catalog.sideH);
+			LOGGER.info("sectorId:"+catalog.sectorIdR+" side:"+catalog.sideH);
 		}
 		return dskFile;
 	}
@@ -274,7 +276,6 @@ public class DskManager {
 			fis.read(pHeader);
 			fis.close();
 			if (dskFile.master.CheckAMSDOS(pHeader)) {
-				System.out.println("AMSDOS is here");
 				pHeader=new byte[0];
 				if (!generateAMSDOSHeader) {
 					// remove AMSDOS (hidden feature)
@@ -285,8 +286,7 @@ public class DskManager {
 			}
 		}
 		
-		
-		System.out.println("Récupération de C1-C2");
+		LOGGER.info("Récupération de C1-C4");
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
 		DskType type = dskFile.master.type;
 

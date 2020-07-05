@@ -10,13 +10,20 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileDescriptor;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 import javax.swing.DropMode;
 import javax.swing.ImageIcon;
@@ -37,6 +44,15 @@ import javax.swing.table.TableCellRenderer;
 
 public class DskManagerEditor extends JFrame {
 
+	 private static Logger LOGGER;
+
+	  static {
+	      System.setProperty("java.util.logging.config",
+	              "c:\\logging.properties");
+	      //must initialize loggers after setting above property
+	      LOGGER = Logger.getLogger(DskManager.class.getName());
+	  }
+	
     DskManager dm = new DskManager();
     protected DskFile dskFile;
     // filename=> baos
@@ -370,11 +386,20 @@ public class DskManagerEditor extends JFrame {
         info.setText("Free: " + freeSize + "kb");
     }
 
-    public static void main(String[] args) {
-        jFrame = new DskManagerEditor();
-        jFrame.setSize(475, 400);
-        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        jFrame.setVisible(true);
+    public static void main(String[] args) throws SecurityException, IOException {
+    	if (args.length == 0) {
+    		InputStream stream = DskManager.class.getClassLoader().
+    	              getResourceAsStream("dskmanager/logging.properties");
+    	    LogManager.getLogManager().readConfiguration(stream);
+    		LOGGER.info("OK");
+	        jFrame = new DskManagerEditor();
+	        jFrame.setSize(475, 400);
+	        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+	        jFrame.setVisible(true);
+    	} else {
+    		LOGGER.setLevel(Level.OFF);
+    		LOGGER.info("OK");
+    	}
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.logging.Logger;
 
 /**
  * un DskManager, personnel à un DskFile
@@ -12,6 +13,9 @@ import java.util.List;
  *
  */
 public class DskMaster {
+	
+	private final static Logger LOGGER = Logger.getLogger(DskManager.class.getName());
+	
 	int [] sectorSizes = new int[] {0x80,0x100,0x200,0x400,0x800,0x1000,0x1800};
 	// dictionary
 //	byte[]usedSectorEntry={};
@@ -113,7 +117,7 @@ public class DskMaster {
 			}
 		}
 		if (cats.size()==0) {
-			System.out.println("rien dans ce catalog");
+			LOGGER.info("rien dans ce catalog");
 		}
 		return cats;
 	}
@@ -171,7 +175,7 @@ public class DskMaster {
 			}
 		}
 		if (cats.size()==0) {
-			System.out.println("rien dans ce catalog sectors list");
+			LOGGER.info("rien dans ce catalog sectors list");
 		}
 		return cats;
 	}
@@ -213,7 +217,7 @@ public class DskMaster {
 					DskSector nextSector=allCSectors.get(i+1);
 					if (nextSector instanceof DskSectorCatalogs) {
 						// avoir confiance au tri de la liste allCSectors
-						System.out.println("galere");
+						LOGGER.severe("galere");
 					}
 
 					allCatsSector.add(allCSectors.get(i));
@@ -406,10 +410,10 @@ public class DskMaster {
 	    }
 	    int ChecksumFromHeader = pHeader[67] & 0xFF | (pHeader[68] & 0xFF) << 8;
 	    if (ChecksumFromHeader == CalculatedChecksum && ChecksumFromHeader != 0) {
-	      System.out.println("Has AMSDOS header");
+	      LOGGER.info("Has AMSDOS header");
 	      return true;
 	    }
-	    System.out.println("Without header");
+	    LOGGER.info("Without header");
 	    return false;
 	  }
 
