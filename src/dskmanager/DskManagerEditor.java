@@ -385,6 +385,8 @@ public class DskManagerEditor extends JFrame {
     }
     
 	public void ejectTable() {
+        Settings.delete();
+		
 		model.setRowCount(0);
 		info.setText("");
 		if (dskFile != null) {

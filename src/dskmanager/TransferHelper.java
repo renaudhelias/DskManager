@@ -74,6 +74,9 @@ public class TransferHelper extends TransferHandler {
     				if (dskManagerEditor.dskFile.master.type == null) {
     					dskManagerEditor.ejectTable();
     					JOptionPane.showMessageDialog(dskManagerEditor, "Disk unknown");
+    				} else {
+    					Settings.set(Settings.lastpath, file.getParent()+"/");
+                        Settings.set(Settings.lastopened,file.getAbsolutePath());
     				}
     			} else if (dskManagerEditor.dskFile == null || dskManagerEditor.dskFile.master.type == null) {
     				dskManagerEditor.ejectTable();
@@ -96,7 +99,7 @@ public class TransferHelper extends TransferHandler {
         			JOptionPane.showMessageDialog(dskManagerEditor, "File already present.", "Warning", JOptionPane.ERROR_MESSAGE);
         		}
         	}
-        	if (dskManagerEditor.dskFile!= null) {
+        	if (dskManagerEditor.dskFile != null || dskManagerEditor.dskFile.master.type != null) {
         		dskManagerEditor.updateTable();
         	}
         } 
