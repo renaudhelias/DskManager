@@ -237,9 +237,14 @@ public class DskManagerEditor extends JFrame {
                     File fileToLoad = jfc.getSelectedFile();
                     try {
                         dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
-                        updateTable();
-                        Settings.set(Settings.lastpath, jfc.getSelectedFile().getParent()+"/");
-                        Settings.set(Settings.lastopened, jfc.getSelectedFile().getAbsolutePath());
+                        if (dskFile == null || dskFile.master.type == null) {
+                        	ejectTable();
+                            JOptionPane.showMessageDialog(DskManagerEditor.this, "Disk unknown");
+                        } else {
+	                        updateTable();
+	                        Settings.set(Settings.lastpath, jfc.getSelectedFile().getParent()+"/");
+	                        Settings.set(Settings.lastopened, jfc.getSelectedFile().getAbsolutePath());
+                        }
                     } catch (IOException e1) {
                         e1.printStackTrace();
                     }
@@ -385,7 +390,7 @@ public class DskManagerEditor extends JFrame {
     }
     
 	public void ejectTable() {
-        Settings.delete();
+        Settings.remove(Settings.lastopened);
 		
 		model.setRowCount(0);
 		info.setText("");

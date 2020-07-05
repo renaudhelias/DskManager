@@ -64,6 +64,11 @@ public class Settings {
     save();
   }
   
+  public static void remove(String key) {
+      instance.props.remove(key);
+      save();
+	  }
+	  
   public static void delete() {
     try {
       instance.props.clear();
