@@ -416,6 +416,8 @@ public class DskManagerEditor extends JFrame {
     	} else {
     		LOGGER.setLevel(Level.OFF);
     		LOGGER.info("OK");
+    		DskManagerConsole console = new DskManagerConsole();
+    		console.execute(args);
     	}
     }
 

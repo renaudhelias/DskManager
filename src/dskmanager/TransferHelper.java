@@ -1,6 +1,5 @@
 package dskmanager;
 
-import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -131,7 +130,8 @@ public class TransferHelper extends TransferHandler {
         	dossierTmp.deleteOnExit();
         	dossierTmp.mkdirs();
         	String filename = (String) dskManagerEditor.model.getValueAt(v, 0);
-        	File tmpFile = new File(dossierTmp,filename);
+        	String filenameDrop=filename.replaceAll("\\s","");
+        	File tmpFile = new File(dossierTmp,filenameDrop);
         	tmpFile.deleteOnExit();
         	
         	LOGGER.finer("Creating File to move : "+tmpFile.getAbsolutePath());
