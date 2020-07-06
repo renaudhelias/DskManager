@@ -43,7 +43,10 @@ public class DskManagerConsole {
 					return;
 				}
 			}
-			
+			if (!new File(currentDir,filename).exists()) {
+				System.out.println("Problem : "+filename+" does not exist");
+				return;
+			}
 			
 			
 			dskFile=dm.loadDsk(new File(currentDir), filename);
