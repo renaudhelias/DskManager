@@ -79,7 +79,9 @@ public class DskMaster {
 		
 		List<Integer> cats= new ArrayList<Integer>();
 		int k=2;
-		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		if (type==DskType.VORTEX) {
+			k=1; // min(catId)
+		} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
@@ -91,10 +93,11 @@ public class DskMaster {
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
 				if (type == DskType.SYSTEM && sector.trackC<2) continue;
+				if (type == DskType.VORTEX && sector.trackC<2) continue;
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -106,7 +109,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
+					} else if (type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX) {
 						if ((b & 0xff) == k) {
 							cats.add((int)(b & 0xff));
 							allCatsId.add((int)(b & 0xff));
@@ -132,7 +135,9 @@ public class DskMaster {
 	public List<DskSector> findCatsSector(byte[] entriesSector) {
 		List<DskSector> cats= new ArrayList<DskSector>();
 		float k=2;
-		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		if (type==DskType.VORTEX) {
+			k=2; // min(catId)
+		} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			k=2; // min(catId)
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
 			k=4; // min(catId)
@@ -144,10 +149,11 @@ public class DskMaster {
 		for (DskSector sector : allCSectors) {
 			if (!(sector instanceof DskSectorCatalogs)) {
 				if (type == DskType.SYSTEM && sector.trackC<2) continue;
+				if (type == DskType.VORTEX && sector.trackC<2) continue;
 				int pair=0;
 				int k1=0;int k2=0;
 				for (byte b : entriesSector) {
-					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.VORTEX) {
+					if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20) {
 						if (pair==0) {
 							k1=(b & 0xff);
 						} else {
@@ -159,7 +165,7 @@ public class DskMaster {
 							}
 						}
 						pair=(pair+1)%2;
-					} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.DOSD40 || type==DskType.SDOS) {
+					} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM || type==DskType.VORTEX || type==DskType.DOSD40 || type==DskType.SDOS) {
 						if ((b & 0xff) == Math.floor(k)) {
 							cats.add(sector);
 							allCatsSector.add(sector);
@@ -169,8 +175,10 @@ public class DskMaster {
 				// idem que moduloMod 2 de nextFreeCat()
 				if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 					k+=0.5; // 512*2<=>1 idCat
-				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.VORTEX) {
+				} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
 					k+=0.25; // 512*4<=>1 idCat
+				} else if (type==DskType.VORTEX) {
+					k+=0.125;  // 512*8<=>1 idCat
 				}
 			}
 		}
@@ -189,10 +197,13 @@ public class DskMaster {
 		// catId à 2 car les cats C1(k==0) et C2(k==0) sont figé pour le CAT
 		int catIdModulo=0;
 		int catIdModuloMod=0;
-		if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
+		if (type==DskType.VORTEX) {
+			cats.catId=2; // min(catId)
+			catIdModuloMod=8; // 1 idCat<=>8*512 sector
+		} else if (type==DskType.PARADOS41 || type==DskType.SS40 || type==DskType.SYSTEM) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=2; // 1 idCat<=>2*512 sector
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		} else if (type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			cats.catId=2; // min(catId)
 			catIdModuloMod=4; // 1 idCat<=>4*512 sector
 		} else if (type==DskType.DOSD2 || type==DskType.DOSD20) {
@@ -209,6 +220,7 @@ public class DskMaster {
 			DskSector sector= allCSectors.get(i);
 			if (!(sector instanceof DskSectorCatalogs)) {
 				if (type == DskType.SYSTEM && sector.trackC<2) continue;
+				if (type == DskType.VORTEX && sector.trackC<2) continue;
 				if (!allCatsId.contains(cats.catId)) {
 //					allCats.put(k,sector);
 					allCatsId.add((int)cats.catId);
@@ -226,10 +238,12 @@ public class DskMaster {
 					if (type==DskType.DOSD2 || type==DskType.SDOS || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						allCatsSector.add(allCSectors.get(i+2));
 						allCatsSector.add(allCSectors.get(i+3));
-//						allCatsSector.add(allCSectors.get(i+4));
-//						allCatsSector.add(allCSectors.get(i+5));
-//						allCatsSector.add(allCSectors.get(i+6));
-//						allCatsSector.add(allCSectors.get(i+7));
+						if (type==DskType.VORTEX) {
+							allCatsSector.add(allCSectors.get(i+4));
+							allCatsSector.add(allCSectors.get(i+5));
+							allCatsSector.add(allCSectors.get(i+6));
+							allCatsSector.add(allCSectors.get(i+7));
+						}
 					}
 					cats.catSectors.add(allCSectors.get(i));
 					// et le suivant 1 catsId <=> 2 catsSector
@@ -237,10 +251,12 @@ public class DskMaster {
 					if (type==DskType.DOSD2 || type==DskType.SDOS || type==DskType.DOSD40 || type==DskType.DOSD20 || type==DskType.DOSD10 || type==DskType.VORTEX) {
 						cats.catSectors.add(allCSectors.get(i+2));
 						cats.catSectors.add(allCSectors.get(i+3));
-//						cats.catSectors.add(allCSectors.get(i+4));
-//						cats.catSectors.add(allCSectors.get(i+5));
-//						cats.catSectors.add(allCSectors.get(i+6));
-//						cats.catSectors.add(allCSectors.get(i+7));
+						if (type==DskType.VORTEX) {
+							cats.catSectors.add(allCSectors.get(i+4));
+							cats.catSectors.add(allCSectors.get(i+5));
+							cats.catSectors.add(allCSectors.get(i+6));
+							cats.catSectors.add(allCSectors.get(i+7));
+						}
 					}
 					return cats;
 				}
@@ -304,7 +320,11 @@ public class DskMaster {
 			if (trackC==2 && sideH==0 && (sectorIdR & 0x0F)<=4) {
 				return true;
 			}
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		} else if (type == DskType.VORTEX) {
+			if (trackC==1 && sideH==0 && (sectorIdR & 0x0F)<=8) {
+				return true;
+			}
+		} else if (type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			if (trackC==0 && sideH==0 && (sectorIdR & 0x0F)<=8) {
 				return true;
 			}
@@ -340,7 +360,7 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x42));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x43));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x44));
-		} else if (type==DskType.VORTEX || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		} else if (type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			DskTrack track0 = tracks.get(0);
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x21));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x22));
@@ -350,6 +370,16 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x26));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x27));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x28));
+		} else if (type==DskType.VORTEX) {
+			DskTrack track1side0 = tracks.get(2);
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x01));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x02));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x03));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x04));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x05));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x06));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x07));
+			catalogs.add((DskSectorCatalogs) find0F(track1side0,0x08));
 		} else if (type==DskType.DOSD2) {
 			DskTrack track0 = tracks.get(0);
 			DskTrack track0side1 = tracks.get(1);

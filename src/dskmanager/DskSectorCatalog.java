@@ -87,13 +87,13 @@ public class DskSectorCatalog {
 				// first part of entriesSector or else last part of entrieSector
 				// 8 catIds by here only.
 				bos.write((byte) cat.intValue());
-			} else if (master.type==DskType.DOSD2 || master.type==DskType.DOSD10 || master.type==DskType.DOSD20 || master.type==DskType.VORTEX) {
+			} else if (master.type==DskType.DOSD2 || master.type==DskType.DOSD10 || master.type==DskType.DOSD20) {
 				byte k1=(byte)(cat & 0xff);
 				byte k2=(byte)((cat & 0xff00) >> 8);
 				bos.write(k1);
 				bos.write(k2);
 				nbTrou++;
-			} else if (master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM) {
+			} else if (master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM || master.type==DskType.VORTEX) {
 				bos.write((byte) cat.intValue());
 			}
 		}

@@ -298,7 +298,9 @@ public class DskManager {
 		
 		// deux sectors par catId, sectorSize=512Ko *2=1024Ko=0x400
 		long entryDataSize=0;
-		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.VORTEX) {
+		if (type==DskType.VORTEX) {
+			entryDataSize=dskFile.master.sectorSizes[2] * 8;
+		} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
 		} else if (type==DskType.PARADOS41  || type==DskType.SS40 || type==DskType.SYSTEM) {
@@ -314,7 +316,7 @@ public class DskManager {
 		int countSectorIncrement=0;
 		// un cat a 10 entrées
 		int entriesSectorCount=0x10;
-		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS || type==DskType.VORTEX) {
+		if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			entriesSectorCount=0x08;
 		}
 		while (nbEntry>0) {
