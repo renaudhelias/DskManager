@@ -114,6 +114,8 @@ public class DskManager {
 			dskFile.nbTracks=80;
 		} else if (type == DskType.VORTEX) {
 			sectorId=sectorId_VORTEX;
+			this.initCPM();
+			baisCPM22SYS = new ByteArrayInputStream(CPM22SYS);
 			dskFile.nbSides=2;
 			dskFile.nbTracks=80;
 		} else if (type == DskType.SS40) {
@@ -168,6 +170,8 @@ public class DskManager {
 					dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
 					for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
 						if (i<2 && dskFile.master.type == DskType.SYSTEM) {
+							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
+						} else if (i<1 && dskFile.master.type == DskType.VORTEX) {
 							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
 						} else {
 							dskTrack.sectors.get(j).data[k]=((Integer)dskTrack.fillerByte).byteValue();

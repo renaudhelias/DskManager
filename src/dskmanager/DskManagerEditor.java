@@ -316,7 +316,7 @@ public class DskManagerEditor extends JFrame {
         } else if (dskFile.master.type == DskType.SYSTEM) {
         	freeSize = 169;
         } else if (dskFile.master.type == DskType.VORTEX) {
-        	freeSize = 716;
+        	freeSize = 704;
         } else if (dskFile.master.type == DskType.DOSD2) {
             freeSize = 712;
         } else if (dskFile.master.type == DskType.DOSD10) {
