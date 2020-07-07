@@ -174,13 +174,15 @@ public class DskManagerEditor extends JFrame {
                     	fileToSave=new File(fileToSave.getParent(), fileToSave.getName()+".dsk");
                     }
                     try {
-                        Object[] values = new Object[] {DskType.PARADOS80, DskType.PARADOS41, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.DOSD20, DskType.DOSD40, DskType.SDOS,  DskType.SYSTEM, DskType.VORTEX};
+                        Object[] values = new Object[] {DskType.PARADOS80, DskType.PARADOS41, DskType.PARADOS40D, DskType.SS40, DskType.DOSD2, DskType.DOSD10, DskType.DOSD20, DskType.DOSD40, DskType.SDOS,  DskType.SYSTEM, DskType.VORTEX};
 						Object value = DskType.SS40;
 						Object dialogResult = JOptionPane.showInputDialog(DskManagerEditor.this, "Format DOSD2 (or else let SS40)", "WARNING",  JOptionPane.PLAIN_MESSAGE, icon, values, value );
                         if (DskType.PARADOS80.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.PARADOS80);
                         } else if (DskType.PARADOS41.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.PARADOS41);
+                        } else if (DskType.PARADOS40D.equals(dialogResult)) {
+                            dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.PARADOS40D);
                         } else if (DskType.SS40.equals(dialogResult)) {
                             dskFile = dm.newDsk(fileToSave.getParentFile(), fileToSave.getName(), DskType.SS40);
                         } else if (DskType.SYSTEM.equals(dialogResult)) {
@@ -315,6 +317,8 @@ public class DskManagerEditor extends JFrame {
             freeSize = 396;
         } else if (dskFile.master.type == DskType.PARADOS41) {
             freeSize = 203;
+        } else if (dskFile.master.type == DskType.PARADOS40D) {
+            freeSize = 396;
         } else if (dskFile.master.type == DskType.SS40) {
             freeSize = 178;
         } else if (dskFile.master.type == DskType.SYSTEM) {
@@ -376,7 +380,7 @@ public class DskManagerEditor extends JFrame {
                 taille += 1;
             }
             // FIXME Vortex 4KB
-            if (dskFile.master.type == DskType.PARADOS80 || dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.DOSD40 || dskFile.master.type == DskType.SDOS || dskFile.master.type == DskType.VORTEX) {
+            if (dskFile.master.type == DskType.PARADOS80 || dskFile.master.type == DskType.PARADOS40D || dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.DOSD40 || dskFile.master.type == DskType.SDOS || dskFile.master.type == DskType.VORTEX) {
                 if ((taille / 2) * 2 != taille) {
                     taille += 1; // DOSD2 min file size is 2KB
                 }
