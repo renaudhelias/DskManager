@@ -354,12 +354,18 @@ public class DskMaster {
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC2));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC3));
 			catalogs.add((DskSectorCatalogs) find0F(track0,0xC4));
-		} else if (type==DskType.SYSTEM) {
+		} else if (type==DskType.SYSTEM && tracks.get(1).side==0) {
 			DskTrack track2 = tracks.get(2);
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x41));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x42));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x43));
 			catalogs.add((DskSectorCatalogs) find0F(track2,0x44));
+		} else if (type==DskType.SYSTEM && tracks.get(1).side==1) {
+			DskTrack track2side0 = tracks.get(4);
+			catalogs.add((DskSectorCatalogs) find0F(track2side0,0x41));
+			catalogs.add((DskSectorCatalogs) find0F(track2side0,0x42));
+			catalogs.add((DskSectorCatalogs) find0F(track2side0,0x43));
+			catalogs.add((DskSectorCatalogs) find0F(track2side0,0x44));
 		} else if (type==DskType.PARADOS80 || type==DskType.PARADOS40D || type==DskType.DOSD10 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			DskTrack track0 = tracks.get(0);
 			catalogs.add((DskSectorCatalogs) find0F(track0,0x21));

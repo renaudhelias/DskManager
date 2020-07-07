@@ -179,7 +179,7 @@ public class DskManager {
 				for (int j=0;j<dskTrack.nbSectors;j++) {
 					dskTrack.sectors.get(j).data=new byte[dskFile.master.sectorSizes[dskTrack.sectorSize]];
 					for (int k=0;k<dskFile.master.sectorSizes[dskTrack.sectorSize];k++) {
-						if (i<2 && dskFile.master.type == DskType.SYSTEM) {
+						if (i<2 && s==0 && dskFile.master.type == DskType.SYSTEM) {
 							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
 						} else if (i<1 && dskFile.master.type == DskType.VORTEX) {
 							dskTrack.sectors.get(j).data[k]=(byte)baisCPM22SYS.read();
@@ -232,7 +232,7 @@ public class DskManager {
 							dskFile.master.type=DskType.PARADOS41;
 						} else if ((sector.sectorIdR & 0xF0)==0xA0) {
 							dskFile.master.type=DskType.PARADOS40D;
-						} else if ((sector.sectorIdR & 0xF0)==0xC0) {
+						} else if ((sector.sectorIdR & 0xF0)==0xC0 && dskFile.nbSides == 1) {
 							dskFile.master.type=DskType.SS40;
 						} else if ((sector.sectorIdR & 0xF0)==0x20) {
 							dskFile.master.type=DskType.DOSD2;
@@ -246,7 +246,7 @@ public class DskManager {
 							dskFile.master.type=DskType.SDOS;
 						} else if ((sector.sectorIdR & 0xF0)==0x00 && dskTrack.nbSectors == 9) {
 							dskFile.master.type=DskType.VORTEX;
-						} else if ((sector.sectorIdR & 0xF0)==0x40) {
+						} else if ((sector.sectorIdR & 0xF0)==0x40 && dskFile.nbSides == 1) {
 							dskFile.master.type=DskType.SYSTEM;
 						}
 					}
