@@ -74,6 +74,7 @@ public class DskManager {
 	 * @throws IOException
 	 */
 	public DskFile newDsk(File currentDir, String dskName, DskType type) throws IOException{
+		int [] sectorId_PARADOS80={0x91,0x96,0x92,0x97,0x93,0x98,0x94,0x99,0x95,0x9A};
 		int [] sectorId_PARADOS41={0x81,0x86,0x82,0x87,0x83,0x88,0x84,0x89,0x85,0x8A};
 		int [] sectorId_SS40={0xC1,0xC6,0xC2,0xC7,0xC3,0xC8,0xC4,0xC9,0xC5};
 		int [] sectorId_DOSD2={0x21,0x26,0x22,0x27,0x23,0x28,0x24,0x29,0x25};
@@ -86,7 +87,11 @@ public class DskManager {
 		int [] sectorId=null;
 		DskFile dskFile=new DskFile(currentDir, dskName);
 		ByteArrayInputStream baisCPM22SYS=null;
-		if (type == DskType.PARADOS41) {
+		if (type == DskType.PARADOS80) {
+			sectorId=sectorId_PARADOS80;
+			dskFile.nbTracks=80;
+			dskFile.sizeOfTrack=0x15;
+		} else if (type == DskType.PARADOS41) {
 			sectorId=sectorId_PARADOS41;
 			dskFile.nbTracks=41;
 			dskFile.sizeOfTrack=0x15;
@@ -137,7 +142,7 @@ public class DskManager {
 				DskTrack dskTrack = new DskTrack(dskFile.master);
 				if (type==DskType.DOSD2 || type==DskType.SYSTEM || type==DskType.VORTEX) {
 					dskTrack.gap=0x52; // for tests (WinAPE)
-				} else if (type==DskType.PARADOS41 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
+				} else if (type==DskType.PARADOS80 || type==DskType.PARADOS41 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
 					dskTrack.gap=0x10; // for tests (WinAPE)
 					dskTrack.nbSectors=0xA;
 				}
@@ -216,7 +221,9 @@ public class DskManager {
 					LOGGER.info("avant scan sector : "+fis.getChannel().position());
 					sector.scan(fis);
 					if (i==0 && s==0 && j==0) {
-						if ((sector.sectorIdR & 0xF0)==0x80) {
+						if ((sector.sectorIdR & 0xF0)==0x90) {
+							dskFile.master.type=DskType.PARADOS80;
+						} else if ((sector.sectorIdR & 0xF0)==0x80) {
 							dskFile.master.type=DskType.PARADOS41;
 						} else if ((sector.sectorIdR & 0xF0)==0xC0) {
 							dskFile.master.type=DskType.SS40;
@@ -304,7 +311,7 @@ public class DskManager {
 		long entryDataSize=0;
 		if (type==DskType.VORTEX) {
 			entryDataSize=dskFile.master.sectorSizes[2] * 8;
-		} else if (type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
+		} else if (type==DskType.PARADOS80 || type==DskType.DOSD2 || type==DskType.DOSD10 || type==DskType.DOSD20 || type==DskType.DOSD40 || type==DskType.SDOS) {
 			// pour un catId, sectoreSize=512Ko * 2 * nbSides
 			entryDataSize=dskFile.master.sectorSizes[2] * 4;
 		} else if (type==DskType.PARADOS41  || type==DskType.SS40 || type==DskType.SYSTEM) {
@@ -331,6 +338,10 @@ public class DskManager {
 					cat.catsId.add(cats.catId);
 					cat.catsSector.addAll(cats.catSectors);
 				}
+				if (type==DskType.PARADOS80 && cat.catsId.size()>=0x08) {
+					countSectorIncrement++;
+				}
+				
 				cat.sectorIncrement=countSectorIncrement;
 				countSectorIncrement++;
 				cat.filename=fileName;
@@ -354,7 +365,14 @@ public class DskManager {
 				//cat.catsId.size()=9
 				//9       =>0x48 72
 				//16 0x10 =>0x80 128
-				cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/entriesSectorCount);
+				if (type==DskType.PARADOS80) {
+					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/(entriesSectorCount/2));
+					if (cat.catsId.size()>=0x08) {
+						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x08)*0x80/(entriesSectorCount/2));
+					}
+				} else {
+					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/entriesSectorCount);
+				}
 			}
 		}
 		

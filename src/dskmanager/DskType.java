@@ -40,5 +40,5 @@ ULTRAFORM         ;203k             ; 64             ;  SS          9           
  * ULTRAFORM : sector 0x10 0x11 0x12 0x13. WinAPE write 0x10 and read catalog 0x11. 
 **/
 public enum DskType {
-	PARADOS41, SS40, DOSD2, DOSD10, DOSD20, DOSD40, SDOS, SYSTEM, VORTEX;
+	PARADOS80, PARADOS41, SS40, DOSD2, DOSD10, DOSD20, DOSD40, SDOS, SYSTEM, VORTEX;
 }

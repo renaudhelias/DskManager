@@ -93,7 +93,7 @@ public class DskSectorCatalog {
 				bos.write(k1);
 				bos.write(k2);
 				nbTrou++;
-			} else if (master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM || master.type==DskType.VORTEX) {
+			} else if (master.type==DskType.PARADOS80 || master.type==DskType.PARADOS41 || master.type==DskType.SS40 || master.type==DskType.SYSTEM || master.type==DskType.VORTEX) {
 				bos.write((byte) cat.intValue());
 			}
 		}
