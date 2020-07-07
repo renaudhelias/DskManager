@@ -374,7 +374,7 @@ public class DskManager {
 				//16 0x10 =>0x80 128
 				if (type==DskType.PARADOS80 || type==DskType.PARADOS40D) {
 					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/(entriesSectorCount/2));
-					if (cat.catsId.size()>=0x08) {
+					if (cat.catsId.size()>0x08) {
 						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x08)*0x80/(entriesSectorCount/2));
 					}
 				} else {
