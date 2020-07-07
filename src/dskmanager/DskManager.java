@@ -361,7 +361,7 @@ public class DskManager {
 			if (nbEntry>0) {
 				// full cat
 				cat.sectorLength=0x80;
-			} else if (nbEntry%entriesSectorCount==0) {
+			} else if (nbEntry==0) {
 				// last full cat
 				cat.sectorLength=0x80;
 			} else {
