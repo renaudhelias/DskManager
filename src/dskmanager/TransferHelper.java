@@ -32,17 +32,11 @@ public class TransferHelper extends TransferHandler {
 	public boolean canImport(TransferHandler.TransferSupport info) {
         // Spammed => bien pour le curseur
     	LOGGER.finest("canImport?");
-        if (!info.isDataFlavorSupported(DataFlavor.stringFlavor) && !info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
+        if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
         	dskManagerEditor.table.setCursor(DragSource.DefaultMoveNoDrop);
             return false;
         }
 
-        JTable.DropLocation dl = (JTable.DropLocation)info.getDropLocation();
-        if (dl.getRow() == -1) {
-        	dskManagerEditor.table.setCursor(DragSource.DefaultMoveNoDrop);
-            return true;
-        }
-        
         dskManagerEditor.table.setCursor(DragSource.DefaultMoveDrop);
         return true;
     }
@@ -51,14 +45,16 @@ public class TransferHelper extends TransferHandler {
         if (!info.isDrop()) {
             return false;
         }
-         
+        
+        dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        
         // Check for String flavor
         if (!info.isDataFlavorSupported(DataFlavor.javaFileListFlavor)) {
         	LOGGER.info("List doesn't accept a drop of this type.");
             return false;
         }
         LOGGER.finer("from Desktop");
-        dskManagerEditor.table.setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        
 
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
