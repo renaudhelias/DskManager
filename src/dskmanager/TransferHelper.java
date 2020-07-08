@@ -128,7 +128,7 @@ public class TransferHelper extends TransferHandler {
         	String filename = (String) dskManagerEditor.model.getValueAt(v, 0);
     		// FutureOS filename contains space in middle of filename
     		// left trim.
-        	String filenameDrop=filename.substring(0,8).replaceAll("\\s+$","")+filename.substring(8,12);
+        	String filenameDrop=filename.substring(0,8).replaceAll("\\s+$","")+filename.substring(8,12).replaceAll("\\s+$","");
         	File tmpFile = new File(dossierTmp,filenameDrop);
         	tmpFile.deleteOnExit();
         	
