@@ -289,7 +289,8 @@ public class DskMaster {
     }
 
 	public String realname2cpcname(String realname) {
-    	String cpcname = realname.toUpperCase();
+		// cannot launch from CPC if lowercase, but FutureOS contains game with lowerCase name.
+    	String cpcname = realname; //.toUpperCase();
     	if (cpcname.contains(".")) {
             int point = cpcname.lastIndexOf(".");
             String filename = cpcname.substring(0, point);
