@@ -413,7 +413,7 @@ public class DskManagerEditor extends JFrame {
 
 
     public static void main(String[] args) throws SecurityException, IOException {
-    	if (args.length == 0) {
+    	if (args.length == 0 || (args.length == 1 && args[0].toUpperCase().endsWith(".DSK"))) {
     		InputStream stream = DskManager.class.getClassLoader().
     	              getResourceAsStream("dskmanager/logging.properties");
     	    LogManager.getLogManager().readConfiguration(stream);
@@ -422,6 +422,18 @@ public class DskManagerEditor extends JFrame {
 	        jFrame.setSize(475, 400);
 	        jFrame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 	        jFrame.setVisible(true);
+    		if (args.length==1) {
+    			File f = new File(args[0]);
+    			jFrame.dskFile = jFrame.dm.loadDsk(new File(f.getParent()), f.getName());
+                if (jFrame.dskFile == null || jFrame.dskFile.master.type == null) {
+                	jFrame.ejectTable();
+                } else {
+                	jFrame.updateTable();
+                    Settings.set(Settings.lastpath, System.getProperty("user.dir"));
+                    Settings.set(Settings.lastopened, System.getProperty("user.dir")+File.separator+args[0]);
+                }
+    			
+    		}
     	} else {
     		LOGGER.setLevel(Level.OFF);
     		LOGGER.info("OK");

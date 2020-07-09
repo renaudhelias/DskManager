@@ -3,14 +3,14 @@
   <dontWrapJar>false</dontWrapJar>
   <headerType>gui</headerType>
   <jar>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\DskManager.jar</jar>
-  <outfile>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\DskManager_v1.1.11.exe</outfile>
+  <outfile>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\DskManager_v1.1.12.exe</outfile>
   <errTitle></errTitle>
   <cmdLine></cmdLine>
   <chdir>.</chdir>
   <priority>normal</priority>
   <downloadUrl>http://java.com/download</downloadUrl>
   <supportUrl></supportUrl>
-  <stayAlive>true</stayAlive>
+  <stayAlive>false</stayAlive>
   <restartOnCrash>false</restartOnCrash>
   <manifest></manifest>
   <icon>C:\Users\Joe\Desktop\mist-git\dskmanager\DskManager\workspaceDskManager\dskmanager\Save.ico</icon>
