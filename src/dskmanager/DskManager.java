@@ -347,7 +347,20 @@ public class DskManager {
 				}
 				if ((type==DskType.PARADOS80 || type==DskType.PARADOS40D) && cat.catsId.size()>=0x08) {
 					countSectorIncrement++;
+				} else if (type==DskType.VORTEX) {
+					//0123 => +0
+					//4567 => +1
+					//89AB => +1+1
+					//CDEF => +1+1+1
+					if (cat.catsId.size()>=0x0C) {
+						countSectorIncrement+=3;
+					} else if (cat.catsId.size()>=0x08) {
+						countSectorIncrement+=2;
+					} else if (cat.catsId.size()>=0x04) {
+						countSectorIncrement+=1;
+					}
 				}
+				
 				
 				cat.sectorIncrement=countSectorIncrement;
 				countSectorIncrement++;
@@ -376,6 +389,15 @@ public class DskManager {
 					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/(entriesSectorCount/2));
 					if (cat.catsId.size()>=0x08) {
 						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x08)*0x80/(entriesSectorCount/2));
+					}
+				} else if (type==DskType.VORTEX) {
+					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/(entriesSectorCount/4));
+					if (cat.catsId.size()>=0x0C) {
+						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x0C)*0x80/(entriesSectorCount/4));
+					} else if (cat.catsId.size()>=0x08) {
+						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x08)*0x80/(entriesSectorCount/4));
+					} else if (cat.catsId.size()>=0x04) {
+						cat.sectorLength=Math.min(0x80, (cat.catsId.size()-0x04)*0x80/(entriesSectorCount/4));
 					}
 				} else {
 					cat.sectorLength=Math.min(0x80, cat.catsId.size()*0x80/entriesSectorCount);

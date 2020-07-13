@@ -379,10 +379,14 @@ public class DskManagerEditor extends JFrame {
             if (list.get(filename).size() % 1024 > 0) {
                 taille += 1;
             }
-            // FIXME Vortex 4KB
             if (dskFile.master.type == DskType.PARADOS80 || dskFile.master.type == DskType.PARADOS40D || dskFile.master.type == DskType.DOSD2 || dskFile.master.type == DskType.DOSD20 || dskFile.master.type == DskType.DOSD40 || dskFile.master.type == DskType.SDOS || dskFile.master.type == DskType.VORTEX) {
                 if ((taille / 2) * 2 != taille) {
                     taille += 1; // DOSD2 min file size is 2KB
+                }
+                if (dskFile.master.type == DskType.VORTEX) {
+                    if ((taille / 4) * 4 != taille) {
+                        taille += 2; // VORTEX min file size is 4KB
+                    }
                 }
             }
             model.addRow(new Object[]{filename, ":"+user, (taille) + "kb", isBinary ? Type : "ASC", attr});
