@@ -49,6 +49,7 @@ public class DskManagerTest {
 		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test2.dsk", DskType.SS40);
 		dm.addFile(toto,currentDir,"main2.bin",true);
+		dm.renameFile(toto, "main2   .bin", "MAIN2   .BIN");
 		compare(currentDir, "jdvpa10_test2.dsk", "jdvpa10_test1.dsk");
 	}
 
@@ -57,7 +58,8 @@ public class DskManagerTest {
 		System.out.println(new File(currentDir,"jdvpa10_test4.dsk").delete());
 		
 		DskFile toto = dm.newDsk(currentDir, "jdvpa10_test4.dsk", DskType.DOSD2);
-		dm.addFile(toto,currentDir,"main2.bin",false);
+		dm.addFile(toto,currentDir,"main2.bin",null);
+		dm.renameFile(toto, "main2   .bin", "MAIN2.BIN");
 		compare(currentDir, "jdvpa10_test4.dsk", "jdvpa10_test5.dsk");
 	}
 
@@ -171,17 +173,17 @@ public class DskManagerTest {
 		in.close();
 		
 		dm.addFile(dskFile, currentDir, "main3.bin", false);
-		File r1=dm.readFile(dskFile,currentDir,"MAIN3   .BIN");
+		File r1=dm.readFile(dskFile,currentDir,"main3   .bin");
 		assertNotNull(r1);
 		assertTrue(r1.exists());
 		tmp.delete();
-		dm.eraseFile(dskFile, "MAIN3   .BIN");
-		r1=dm.readFile(dskFile,currentDir,"MAIN3   .BIN");
+		dm.eraseFile(dskFile, "main3   .bin");
+		r1=dm.readFile(dskFile,currentDir,"main3   .bin");
 		assertNull(r1);
 		
 		Set<String> list=dm.listFiles(dskFile).keySet();
 		for(String notErased:list) {
-			if (notErased.equals("MAIN3.BIN   ")) {
+			if (notErased.equals("main3   .bin")) {
 				fail("still here");
 			}
 		}
@@ -205,7 +207,7 @@ public class DskManagerTest {
 		Set<String> list=listWithDATA.keySet();
 		assertNotNull(list);
 		assertTrue(list.contains("MAIN2   .BIN"));
-		assertEquals(listWithDATA.get("MAIN2   .BIN").size(),10240);
+		assertEquals(listWithDATA.get("MAIN2   .BIN").size(),9106);
 		
 		File fichier = dm.readFile(dskFile, currentDir, "MAIN2   .BIN");
 		assertEquals(fichier.getName(),"MAIN2   .BIN");
@@ -231,7 +233,7 @@ public class DskManagerTest {
 		String realname="ETOILE  .BAS";
 		assertEquals(master.realname2realname(realname),"ETOILE  .BAS");
 		realname="etoile.bas";
-		assertEquals(master.realname2realname(realname),"ETOILE  .BAS");
+		assertEquals(master.realname2realname(realname),"etoile  .bas");
 	}
 	
 	@Test
@@ -239,10 +241,9 @@ public class DskManagerTest {
 		File boum = new File(currentDir, "boum.txt");
 		assertEquals(boum.length(),600000);
 		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test6.dsk", DskType.DOSD2);
-		dm.addFile(dskFile, currentDir, "boum.txt", false);
+		dm.addFile(dskFile, currentDir, "boum.txt", null);
 		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
-		ByteArrayOutputStream fileEntry = list.get("BOUM    .TXT");
-		//FIXME
+		ByteArrayOutputStream fileEntry = list.get("boum    .txt");
 		assertEquals(fileEntry.toByteArray().length, 600000);
 		
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
@@ -287,10 +288,10 @@ public class DskManagerTest {
 	@Test
 	public void testDOSD10Boum() throws IOException {
 		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test7.dsk", DskType.DOSD10);
-		dm.addFile(dskFile, currentDir, "boum.txt", false);
+		dm.addFile(dskFile, currentDir, "boum.txt", null);
 		dskFile = dm.loadDsk(currentDir, "jdvpa10_test7.dsk");
 		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
-		ByteArrayOutputStream fileEntry = list.get("BOUM    .TXT");
+		ByteArrayOutputStream fileEntry = list.get("boum    .txt");
 		assertEquals(fileEntry.toByteArray().length, 600064);
 		
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
@@ -325,12 +326,12 @@ public class DskManagerTest {
 		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test7.dsk", DskType.DOSD10);
 		assertEquals(dskFile.master.allCatsId.size(),0);
 		assertEquals(dskFile.master.allCatsSector.size(),0);
-		dm.addFile(dskFile, currentDir, "test100", false);
+		dm.addFile(dskFile, currentDir, "test100", null);
 		assertEquals(dskFile.master.allCatsId.size(),1);
 		assertEquals(dskFile.master.allCatsSector.size(),4);
 		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
 		assertEquals(dskFile.master.allCatsId.size(),1);
-		ByteArrayOutputStream fileEntry = list.get("TEST100 .   ");
+		ByteArrayOutputStream fileEntry = list.get("test100 .   ");
 		assertEquals(fileEntry.toByteArray().length, 1);
 		
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
@@ -380,10 +381,10 @@ public class DskManagerTest {
 	@Test
 	public void testDOSD40() throws IOException {
 		DskFile dskFile = dm.newDsk(currentDir, "jdvpa10_test9.dsk", DskType.DOSD40);
-		dm.addFile(dskFile, currentDir, "boum4096.txt", false);
+		dm.addFile(dskFile, currentDir, "boum4096.txt", null);
 		dskFile = dm.loadDsk(currentDir, "jdvpa10_test9.dsk");
 		LinkedHashMap<String, ByteArrayOutputStream> list = dm.listFiles(dskFile);
-		ByteArrayOutputStream fileEntry = list.get("BOUM4096.TXT");
+		ByteArrayOutputStream fileEntry = list.get("boum4096.txt");
 		assertEquals(fileEntry.toByteArray().length, 4096);
 		
 		List<DskSectorCatalogs> catalogsC1C4=dskFile.master.buildCatalogs(dskFile.tracks);
