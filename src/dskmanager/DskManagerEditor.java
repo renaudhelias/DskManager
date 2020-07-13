@@ -433,10 +433,9 @@ public class DskManagerEditor extends JFrame {
                 	jFrame.ejectTable();
                 } else {
                 	jFrame.updateTable();
-                    Settings.set(Settings.lastpath, System.getProperty("user.dir"));
-                    Settings.set(Settings.lastopened, System.getProperty("user.dir")+File.separator+args[0]);
+                    Settings.set(Settings.lastpath, f.getParent());
+                    Settings.set(Settings.lastopened, f.getParent()+File.separator+f.getName());
                 }
-    			
     		}
     	} else {
     		LOGGER.setLevel(Level.OFF);
