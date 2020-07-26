@@ -8,6 +8,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -88,6 +91,7 @@ public class DskManagerEditor extends JFrame {
 
     };
     public int freeSize = 0;
+	private TransferHelper th;
 
     private static DskManagerEditor jFrame;
 
@@ -118,7 +122,8 @@ public class DskManagerEditor extends JFrame {
         table.setFont(font);
         info.setFont(font);
         JScrollPane scrollPane = new JScrollPane(table, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-        table.setTransferHandler(new TransferHelper(this));
+        th = new TransferHelper(this);
+        table.setTransferHandler(th);
         table.setDragEnabled(true);
         table.setDropMode(DropMode.USE_SELECTION);
         table.setFillsViewportHeight(true);
@@ -283,6 +288,16 @@ public class DskManagerEditor extends JFrame {
 						e1.printStackTrace();
 					}
                 }
+               	if ((e.getKeyCode() == KeyEvent.VK_C) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0) && table.getSelectedRows().length > 0) {
+                    Transferable contents= th.createTransferable(table);
+					// ctrl+C COPY
+               		Toolkit.getDefaultToolkit().getSystemClipboard().setContents(contents, null);
+                }
+               	if ((e.getKeyCode() == KeyEvent.VK_V) && ((e.getModifiers() & KeyEvent.CTRL_MASK) != 0)) {
+                    // ctrl+V PASTE
+               		Transferable transferable = Toolkit.getDefaultToolkit().getSystemClipboard().getContents(null);
+               		th.importDataTransferable(transferable);
+                }
             }
         });
 
@@ -294,16 +309,15 @@ public class DskManagerEditor extends JFrame {
         
         String file = Settings.get(Settings.lastopened, null);
         if (file != null){
-            
-                    File fileToLoad = new File(file);
-                    try {
-                        dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
-                        updateTable();
-                        Settings.set(Settings.lastpath, fileToLoad.getParent()+"/");
-                        Settings.set(Settings.lastopened, fileToLoad.getAbsolutePath());
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
-                    }
+            File fileToLoad = new File(file);
+            try {
+                dskFile = dm.loadDsk(fileToLoad.getParentFile(), fileToLoad.getName());
+                updateTable();
+                Settings.set(Settings.lastpath, fileToLoad.getParent()+"/");
+                Settings.set(Settings.lastopened, fileToLoad.getAbsolutePath());
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
         }
     }
 

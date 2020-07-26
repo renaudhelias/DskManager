@@ -5,7 +5,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DragSource;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -58,6 +57,10 @@ public class TransferHelper extends TransferHandler {
 
         // Get the string that is being dropped.
         Transferable t = info.getTransferable();
+        return importDataTransferable(t);
+    }
+    
+    public boolean importDataTransferable(Transferable t) {
         try {
         	boolean generateAMSDOSHeader = false;
         	boolean generateAMSDOSHeaderDone = false;
@@ -97,8 +100,7 @@ public class TransferHelper extends TransferHandler {
         	if (dskManagerEditor.dskFile != null && dskManagerEditor.dskFile.master.type != null) {
         		dskManagerEditor.updateTable();
         	}
-        } 
-        catch (Exception e) {
+        } catch (Exception e) {
         	e.printStackTrace();
         	return false;
         }
@@ -111,14 +113,11 @@ public class TransferHelper extends TransferHandler {
     }
      
     @Override
-    protected Transferable createTransferable(JComponent c) {
+    public Transferable createTransferable(JComponent c) {
     	LOGGER.finer("to Desktop");
     	
     	JTable list = (JTable)c;
         int[] values = list.getSelectedRows();
-        
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-        bos.write(10);
         
         List<File> files= new ArrayList<File>();
         for (int v :values) {
