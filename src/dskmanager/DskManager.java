@@ -539,7 +539,7 @@ public class DskManager {
 					if (listFiles.containsKey(key)) {
 						if (checkAMSDOS) {
 							listFiles.get(key).write(sector.data,0,Math.min(sector.data.length,fileLength));
-							fileLength-=Math.min(sector.data.length,fileLength);
+							//fileLength-=Math.min(sector.data.length,fileLength);
 						} else {
 							listFiles.get(key).write(sector.data);
 						}
@@ -555,7 +555,7 @@ public class DskManager {
 						ByteArrayOutputStream baos = new ByteArrayOutputStream();
 						if (checkAMSDOS) {
 							baos.write(sector.data,0,Math.min(sector.data.length,fileLength));
-							fileLength-=Math.min(sector.data.length,fileLength);
+							//fileLength-=Math.min(sector.data.length,fileLength);
 						} else {
 							baos.write(sector.data);
 						}
