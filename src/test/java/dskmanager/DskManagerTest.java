@@ -23,7 +23,7 @@ public class DskManagerTest {
 
 	DskManager dm = DskManager.getInstance();
 	
-	File currentDir = new File(new File("src/"+DskManagerTest.class.getName().replace('.', '/')+".class").getAbsolutePath()).getParentFile();
+	File currentDir = new File("target/test-classes");
 	
 	@Test
 	@Ignore
